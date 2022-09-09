@@ -1,7 +1,7 @@
 {
   "name": "site_17_server_side",
   "version": "0.0.1",
-  "description": "Site 17 ServiceNow Application",
+  "description": "TypeScript source code for the Site 17 ServiceNow application",
   "author": {
     "name": "Leonard T. Erwine"
   },
