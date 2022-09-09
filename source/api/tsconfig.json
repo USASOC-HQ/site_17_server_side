@@ -12,7 +12,7 @@
       "../../types/x_g_inte_site_17/table"
     ],
     "declaration": true,
-    "declarationDir": "../../x_g_inte_site_17/api",
+    "declarationDir": "../../types/x_g_inte_site_17/api",
     "outDir": "../../transpiled/api"
   },
 }
