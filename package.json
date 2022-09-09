@@ -1,0 +1,15 @@
+{
+  "name": "site_17_server_side",
+  "version": "1.0.1",
+  "description": "Site 17 ServiceNow Application",
+  "author": {
+    "name": "Leonard T. Erwine"
+  },
+  "scripts": {
+    "build": "tsc --build - source/api/tsconfig.json",
+    "clean": "tsc --build --clean - source/api/tsconfig.json"
+  },
+  "devDependencies": {
+    "typescript": "^4.8.3"
+  }
+}

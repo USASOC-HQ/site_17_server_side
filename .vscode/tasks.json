@@ -1,0 +1,43 @@
+{
+	"version": "2.0.0",
+	"tasks": [
+		{
+			"label": "Build All",
+			"group": {
+				"kind": "build",
+				"isDefault": true
+			},
+			"dependsOn": [
+				"Build API",
+				"Build Server Scripts"
+			],
+			"problemMatcher": []
+		},
+		{
+			"label": "Build API",
+			"type": "typescript",
+			"tsconfig": "source/api/tsconfig.json",
+			"options": {
+				"cwd": "${workspaceFolder}/source/api"
+			},
+			"group": "build",
+			"problemMatcher": [
+				"$tsc"
+			],
+			"detail": "tsc --build - source/api/tsconfig.json"
+		},
+		{
+			"label": "Build Server Scripts",
+			"type": "typescript",
+			"tsconfig": "source/scripts/tsconfig.json",
+			"options": {
+				"cwd": "${workspaceFolder}/source/scripts"
+			},
+			"group": "build",
+			"problemMatcher": [
+				"$tsc"
+			],
+			"detail": "tsc --build - source/scripts/tsconfig.json"
+		}
+	]
+}
