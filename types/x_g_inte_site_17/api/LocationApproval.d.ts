@@ -1,4 +1,4 @@
-/// <reference path="../sn_typings_server_scoped/dist/index.d.ts" />
+/// <reference path="../../sn_typings_server_scoped/dist/index.d.ts" />
 declare namespace x_g_inte_site_17 {
     interface ILocationApproval extends $$snClass.ICustomClassBase<ILocationApproval, "LocationApproval"> {
         /**

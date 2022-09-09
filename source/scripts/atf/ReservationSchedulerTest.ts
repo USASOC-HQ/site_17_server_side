@@ -1,4 +1,5 @@
-/// <reference path="../../../types/index.d.ts" />
+/// <reference path="../../../types/sn_typings_server_scoped/dist/index.d.ts" />
+/// <reference path="../../../types/x_g_inte_site_17/table/index.d.ts" />
 
 namespace constructorTest {
     declare var outputs: sn_atf.ITestStepOutputs;

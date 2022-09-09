@@ -1,5 +1,5 @@
-/// <reference path="../sn_typings_server_scoped/dist/index.d.ts" />
-/// <reference path="../table/index.d.ts" />
+/// <reference path="../../types/sn_typings_server_scoped/dist/index.d.ts" />
+/// <reference path="../../types/x_g_inte_site_17/table/index.d.ts" />
 declare namespace x_g_inte_site_17 {
     interface ITimeSpan {
         start: GlideDateTime;

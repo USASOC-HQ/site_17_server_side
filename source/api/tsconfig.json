@@ -9,10 +9,10 @@
     "removeComments": false,
     "typeRoots": [
       "../../types/sn_typings_server_scoped/dist",
-      "../../types/table"
+      "../../types/x_g_inte_site_17/table"
     ],
     "declaration": true,
-    "declarationDir": "../../types/api",
+    "declarationDir": "../../x_g_inte_site_17/api",
     "outDir": "../../transpiled/api"
   },
 }

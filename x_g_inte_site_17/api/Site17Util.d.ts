@@ -1,4 +1,4 @@
-/// <reference path="../sn_typings_server_scoped/dist/index.d.ts" />
+/// <reference path="../../types/sn_typings_server_scoped/dist/index.d.ts" />
 declare namespace x_g_inte_site_17 {
     /**
      * Base interface for the Site17Util API

@@ -1,6 +1,6 @@
 "use strict";
 /// <reference path="../../types/sn_typings_server_scoped/dist/index.d.ts" />
-/// <reference path="../../types/table/index.d.ts" />
+/// <reference path="../../types/x_g_inte_site_17/table/index.d.ts" />
 var x_g_inte_site_17;
 (function (x_g_inte_site_17) {
     x_g_inte_site_17.ReservationScheduler = (function () {

@@ -1,5 +1,6 @@
 "use strict";
-/// <reference path="../../../types/index.d.ts" />
+/// <reference path="../../../types/sn_typings_server_scoped/dist/index.d.ts" />
+/// <reference path="../../../types/x_g_inte_site_17/table/index.d.ts" />
 var constructorTest;
 (function (constructorTest) {
     // Insert Reservation Schedule
