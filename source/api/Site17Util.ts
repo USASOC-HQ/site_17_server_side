@@ -99,6 +99,125 @@ namespace x_g_inte_site_17 {
     export declare type Site17Util = Readonly<ISite17Util>;
 
     /**
+     * Callback function that produces an {@link IteratorResult} object when the {@link Iterator.throw} method is invoked on the target {@link Iterator}.
+     * @export
+     * @interface IThrowFunc
+     * @template TYield - The type of value yielded by the target {@link Iterator}.
+     * @template TReturn - The final value type returned by the target {@link Iterator}.
+     */
+    export interface IThrowFunc<TYield, TReturn = any> {
+        /**
+         * Produces an {@link IteratorResult} object when the {@link Iterator.throw} method is invoked on the target {@link Iterator}.
+         * @param {*} [e] - An optional object representing the exception.
+         * @return {IteratorResult<TYield, TReturn>} The iterator result object representing a yielded value or the end of the iteration.
+         * @memberof IThrowFunc
+         */
+        (e?: any): IteratorResult<TYield, TReturn>;
+    }
+
+    /**
+     * Predicate function for testing yielded value from the {@link Iterator.next} method of an {@link Iterator} object, including the arguments that were passed to the {@link Iterator.next} method.
+     * @export
+     * @interface IIterationPredicate
+     * @template TYield - The type of value yielded by the target {@link Iterator}.
+     * @template TNext - The type of value may be passed to the {@link Iterator.next} method on the target {@link Iterator}.
+     */
+    export interface IIterationPredicate<TYield, TNext = undefined> {
+        /**
+         * Tests the yielded value from the {@link Iterator.next} method of the target {@link Iterator} object.
+         * @param {TYield} value - The yielded value.
+         * @param {(...[] | [TNext])} args - The arguments that were passed to the {@link Iterator.next} method.
+         * @return {boolean} A value indicating whether the test passed.
+         * @memberof IIterationPredicate
+         */
+        (value: TYield, ...args: [] | [TNext]): boolean;
+    }
+    /**
+     * Callback function for processing a yielded value from the {@link Iterator.next} method of an {@link Iterator} object, including the arguments that were passed to the {@link Iterator.next} method.
+     * @export
+     * @interface IIteratorNextCallback
+     * @template TYield - The type of value yielded by the target {@link Iterator}.
+     * @template TNext - The type of value may be passed to the {@link Iterator.next} method on the target {@link Iterator}.
+     */
+    export interface IIteratorNextCallback<TYield, TNext = undefined> {
+        /**
+         * Tests the yielded value from the {@link Iterator.next} method of the target {@link Iterator} object.
+         * @param {TYield} value - The yielded value.
+         * @param {(...[] | [TNext])} args - The arguments that were passed to the {@link Iterator.next} method.
+         * @memberof IIterationPredicate
+         */
+        (value: TYield, ...args: [] | [TNext]): void;
+    }
+
+    /**
+     * Function that converts the yielded value from the {@link Iterator.next} method of an {@link Iterator} object, including the arguments that were passed to the {@link Iterator.next} method.
+     * @export
+     * @interface IMapFunc
+     * @template TInput - The type of value yielded by the target {@link Iterator}.
+     * @template TResult - The type of converted value.
+     * @template TNext - The type of value may be passed to the {@link Iterator.next} method on the target {@link Iterator}.
+     */
+    export interface IMapFunc<TInput, TResult, TNext = undefined> {
+        /**
+         * Converts the yielded value from the {@link Iterator.next} method of the target {@link Iterator} object.
+         * @param {TInput} value - The yielded value.
+         * @param {(...[] | [TNext])} args - The arguments that were passed to the {@link Iterator.next} method.
+         * @return {TResult} The converted value.
+         * @memberof IMapFunc
+         */
+        (value: TInput, ...args: [] | [TNext]): TResult;
+    }
+    
+    /**
+     * Function that calculates an aggregate value from the next input value.
+     * @export
+     * @interface IReducerFunc
+     * @template TAcc - The type of aggregated value.
+     * @template TInput - The input value type.
+     */
+    export interface IReducerFunc<TAcc, TInput> {
+        /**
+         * Calculates an aggregated value from the next input value.
+         * @param {TAcc} acc - The current aggregated value.
+         * @param {TInput} cur - The next input value.
+         * @return {TAcc} The accumulated aggregate value.
+         * @memberof IReducerFunc
+         */
+        (acc: TAcc, cur: TInput): TAcc;
+    }
+    /**
+     * Function for testing a value.
+     * @export
+     * @interface IPredicate
+     * @template T - The type of value to be tested.
+     */
+    export interface IPredicate<T> {
+        /**
+         * Tests a value.
+         * @param {T} value - The value to be tested.
+         * @return {boolean} A value indictating whether the test passed.
+         * @memberof IPredicate
+         */
+        (value: T): boolean;
+    }
+
+    /**
+     * Function that produces an optional return value from an error state.
+     * @export
+     * @interface IIteratorThrowHandler
+     * @template TReturn
+     */
+    export interface IIteratorThrowHandler<TReturn = any> {
+        /**
+         * Produces an optional return value from an error state.
+         * @param {*} [e] - An optional object representing the exception.
+         * @return {(TReturn | undefined)} The optional return value.
+         * @memberof IIteratorThrowHandler
+         */
+        (e?: any): TReturn | undefined;
+    };
+
+    /**
      * Defines the constructor for the Site17Util API
      * @export
      * @interface Site17UtilConstructor
@@ -303,13 +422,12 @@ namespace x_g_inte_site_17 {
          * @template TReturn - The optional final value type for the iterator.
          * @template TNext - The optional parameter type for obtaining a yielded result.
          * @param {Iterator<TYield, TReturn, TNext>} source - The source iterator.
-         * @param {{ (value: TYield, ...args: [] | [TNext]): boolean; }} predicate - Determines whether a value will be yielded in the result iterator.
+         * @param {IIterationPredicate<TYield, TNext>} predicate - Determines whether a value will be yielded in the result iterator.
          * @param {*} [thisArg] - An optional object to which the this keyword can refer in the predicate function.
          * @return {Iterator<TYield, TReturn, TNext>} The iterator yielding filtered results.
          * @memberof Site17UtilConstructor
          */
-        filterIterator<TYield, TReturn = any, TNext = undefined>(source: Iterator<TYield, TReturn, TNext>, predicate: { (value: TYield, ...args: [] | [TNext]): boolean; },
-            thisArg?: any): Iterator<TYield, TReturn, TNext>;
+        filterIterator<TYield, TReturn = any, TNext = undefined>(source: Iterator<TYield, TReturn, TNext>, predicate: IIterationPredicate<TYield, TNext>, thisArg?: any): Iterator<TYield, TReturn, TNext>;
         
         /**
          * Creates a new iterator which applies a given function before each value is yielded.
@@ -317,13 +435,12 @@ namespace x_g_inte_site_17 {
          * @template TReturn - The optional final value type for the iterator.
          * @template TNext - The optional parameter type for obtaining a yielded result.
          * @param {Iterator<TYield, TReturn, TNext>} source - The source iterator.
-         * @param {{ (value: TYield, ...args: [] | [TNext]): void; }} callbackFn - The function that is applied to each value before it is yielded in the result iterator.
+         * @param {IIteratorNextCallback<TYield, TNext>} callbackFn - The function that is applied to each value before it is yielded in the result iterator.
          * @param {*} [thisArg] - An optional object to which the this keyword can refer in the callback function.
          * @return {Iterator<TYield, TReturn, TNext>} A wrapper for the original iterator.
          * @memberof Site17UtilConstructor
          */
-        reiterate<TYield, TReturn = any, TNext = undefined>(source: Iterator<TYield, TReturn, TNext>, callbackFn: { (value: TYield, ...args: [] | [TNext]): void; },
-            thisArg?: any): Iterator<TYield, TReturn, TNext>;
+        reiterate<TYield, TReturn = any, TNext = undefined>(source: Iterator<TYield, TReturn, TNext>, callbackFn: IIteratorNextCallback<TYield, TNext>, thisArg?: any): Iterator<TYield, TReturn, TNext>;
         
         /**
          * Maps the yielded results of an iterator to another value or type.
@@ -332,13 +449,12 @@ namespace x_g_inte_site_17 {
          * @template TReturn - The optional final value type for the iterator.
          * @template TNext - The optional parameter type for obtaining a yielded result.
          * @param {Iterator<TInput, TReturn, TNext>} source - The source iterator.
-         * @param {{ (value: TInput, ...args: [] | [TNext]): TYield; }} mapper - A function that converts each value from the source iterator as it is yielded.
+         * @param {IMapFunc<TInput, TYield, TNext>} mapper - A function that converts each value from the source iterator as it is yielded.
          * @param {*} [thisArg] - An optional object to which the this keyword can refer in the mapper function.
          * @return {Iterator<TYield, TReturn, TNext>} The iterator with mapped values.
          * @memberof Site17UtilConstructor
          */
-        mapIterator<TInput, TYield, TReturn = any, TNext = undefined>(source: Iterator<TInput, TReturn, TNext>, mapper: { (value: TInput, ...args: [] | [TNext]): TYield; },
-            thisArg?: any): Iterator<TYield, TReturn, TNext>;
+        mapIterator<TInput, TYield, TReturn = any, TNext = undefined>(source: Iterator<TInput, TReturn, TNext>, mapper: IMapFunc<TInput, TYield, TNext>, thisArg?: any): Iterator<TYield, TReturn, TNext>;
         
         /**
          * Creates an aggregated value from all yielded values of an iterator.
@@ -346,35 +462,35 @@ namespace x_g_inte_site_17 {
          * @template TAcc - The type of aggregated value.
          * @param {Iterator<TInput>} source - The source iterator.
          * @param {TAcc} initialValue - The initial aggregated value.
-         * @param {{ (acc: TAcc, cur: TInput): TAcc }} reducerFn - The function that calculates the aggregated value for each yielded iterator value.
+         * @param {IReducerFunc<TAcc, TInput>} reducerFn - The function that calculates the aggregated value for each yielded iterator value.
          * @param {*} [thisArg] - An optional object to which the this keyword can refer in the reducer function.
          * @return {TAcc} The final aggregated value.
          * @memberof Site17UtilConstructor
          */
-        reduceIterator<TInput, TAcc>(source: Iterator<TInput>, initialValue: TAcc, reducerFn: { (acc: TAcc, cur: TInput): TAcc }, thisArg?: any): TAcc;
+        reduceIterator<TInput, TAcc>(source: Iterator<TInput>, initialValue: TAcc, reducerFn: IReducerFunc<TAcc, TInput>, thisArg?: any): TAcc;
         
         /**
          * Gets the first yielded result from an iterator.
          * @template TYield - The yielded result type for the iterator.
          * @param {Iterator<TYield, TReturn, TNext>} source - The source iterator.
-         * @param {{ (value: TYield): boolean; }} [predicate] - Optional predicate that determines whether to ignore a yielded value.
+         * @param {IPredicate<TYield>} [predicate] - Optional predicate that determines whether to ignore a yielded value.
          * @param {*} [thisArg] - An optional object to which the this keyword can refer in the predicate function.
          * @return {(TYield | undefined)} The first yielded result that wasn't filered out by the predicate.
          * @memberof Site17UtilConstructor
          */
-        firstIterated<TYield>(source: Iterator<TYield>, predicate?: { (value: TYield): boolean; }, thisArg?: any): TYield | undefined;
+        firstIterated<TYield>(source: Iterator<TYield>, predicate?: IPredicate<TYield>, thisArg?: any): TYield | undefined;
 
         /**
          * Gets the first yielded or default result from an iterator.
          * @template TYield - The yielded result type for the iterator.
          * @param {Iterator<TYield>} source - The source iterator.
          * @param {(TYield | { (): TYield; })} ifEmpty - Default value or function that produces the default value if no value was yieled which was not filtered out.
-         * @param {{ (value: TYield): boolean; }} [predicate] - Optional predicate that determines whether to ignore a yielded value.
+         * @param {IPredicate<TYield>} [predicate] - Optional predicate that determines whether to ignore a yielded value.
          * @param {*} [thisArg] - An optional object to which the this keyword can refer in the predicate function.
          * @return {TYield} The first yeilded value that was not filtered out or the default value.
          * @memberof Site17UtilConstructor
          */
-        firstIteratedOrDefault<TYield>(source: Iterator<TYield>, ifEmpty: TYield | { (): TYield; }, predicate?: { (value: TYield): boolean; }, thisArg?: any): TYield;
+        firstIteratedOrDefault<TYield>(source: Iterator<TYield>, ifEmpty: TYield | { (): TYield; }, predicate?: IPredicate<TYield>, thisArg?: any): TYield;
 
         /**
          * Creates a wrapper iterator that limits the number of iterations from a source iterator.
@@ -406,18 +522,22 @@ namespace x_g_inte_site_17 {
          * @param {T[]} arr - The source array.
          * @param {boolean} [supportsReturn] - If true, the iterator will implement the "return" method.
          * @param {TReturn} [finalReturnValue] - The value to return with the iteration result when all items have been iterated.
-         * @param {{ (e?: any): TReturn | undefined }} [onThrow] - If defined, the iterator will implement the "throw" method, using this method to get the result value.
+         * @param {IIteratorThrowHandler<TReturn>} [onThrow] - If defined, the iterator will implement the "throw" method, using this method to get the result value.
          * @return {Iterator<T, TReturn, TNext>} - The iterator created from the array.
          * @memberof Site17UtilConstructor
          */
-        iteratorFromArray<T, TReturn = any, TNext = undefined>(arr: T[], supportsReturn?: boolean, finalReturnValue?: TReturn, onThrow?: { (e?: any): TReturn | undefined }): Iterator<T, TReturn, TNext>;
+        iteratorFromArray<T, TReturn = any, TNext = undefined>(arr: T[], supportsReturn?: boolean, finalReturnValue?: TReturn, onThrow?: IIteratorThrowHandler<TReturn>): Iterator<T, TReturn, TNext>;
     }
+
+    interface IReturnContext<TReturn = any> { return?: IteratorReturnResult<TReturn>; }
 
     export const Site17Util: Site17UtilConstructor = (function (): Site17UtilConstructor {
     
         var constructor: Site17UtilConstructor = Class.create();
 
         // #region Static members
+
+        // #region Record object methods
 
         /**
          * Tests whether a given LDAP Distinguished Name is to be considered that of a Site 17 user.
@@ -589,6 +709,10 @@ namespace x_g_inte_site_17 {
             }
         };
 
+        // #endregion
+        
+        // #region Active Directory-related methods
+
         /**
          * Determines whether a specified DistinguishedName is contained within another.
          * @param {($$rhino.String | null)} [sourceDN] - The DistinguishedName to check.
@@ -758,149 +882,72 @@ namespace x_g_inte_site_17 {
             return ((s = (<{ [key: string]: any}>gr).source).length == 0 || testDistinguishedName(s)) && isGroupDN(s);
         };
 
+        // #endregion
+        
+        // #region Iterator methods
+
         /**
          * Creates a new iterator which is a filtered result set of a given iterator.
          * @template TYield - The yielded result type for the iterator.
          * @template TReturn - The optional final value type for the iterator.
          * @template TNext - The optional parameter type for obtaining a yielded result.
          * @param {Iterator<TYield, TReturn, TNext>} source - The source iterator.
-         * @param {{ (value: TYield, ...args: [] | [TNext]): boolean; }} predicate - Determines whether a value will be yielded in the result iterator.
+         * @param {IIterationPredicate<TYield, TNext>} predicate - Determines whether a value will be yielded in the result iterator.
          * @param {*} [thisArg] - An optional object to which the this keyword can refer in the predicate function.
          * @return {Iterator<TYield, TReturn, TNext>} The iterator yielding filtered results.
          * @static
          * @memberof Site17Util
          */
-        constructor.filterIterator = function<TYield, TReturn = any, TNext = undefined>(source: Iterator<TYield, TReturn, TNext>, predicate: { (value: TYield, ...args: [] | [TNext]): boolean; },
-                thisArg?: any): Iterator<TYield, TReturn, TNext> {
-            var context: { return?: IteratorReturnResult<TReturn>; } = { };
+        constructor.filterIterator = function<TYield, TReturn = any, TNext = undefined>(source: Iterator<TYield, TReturn, TNext>, predicate: IIterationPredicate<TYield, TNext>, thisArg?: any): Iterator<TYield, TReturn, TNext> {
+            var context: IReturnContext<TReturn> = { };
             var arrayUtil = new global.ArrayUtil();
-            var iterator: Iterator<TYield, TReturn, TNext>;
-            if (typeof thisArg === 'undefined') {
-                // #region thisArg === 'undefined'
-                iterator = {
-                    next: function(...args: [] | [TNext]): IteratorResult<TYield, TReturn> {
-                        if (typeof context.return !== 'undefined') return context.return;
-                        var result = source.next.apply(source, args);
-                        if (result.done) {
-                            context.return = result;
-                            return result;
-                        }
-                        if (typeof args !== undefined && args.length > 0) {
-                            while (!predicate.apply(undefined, <[TYield] | [TYield, TNext]>arrayUtil.concat(<any[]>[result.value], args))) {
-                                if ((result = source.next.apply(source, args)).done) {
-                                    context.return = result;
-                                    break;
-                                }
-                            }
-                        } else
-                            while (!predicate((<IteratorYieldResult<TYield>>result).value)) {
-                                if ((result = source.next.apply(source, args)).done) {
-                                    context.return = result;
-                                    break;
-                                }
-                            }
+            if (typeof thisArg === 'undefined')
+                return createRelayIterator<TYield, TReturn, TNext>(context, source, function(...args: [] | [TNext]): IteratorResult<TYield, TReturn> {
+                    if (typeof context.return !== 'undefined') return context.return;
+                    var result = assertIteratorResult<TYield, TReturn>("next", source.next.apply(source, args));
+                    if (result.done) {
+                        context.return = result;
                         return result;
                     }
-                };
-                if (typeof source.return !== 'undefined')
-                    iterator.return = function(value?: TReturn): IteratorResult<TYield, TReturn> {
-                        if (typeof source.return === 'undefined')
-                            context.return = <IteratorReturnResult<TReturn>><any>{ done: true, value: null };
-                        else {
-                            var result = source.return(value);
-                            if (result.done) {
+                    if (typeof args !== undefined && args.length > 0) {
+                        while (!predicate.apply(undefined, <[TYield] | [TYield, TNext]>arrayUtil.concat(<any[]>[result.value], args))) {
+                            if ((result = source.next.apply(source, args)).done) {
                                 context.return = result;
-                                return result;
+                                break;
                             }
-                            context.return = <IteratorReturnResult<TReturn>><any>{ done: true, value: null };
-                            if (predicate((<IteratorYieldResult<TYield>>result).value))
-                                return result;
                         }
-                        if (typeof value !== 'undefined')
-                            context.return.value = value;
-                        return context.return;
-                    };
-                if (typeof source.throw !== 'undefined')
-                    iterator.throw = function(e?: any): IteratorResult<TYield, TReturn> {
-                        if (typeof source.throw === 'undefined')
-                            context.return = <IteratorReturnResult<TReturn>><any>{ done: true, value: null };
-                        else {
-                            var result = source.throw(e);
-                            if (result.done) {
+                    } else
+                        while (!predicate((<IteratorYieldResult<TYield>>result).value)) {
+                            if ((result = source.next.apply(source, args)).done) {
                                 context.return = result;
-                                return result;
+                                break;
                             }
-                            context.return = <IteratorReturnResult<TReturn>><any>{ done: true, value: null };
-                            if (predicate((<IteratorYieldResult<TYield>>result).value))
-                                return result;
                         }
-                        return context.return;
-                    };
-                // #endregion
-            } else {
-                // #region thisArg !== 'undefined'
-                iterator = {
-                    next: function(...args: [] | [TNext]): IteratorResult<TYield, TReturn> {
-                        if (typeof context.return !== 'undefined') return context.return;
-                        var result = source.next.apply(source, args);
-                        if (result.done) {
+                    return result;
+                });
+            return createRelayIterator<TYield, TReturn, TNext>(context, source, function(...args: [] | [TNext]): IteratorResult<TYield, TReturn> {
+                if (typeof context.return !== 'undefined') return context.return;
+                var result = source.next.apply(source, args);
+                if (result.done) {
+                    context.return = result;
+                    return result;
+                }
+                if (typeof args !== undefined && args.length > 0)
+                    while (!predicate.apply(thisArg, <[TYield] | [TYield, TNext]>arrayUtil.concat(<any[]>[(<IteratorYieldResult<TYield>>result).value], args))) {
+                        if ((result = source.next.apply(source, args)).done) {
                             context.return = result;
-                            return result;
+                            break;
                         }
-                        if (typeof args !== undefined && args.length > 0)
-                            while (!predicate.apply(thisArg, <[TYield] | [TYield, TNext]>arrayUtil.concat(<any[]>[(<IteratorYieldResult<TYield>>result).value], args))) {
-                                if ((result = source.next.apply(source, args)).done) {
-                                    context.return = result;
-                                    break;
-                                }
-                            }
-                        else
-                            while (!predicate.call(thisArg, (<IteratorYieldResult<TYield>>result).value)) {
-                                if ((result = source.next.apply(source, args)).done) {
-                                    context.return = result;
-                                    break;
-                                }
-                            }
-                        return result;
                     }
-                };
-                if (typeof source.return !== 'undefined')
-                    iterator.return = function(value?: TReturn): IteratorResult<TYield, TReturn> {
-                        if (typeof source.return === 'undefined')
-                            context.return = <IteratorReturnResult<TReturn>><any>{ done: true, value: null };
-                        else {
-                            var result = source.return(value);
-                            if (result.done) {
-                                context.return = result;
-                                return result;
-                            }
-                            context.return = <IteratorReturnResult<TReturn>><any>{ done: true, value: null };
-                            if (predicate.call(thisArg, (<IteratorYieldResult<TYield>>result).value))
-                                return result;
+                else
+                    while (!predicate.call(thisArg, (<IteratorYieldResult<TYield>>result).value)) {
+                        if ((result = source.next.apply(source, args)).done) {
+                            context.return = result;
+                            break;
                         }
-                        if (typeof value !== 'undefined')
-                            context.return.value = value;
-                        return context.return;
-                    };
-                if (typeof source.throw !== 'undefined')
-                    iterator.throw = function(e?: any): IteratorResult<TYield, TReturn> {
-                        if (typeof source.throw === 'undefined')
-                            context.return = <IteratorReturnResult<TReturn>><any>{ done: true, value: null };
-                        else {
-                            var result = source.throw(e);
-                            if (result.done) {
-                                context.return = result;
-                                return result;
-                            }
-                            context.return = <IteratorReturnResult<TReturn>><any>{ done: true, value: null };
-                            if (predicate.call(thisArg, (<IteratorYieldResult<TYield>>result).value))
-                                return result;
-                        }
-                        return context.return;
-                    };
-                // #endregion
-            }
-            return iterator;
+                    }
+                return result;
+            });
         };
 
         /**
@@ -909,115 +956,42 @@ namespace x_g_inte_site_17 {
          * @template TReturn - The optional final value type for the iterator.
          * @template TNext - The optional parameter type for obtaining a yielded result.
          * @param {Iterator<TYield, TReturn, TNext>} source - The source iterator.
-         * @param {{ (value: TYield, ...args: [] | [TNext]): void; }} callbackFn - The function that is applied to each value before it is yielded in the result iterator.
+         * @param {IIteratorNextCallback<TYield, TNext>} callbackFn - The function that is applied to each value before it is yielded in the result iterator.
          * @param {*} [thisArg] - An optional object to which the this keyword can refer in the callback function.
          * @return {Iterator<TYield, TReturn, TNext>} A wrapper for the original iterator.
          * @static
          * @memberof Site17Util
          */
-        constructor.reiterate = function<TYield, TReturn = any, TNext = undefined>(source: Iterator<TYield, TReturn, TNext>, callbackFn: { (value: TYield, ...args: [] | [TNext]): void; },
-                thisArg?: any): Iterator<TYield, TReturn, TNext> {
-            var context: { return?: IteratorReturnResult<TReturn>; } = { };
-            var iterator: Iterator<TYield, TReturn, TNext>;
+        constructor.reiterate = function<TYield, TReturn = any, TNext = undefined>(source: Iterator<TYield, TReturn, TNext>, callbackFn: IIteratorNextCallback<TYield, TNext>, thisArg?: any): Iterator<TYield, TReturn, TNext> {
+            var context: IReturnContext<TReturn> = { };
             var arrayUtil = new global.ArrayUtil();
-            if (typeof thisArg === 'undefined') {
-                iterator = {
-                    next: function(...args: [] | [TNext]): IteratorResult<TYield, TReturn> {
-                        if (typeof context.return !== 'undefined') return context.return;
-                        var result = source.next.apply(source, args);
-                        if (result.done) {
-                            context.return = result;
-                            return result;
-                        }
-                        if (typeof args !== undefined && args.length > 0)
-                            callbackFn.apply(undefined, <[TYield] | [TYield, TNext]>arrayUtil.concat(<any[]>[(<IteratorYieldResult<TYield>>result).value], args));
-                        else
-                            callbackFn((<IteratorYieldResult<TYield>>result).value);
+            if (typeof thisArg === 'undefined')
+                return createRelayIterator<TYield, TReturn, TNext>(context, source, function(...args: [] | [TNext]): IteratorResult<TYield, TReturn> {
+                    if (typeof context.return !== 'undefined') return context.return;
+                    var result = source.next.apply(source, args);
+                    if (result.done) {
+                        context.return = result;
                         return result;
                     }
-                };
-                if (typeof source.return !== 'undefined')
-                    iterator.return = function(value?: TReturn): IteratorResult<TYield, TReturn> {
-                        if (typeof source.return === 'undefined') {
-                            context.return = <IteratorReturnResult<TReturn>><any>{ done: true, value: null };
-                            if (typeof value !== 'undefined')
-                                context.return.value = value;
-                            return context.return;
-                        }
-                        var result = source.return(value);
-                        if (result.done)
-                            context.return = result;
-                        else {
-                            context.return = <IteratorReturnResult<TReturn>><any>{ done: true, value: null };
-                            callbackFn((<IteratorYieldResult<TYield>>result).value);
-                        }
-                        return result;
-                    };
-                if (typeof source.throw !== 'undefined')
-                    iterator.throw = function(e?: any): IteratorResult<TYield, TReturn> {
-                        if (typeof source.throw === 'undefined') {
-                            context.return = <IteratorReturnResult<TReturn>><any>{ done: true, value: null };
-                            return context.return;
-                        }
-                        var result = source.throw(e);
-                        if (result.done)
-                            context.return = result;
-                        else {
-                            context.return = <IteratorReturnResult<TReturn>><any>{ done: true, value: null };
-                            callbackFn((<IteratorYieldResult<TYield>>result).value);
-                        }
-                        return result;
-                    };
-            } else {
-                iterator = {
-                    next: function(...args: [] | [TNext]): IteratorResult<TYield, TReturn> {
-                        if (typeof context.return !== 'undefined') return context.return;
-                        var result = source.next.apply(source, args);
-                        if (result.done) {
-                            context.return = result;
-                            return result;
-                        }
-                        if (typeof args !== undefined && args.length > 0)
-                            callbackFn.apply(thisArg, <[TYield] | [TYield, TNext]>arrayUtil.concat(<any[]>[(<IteratorYieldResult<TYield>>result).value], args));
-                        else
-                            callbackFn.call(thisArg, (<IteratorYieldResult<TYield>>result).value);
-                        return result;
-                    }
-                };
-                if (typeof source.return !== 'undefined')
-                    iterator.return = function(value?: TReturn): IteratorResult<TYield, TReturn> {
-                        if (typeof source.return === 'undefined') {
-                            context.return = <IteratorReturnResult<TReturn>><any>{ done: true, value: null };
-                            if (typeof value !== 'undefined')
-                                context.return.value = value;
-                            return context.return;
-                        }
-                        var result = source.return(value);
-                        if (result.done)
-                            context.return = result;
-                        else {
-                            context.return = <IteratorReturnResult<TReturn>><any>{ done: true, value: null };
-                            callbackFn.call(thisArg, (<IteratorYieldResult<TYield>>result).value);
-                        }
-                        return result;
-                    };
-                if (typeof source.throw !== 'undefined')
-                    iterator.throw = function(e?: any): IteratorResult<TYield, TReturn> {
-                        if (typeof source.throw === 'undefined') {
-                            context.return = <IteratorReturnResult<TReturn>><any>{ done: true, value: null };
-                            return context.return;
-                        }
-                        var result = source.throw(e);
-                        if (result.done)
-                            context.return = result;
-                        else {
-                            context.return = <IteratorReturnResult<TReturn>><any>{ done: true, value: null };
-                            callbackFn.call(thisArg, (<IteratorYieldResult<TYield>>result).value);
-                        }
-                        return result;
-                    };
-            }
-            return iterator;
+                    if (typeof args !== undefined && args.length > 0)
+                        callbackFn.apply(undefined, <[TYield] | [TYield, TNext]>arrayUtil.concat(<any[]>[(<IteratorYieldResult<TYield>>result).value], args));
+                    else
+                        callbackFn((<IteratorYieldResult<TYield>>result).value);
+                    return result;
+                });
+            return createRelayIterator<TYield, TReturn, TNext>(context, source, function(...args: [] | [TNext]): IteratorResult<TYield, TReturn> {
+                if (typeof context.return !== 'undefined') return context.return;
+                var result = source.next.apply(source, args);
+                if (result.done) {
+                    context.return = result;
+                    return result;
+                }
+                if (typeof args !== undefined && args.length > 0)
+                    callbackFn.apply(thisArg, <[TYield] | [TYield, TNext]>arrayUtil.concat(<any[]>[(<IteratorYieldResult<TYield>>result).value], args));
+                else
+                    callbackFn.call(thisArg, (<IteratorYieldResult<TYield>>result).value);
+                return result;
+            });
         };
 
         /**
@@ -1027,14 +1001,13 @@ namespace x_g_inte_site_17 {
          * @template TReturn - The optional final value type for the iterator.
          * @template TNext - The optional parameter type for obtaining a yielded result.
          * @param {Iterator<TInput, TReturn, TNext>} source - The source iterator.
-         * @param {{ (value: TInput, ...args: [] | [TNext]): TYield; }} mapper - A function that converts each value from the source iterator as it is yielded.
+         * @param {IMapFunc<TInput, TYield, TNext>} mapper - A function that converts each value from the source iterator as it is yielded.
          * @param {*} [thisArg] - An optional object to which the this keyword can refer in the mapper function.
          * @return {Iterator<TYield, TReturn, TNext>} The iterator with mapped values.
          * @static
          * @memberof Site17Util
          */
-        constructor.mapIterator = function<TInput, TYield, TReturn = any, TNext = undefined>(source: Iterator<TInput, TReturn, TNext>, mapper: { (value: TInput, ...args: [] | [TNext]): TYield; },
-                thisArg?: any): Iterator<TYield, TReturn, TNext> {
+        constructor.mapIterator = function<TInput, TYield, TReturn = any, TNext = undefined>(source: Iterator<TInput, TReturn, TNext>, mapper: IMapFunc<TInput, TYield, TNext>, thisArg?: any): Iterator<TYield, TReturn, TNext> {
             var context: { return?: IteratorReturnResult<TReturn>; } = { };
             var iterator: Iterator<TYield, TReturn, TNext>;
             var arrayUtil = new global.ArrayUtil();
@@ -1057,7 +1030,7 @@ namespace x_g_inte_site_17 {
                         if (typeof source.return === 'undefined')
                             context.return = <IteratorReturnResult<TReturn>><any>{ done: true, value: null };
                         else {
-                            var result = source.return(value);
+                            var result = assertIteratorResult<TInput, TReturn>("return", (arguments.length > 0) ? source.return(value) : source.return());
                             if (result.done) {
                                 context.return = result;
                                 return result;
@@ -1074,7 +1047,7 @@ namespace x_g_inte_site_17 {
                         if (typeof source.throw === 'undefined')
                             context.return = <IteratorReturnResult<TReturn>><any>{ done: true, value: null };
                         else {
-                            var result = source.throw(e);
+                            var result = assertIteratorResult<TInput, TReturn>("throw", (arguments.length > 0) ? source.throw(e) : source.throw());
                             if (result.done) {
                                 context.return = result;
                                 return result;
@@ -1140,13 +1113,13 @@ namespace x_g_inte_site_17 {
          * @template TAcc - The type of aggregated value.
          * @param {Iterator<TInput>} source - The source iterator.
          * @param {TAcc} initialValue - The initial aggregated value.
-         * @param {{ (acc: TAcc, cur: TInput): TAcc }} reducerFn - The function that calculates the aggregated value for each yielded iterator value.
+         * @param {IReducerFunc<TAcc, TInput>} reducerFn - The function that calculates the aggregated value for each yielded iterator value.
          * @param {*} [thisArg] - An optional object to which the this keyword can refer in the reducer function.
          * @return {TAcc} The final aggregated value.
          * @static
          * @memberof Site17Util
          */
-        constructor.reduceIterator = function<TInput, TAcc>(source: Iterator<TInput>, initialValue: TAcc, reducerFn: { (acc: TAcc, cur: TInput): TAcc },
+        constructor.reduceIterator = function<TInput, TAcc>(source: Iterator<TInput>, initialValue: TAcc, reducerFn: IReducerFunc<TAcc, TInput>,
                 thisArg?: any): TAcc {
             var result = source.next();
             if (typeof thisArg === 'undefined')
@@ -1166,13 +1139,13 @@ namespace x_g_inte_site_17 {
          * Gets the first yielded result from an iterator.
          * @template TYield - The yielded result type for the iterator.
          * @param {Iterator<TYield, TReturn, TNext>} source - The source iterator.
-         * @param {{ (value: TYield): boolean; }} [predicate] - Optional predicate that determines whether to ignore a yielded value.
+         * @param {IPredicate<TYield>} [predicate] - Optional predicate that determines whether to ignore a yielded value.
          * @param {*} [thisArg] - An optional object to which the this keyword can refer in the predicate function.
          * @return {(TYield | undefined)} The first yielded result that wasn't filered out by the predicate.
          * @static
          * @memberof Site17Util
          */
-        constructor.firstIterated = function<TYield>(source: Iterator<TYield>, predicate?: { (value: TYield): boolean; }, thisArg?: any): TYield | undefined {
+        constructor.firstIterated = function<TYield>(source: Iterator<TYield>, predicate?: IPredicate<TYield>, thisArg?: any): TYield | undefined {
             var result = source.next();
             if (typeof predicate === 'undefined') {
                 if (!result.done) return result.value;
@@ -1193,14 +1166,13 @@ namespace x_g_inte_site_17 {
          * @template TYield - The yielded result type for the iterator.
          * @param {Iterator<TYield>} source - The source iterator.
          * @param {(TYield | { (): TYield; })} ifEmpty - Default value or function that produces the default value if no value was yieled which was not filtered out.
-         * @param {{ (value: TYield): boolean; }} [predicate] - Optional predicate that determines whether to ignore a yielded value.
+         * @param {IPredicate<TYield>} [predicate] - Optional predicate that determines whether to ignore a yielded value.
          * @param {*} [thisArg] - An optional object to which the this keyword can refer in the predicate function.
          * @return {TYield} The first yeilded value that was not filtered out or the default value.
          * @static
          * @memberof Site17Util
          */
-        constructor.firstIteratedOrDefault = function<TYield>(source: Iterator<TYield>, ifEmpty: TYield | { (): TYield; }, predicate?: { (value: TYield): boolean; },
-                thisArg?: any): TYield {
+        constructor.firstIteratedOrDefault = function<TYield>(source: Iterator<TYield>, ifEmpty: TYield | { (): TYield; }, predicate?: IPredicate<TYield>, thisArg?: any): TYield {
             var result = source.next();
             if (typeof predicate === 'undefined') {
                 if (!result.done) return result.value;
@@ -1231,52 +1203,21 @@ namespace x_g_inte_site_17 {
          */
         constructor.limitIterator = function<TYield, TReturn = any, TNext = undefined>(source: Iterator<TYield, TReturn, TNext>, count: number): Iterator<TYield, TReturn, TNext> {
             if (isNaN(count)) count = 0;
-            var context: { iterations: number; return?: IteratorReturnResult<TReturn>; } = { iterations: 0 };
-            var iterator = <Iterator<TYield, TReturn, TNext>>{
-                next: function(...args: [] | [TNext]): IteratorResult<TYield, TReturn> {
-                    if (typeof context.return !== 'undefined') return context.return;
-                    context.iterations++;
-                    if (context.iterations > count) {
-                        context.return = <IteratorReturnResult<TReturn>><any>{ done: true, value: null };
-                        return context.return;
-                    }
-                    var result = source.next.apply(source, args);
-                    if (result.done) {
-                        context.return = result;
-                        return result;
-                    }
+            var context: IReturnContext<TReturn> & { iterations: number; } = { iterations: 0 };
+            return createRelayIterator<TYield, TReturn, TNext>(context, source, function(...args: [] | [TNext]): IteratorResult<TYield, TReturn> {
+                if (typeof context.return !== 'undefined') return context.return;
+                context.iterations++;
+                if (context.iterations > count) {
+                    context.return = <IteratorReturnResult<TReturn>><any>{ done: true, value: null };
+                    return context.return;
+                }
+                var result = source.next.apply(source, args);
+                if (result.done) {
+                    context.return = result;
                     return result;
                 }
-            };
-            if (typeof source.return !== 'undefined')
-                iterator.return = function(value?: TReturn): IteratorResult<TYield, TReturn> {
-                    if (typeof source.return === 'undefined') {
-                        context.return = <IteratorReturnResult<TReturn>><any>{ done: true, value: null };
-                        if (typeof value !== 'undefined')
-                            context.return.value = value;
-                        return context.return;
-                    }
-                    var result = source.return(value);
-                    if (result.done)
-                        context.return = result;
-                    else
-                        context.return = <IteratorReturnResult<TReturn>><any>{ done: true, value: null };
-                    return result;
-                };
-            if (typeof source.throw !== 'undefined')
-                iterator.throw = function(e?: any): IteratorResult<TYield, TReturn> {
-                    if (typeof source.throw === 'undefined') {
-                        context.return = <IteratorReturnResult<TReturn>><any>{ done: true, value: null };
-                        return context.return;
-                    }
-                    var result = source.throw(e);
-                    if (result.done)
-                        context.return = result;
-                    else
-                        context.return = <IteratorReturnResult<TReturn>><any>{ done: true, value: null };
-                    return result;
-                };
-            return iterator;
+                return result;
+            });
         }
         
         /**
@@ -1312,12 +1253,12 @@ namespace x_g_inte_site_17 {
          * @param {T[]} arr - The source array.
          * @param {boolean} [supportsReturn] - If true, the iterator will implement the "return" method.
          * @param {TReturn} [finalReturnValue] - The value to return with the iteration result when all items have been iterated.
-         * @param {{ (e?: any): TReturn | undefined }} [onThrow] - If defined, the iterator will implement the "throw" method, using this method to get the result value.
+         * @param {IIteratorThrowHandler<TReturn>} [onThrow] - If defined, the iterator will implement the "throw" method, using this method to get the result value.
          * @return {Iterator<T, TReturn, TNext>} - The iterator created from the array.
          * @static
          * @memberof Site17Util
          */
-        constructor.iteratorFromArray = function<T, TReturn = any, TNext = undefined>(arr: T[], supportsReturn?: boolean, finalReturnValue?: TReturn, onThrow?: { (e?: any): TReturn | undefined }): Iterator<T, TReturn, TNext> {
+        constructor.iteratorFromArray = function<T, TReturn = any, TNext = undefined>(arr: T[], supportsReturn?: boolean, finalReturnValue?: TReturn, onThrow?: IIteratorThrowHandler<TReturn>): Iterator<T, TReturn, TNext> {
         var context: { index: number; returned?: TReturn } = { index: 0 };
         var iterator = <Iterator<T, TReturn, TNext>> {
             next: function(): IteratorResult<T, TReturn> {
@@ -1362,6 +1303,8 @@ namespace x_g_inte_site_17 {
             return iterator;
         };
 
+        // #endregion
+        
         // #endregion
         
         constructor.prototype = Object.extendsObject<IAbstractAjaxProcessor, ISite17UtilPrototype>(global.AbstractAjaxProcessor, {
@@ -1679,6 +1622,50 @@ namespace x_g_inte_site_17 {
             if (containerDN.trim().length == 0) return sourceDN.trim().length == 0;
             if (sourceDN.trim().length == 0) return constructor.includeEmptyGroupSource();
             return isDnContainedBy(sourceDN, containerDN);
+        }
+
+        function assertIteratorResult<TYield, TReturn = any>(methodName: string, iteratorResult: any | undefined): IteratorResult<TYield, TReturn> {
+            if (typeof iteratorResult !== 'object' || iteratorResult === null)
+                throw new TypeError("iterator." + methodName + "() returned a non-object value");
+            if (typeof iteratorResult.done !== 'boolean' && typeof iteratorResult.value === 'undefined') throw new TypeError("Object returned by iterator." + methodName + "() does not imlement the IteratorResult interface");
+            return <IteratorResult<TYield, TReturn>>iteratorResult;
+        }
+
+        function createRelayIterator<TYield, TReturn = any, TNext = undefined>(context: IReturnContext<TReturn>, source: Iterator<TYield, TReturn, TNext>, onNext: { (...args: [] | [TNext]): IteratorResult<TYield, TReturn>; }): Iterator<TYield, TReturn, TNext> {
+            var relayIterator: Iterator<TYield, TReturn, TNext> = { next: onNext };
+            if (typeof source.return !== 'undefined')
+                relayIterator.return = function(value?: TReturn): IteratorResult<TYield, TReturn> {
+                    var iteratorResult: IteratorResult<TYield, TReturn>;
+                    if (typeof source.return === 'undefined') {
+                        iteratorResult = (typeof value === 'undefined') ? <IteratorReturnResult<TReturn>>{ done: true, value: null } : { done: true, value: value };
+                        if (typeof context.return === 'undefined')
+                            context.return = iteratorResult;
+                    } else {
+                        iteratorResult = assertIteratorResult<TYield, TReturn>("return", (arguments.length > 0) ? source.return(value) : source.return());
+                        if(typeof context.return === 'undefined') {
+                            if (iteratorResult.done === true)
+                                context.return = iteratorResult;
+                            else
+                                context.return = (typeof value === 'undefined') ? <IteratorReturnResult<TReturn>>{ done: true, value: null } : { done: true, value: value };
+                        }
+                    }
+                    return iteratorResult;
+                }
+            if (typeof source.throw !== 'undefined')
+                relayIterator.throw = function(e?: any): IteratorResult<TYield, TReturn> {
+                    var iteratorResult: IteratorResult<TYield, TReturn>;
+                    if (typeof source.throw === 'undefined') {
+                        iteratorResult = <IteratorReturnResult<TReturn>>{ done: true, value: null };
+                        if (typeof context.return === 'undefined')
+                            context.return = iteratorResult;
+                    } else {
+                        iteratorResult = assertIteratorResult<TYield, TReturn>("throw", (arguments.length > 0) ? source.throw(e) : source.throw());
+                        if (typeof context.return === 'undefined')
+                            context.return = (iteratorResult.done === true) ? iteratorResult : <IteratorReturnResult<TReturn>>{ done: true, value: null };
+                    }
+                    return iteratorResult;
+                }
+            return relayIterator;
         }
 
         // #endregion

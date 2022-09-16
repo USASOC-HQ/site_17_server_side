@@ -2,9 +2,11 @@
 /// <reference path="../../types/sn_typings_server_scoped/dist/index.d.ts" />
 var x_g_inte_site_17;
 (function (x_g_inte_site_17) {
+    ;
     x_g_inte_site_17.Site17Util = (function () {
         var constructor = Class.create();
         // #region Static members
+        // #region Record object methods
         /**
          * Tests whether a given LDAP Distinguished Name is to be considered that of a Site 17 user.
          * @param {string} sourceDN - The LDAP Distinguished Name.
@@ -163,6 +165,8 @@ var x_g_inte_site_17;
                     return l.getRefRecord();
             }
         };
+        // #endregion
+        // #region Active Directory-related methods
         /**
          * Determines whether a specified DistinguishedName is contained within another.
          * @param {($$rhino.String | null)} [sourceDN] - The DistinguishedName to check.
@@ -341,13 +345,15 @@ var x_g_inte_site_17;
             }
             return ((s = gr.source).length == 0 || testDistinguishedName(s)) && isGroupDN(s);
         };
+        // #endregion
+        // #region Iterator methods
         /**
          * Creates a new iterator which is a filtered result set of a given iterator.
          * @template TYield - The yielded result type for the iterator.
          * @template TReturn - The optional final value type for the iterator.
          * @template TNext - The optional parameter type for obtaining a yielded result.
          * @param {Iterator<TYield, TReturn, TNext>} source - The source iterator.
-         * @param {{ (value: TYield, ...args: [] | [TNext]): boolean; }} predicate - Determines whether a value will be yielded in the result iterator.
+         * @param {IIterationPredicate<TYield, TNext>} predicate - Determines whether a value will be yielded in the result iterator.
          * @param {*} [thisArg] - An optional object to which the this keyword can refer in the predicate function.
          * @return {Iterator<TYield, TReturn, TNext>} The iterator yielding filtered results.
          * @static
@@ -356,145 +362,64 @@ var x_g_inte_site_17;
         constructor.filterIterator = function (source, predicate, thisArg) {
             var context = {};
             var arrayUtil = new global.ArrayUtil();
-            var iterator;
-            if (typeof thisArg === 'undefined') {
-                // #region thisArg === 'undefined'
-                iterator = {
-                    next: function () {
-                        var args = [];
-                        for (var _i = 0; _i < arguments.length; _i++) {
-                            args[_i] = arguments[_i];
-                        }
-                        if (typeof context["return"] !== 'undefined')
-                            return context["return"];
-                        var result = source.next.apply(source, args);
-                        if (result.done) {
-                            context["return"] = result;
-                            return result;
-                        }
-                        if (typeof args !== undefined && args.length > 0) {
-                            while (!predicate.apply(undefined, arrayUtil.concat([result.value], args))) {
-                                if ((result = source.next.apply(source, args)).done) {
-                                    context["return"] = result;
-                                    break;
-                                }
-                            }
-                        }
-                        else
-                            while (!predicate(result.value)) {
-                                if ((result = source.next.apply(source, args)).done) {
-                                    context["return"] = result;
-                                    break;
-                                }
-                            }
+            if (typeof thisArg === 'undefined')
+                return createRelayIterator(context, source, function () {
+                    var args = [];
+                    for (var _i = 0; _i < arguments.length; _i++) {
+                        args[_i] = arguments[_i];
+                    }
+                    if (typeof context["return"] !== 'undefined')
+                        return context["return"];
+                    var result = assertIteratorResult("next", source.next.apply(source, args));
+                    if (result.done) {
+                        context["return"] = result;
                         return result;
                     }
-                };
-                if (typeof source["return"] !== 'undefined')
-                    iterator["return"] = function (value) {
-                        if (typeof source["return"] === 'undefined')
-                            context["return"] = { done: true, value: null };
-                        else {
-                            var result = source["return"](value);
-                            if (result.done) {
+                    if (typeof args !== undefined && args.length > 0) {
+                        while (!predicate.apply(undefined, arrayUtil.concat([result.value], args))) {
+                            if ((result = source.next.apply(source, args)).done) {
                                 context["return"] = result;
-                                return result;
+                                break;
                             }
-                            context["return"] = { done: true, value: null };
-                            if (predicate(result.value))
-                                return result;
                         }
-                        if (typeof value !== 'undefined')
-                            context["return"].value = value;
-                        return context["return"];
-                    };
-                if (typeof source["throw"] !== 'undefined')
-                    iterator["throw"] = function (e) {
-                        if (typeof source["throw"] === 'undefined')
-                            context["return"] = { done: true, value: null };
-                        else {
-                            var result = source["throw"](e);
-                            if (result.done) {
-                                context["return"] = result;
-                                return result;
-                            }
-                            context["return"] = { done: true, value: null };
-                            if (predicate(result.value))
-                                return result;
-                        }
-                        return context["return"];
-                    };
-                // #endregion
-            }
-            else {
-                // #region thisArg !== 'undefined'
-                iterator = {
-                    next: function () {
-                        var args = [];
-                        for (var _i = 0; _i < arguments.length; _i++) {
-                            args[_i] = arguments[_i];
-                        }
-                        if (typeof context["return"] !== 'undefined')
-                            return context["return"];
-                        var result = source.next.apply(source, args);
-                        if (result.done) {
-                            context["return"] = result;
-                            return result;
-                        }
-                        if (typeof args !== undefined && args.length > 0)
-                            while (!predicate.apply(thisArg, arrayUtil.concat([result.value], args))) {
-                                if ((result = source.next.apply(source, args)).done) {
-                                    context["return"] = result;
-                                    break;
-                                }
-                            }
-                        else
-                            while (!predicate.call(thisArg, result.value)) {
-                                if ((result = source.next.apply(source, args)).done) {
-                                    context["return"] = result;
-                                    break;
-                                }
-                            }
-                        return result;
                     }
-                };
-                if (typeof source["return"] !== 'undefined')
-                    iterator["return"] = function (value) {
-                        if (typeof source["return"] === 'undefined')
-                            context["return"] = { done: true, value: null };
-                        else {
-                            var result = source["return"](value);
-                            if (result.done) {
+                    else
+                        while (!predicate(result.value)) {
+                            if ((result = source.next.apply(source, args)).done) {
                                 context["return"] = result;
-                                return result;
+                                break;
                             }
-                            context["return"] = { done: true, value: null };
-                            if (predicate.call(thisArg, result.value))
-                                return result;
                         }
-                        if (typeof value !== 'undefined')
-                            context["return"].value = value;
-                        return context["return"];
-                    };
-                if (typeof source["throw"] !== 'undefined')
-                    iterator["throw"] = function (e) {
-                        if (typeof source["throw"] === 'undefined')
-                            context["return"] = { done: true, value: null };
-                        else {
-                            var result = source["throw"](e);
-                            if (result.done) {
-                                context["return"] = result;
-                                return result;
-                            }
-                            context["return"] = { done: true, value: null };
-                            if (predicate.call(thisArg, result.value))
-                                return result;
+                    return result;
+                });
+            return createRelayIterator(context, source, function () {
+                var args = [];
+                for (var _i = 0; _i < arguments.length; _i++) {
+                    args[_i] = arguments[_i];
+                }
+                if (typeof context["return"] !== 'undefined')
+                    return context["return"];
+                var result = source.next.apply(source, args);
+                if (result.done) {
+                    context["return"] = result;
+                    return result;
+                }
+                if (typeof args !== undefined && args.length > 0)
+                    while (!predicate.apply(thisArg, arrayUtil.concat([result.value], args))) {
+                        if ((result = source.next.apply(source, args)).done) {
+                            context["return"] = result;
+                            break;
                         }
-                        return context["return"];
-                    };
-                // #endregion
-            }
-            return iterator;
+                    }
+                else
+                    while (!predicate.call(thisArg, result.value)) {
+                        if ((result = source.next.apply(source, args)).done) {
+                            context["return"] = result;
+                            break;
+                        }
+                    }
+                return result;
+            });
         };
         /**
          * Creates a new iterator which applies a given function before each value is yielded.
@@ -502,7 +427,7 @@ var x_g_inte_site_17;
          * @template TReturn - The optional final value type for the iterator.
          * @template TNext - The optional parameter type for obtaining a yielded result.
          * @param {Iterator<TYield, TReturn, TNext>} source - The source iterator.
-         * @param {{ (value: TYield, ...args: [] | [TNext]): void; }} callbackFn - The function that is applied to each value before it is yielded in the result iterator.
+         * @param {IIteratorNextCallback<TYield, TNext>} callbackFn - The function that is applied to each value before it is yielded in the result iterator.
          * @param {*} [thisArg] - An optional object to which the this keyword can refer in the callback function.
          * @return {Iterator<TYield, TReturn, TNext>} A wrapper for the original iterator.
          * @static
@@ -510,117 +435,44 @@ var x_g_inte_site_17;
          */
         constructor.reiterate = function (source, callbackFn, thisArg) {
             var context = {};
-            var iterator;
             var arrayUtil = new global.ArrayUtil();
-            if (typeof thisArg === 'undefined') {
-                iterator = {
-                    next: function () {
-                        var args = [];
-                        for (var _i = 0; _i < arguments.length; _i++) {
-                            args[_i] = arguments[_i];
-                        }
-                        if (typeof context["return"] !== 'undefined')
-                            return context["return"];
-                        var result = source.next.apply(source, args);
-                        if (result.done) {
-                            context["return"] = result;
-                            return result;
-                        }
-                        if (typeof args !== undefined && args.length > 0)
-                            callbackFn.apply(undefined, arrayUtil.concat([result.value], args));
-                        else
-                            callbackFn(result.value);
+            if (typeof thisArg === 'undefined')
+                return createRelayIterator(context, source, function () {
+                    var args = [];
+                    for (var _i = 0; _i < arguments.length; _i++) {
+                        args[_i] = arguments[_i];
+                    }
+                    if (typeof context["return"] !== 'undefined')
+                        return context["return"];
+                    var result = source.next.apply(source, args);
+                    if (result.done) {
+                        context["return"] = result;
                         return result;
                     }
-                };
-                if (typeof source["return"] !== 'undefined')
-                    iterator["return"] = function (value) {
-                        if (typeof source["return"] === 'undefined') {
-                            context["return"] = { done: true, value: null };
-                            if (typeof value !== 'undefined')
-                                context["return"].value = value;
-                            return context["return"];
-                        }
-                        var result = source["return"](value);
-                        if (result.done)
-                            context["return"] = result;
-                        else {
-                            context["return"] = { done: true, value: null };
-                            callbackFn(result.value);
-                        }
-                        return result;
-                    };
-                if (typeof source["throw"] !== 'undefined')
-                    iterator["throw"] = function (e) {
-                        if (typeof source["throw"] === 'undefined') {
-                            context["return"] = { done: true, value: null };
-                            return context["return"];
-                        }
-                        var result = source["throw"](e);
-                        if (result.done)
-                            context["return"] = result;
-                        else {
-                            context["return"] = { done: true, value: null };
-                            callbackFn(result.value);
-                        }
-                        return result;
-                    };
-            }
-            else {
-                iterator = {
-                    next: function () {
-                        var args = [];
-                        for (var _i = 0; _i < arguments.length; _i++) {
-                            args[_i] = arguments[_i];
-                        }
-                        if (typeof context["return"] !== 'undefined')
-                            return context["return"];
-                        var result = source.next.apply(source, args);
-                        if (result.done) {
-                            context["return"] = result;
-                            return result;
-                        }
-                        if (typeof args !== undefined && args.length > 0)
-                            callbackFn.apply(thisArg, arrayUtil.concat([result.value], args));
-                        else
-                            callbackFn.call(thisArg, result.value);
-                        return result;
-                    }
-                };
-                if (typeof source["return"] !== 'undefined')
-                    iterator["return"] = function (value) {
-                        if (typeof source["return"] === 'undefined') {
-                            context["return"] = { done: true, value: null };
-                            if (typeof value !== 'undefined')
-                                context["return"].value = value;
-                            return context["return"];
-                        }
-                        var result = source["return"](value);
-                        if (result.done)
-                            context["return"] = result;
-                        else {
-                            context["return"] = { done: true, value: null };
-                            callbackFn.call(thisArg, result.value);
-                        }
-                        return result;
-                    };
-                if (typeof source["throw"] !== 'undefined')
-                    iterator["throw"] = function (e) {
-                        if (typeof source["throw"] === 'undefined') {
-                            context["return"] = { done: true, value: null };
-                            return context["return"];
-                        }
-                        var result = source["throw"](e);
-                        if (result.done)
-                            context["return"] = result;
-                        else {
-                            context["return"] = { done: true, value: null };
-                            callbackFn.call(thisArg, result.value);
-                        }
-                        return result;
-                    };
-            }
-            return iterator;
+                    if (typeof args !== undefined && args.length > 0)
+                        callbackFn.apply(undefined, arrayUtil.concat([result.value], args));
+                    else
+                        callbackFn(result.value);
+                    return result;
+                });
+            return createRelayIterator(context, source, function () {
+                var args = [];
+                for (var _i = 0; _i < arguments.length; _i++) {
+                    args[_i] = arguments[_i];
+                }
+                if (typeof context["return"] !== 'undefined')
+                    return context["return"];
+                var result = source.next.apply(source, args);
+                if (result.done) {
+                    context["return"] = result;
+                    return result;
+                }
+                if (typeof args !== undefined && args.length > 0)
+                    callbackFn.apply(thisArg, arrayUtil.concat([result.value], args));
+                else
+                    callbackFn.call(thisArg, result.value);
+                return result;
+            });
         };
         /**
          * Maps the yielded results of an iterator to another value or type.
@@ -629,7 +481,7 @@ var x_g_inte_site_17;
          * @template TReturn - The optional final value type for the iterator.
          * @template TNext - The optional parameter type for obtaining a yielded result.
          * @param {Iterator<TInput, TReturn, TNext>} source - The source iterator.
-         * @param {{ (value: TInput, ...args: [] | [TNext]): TYield; }} mapper - A function that converts each value from the source iterator as it is yielded.
+         * @param {IMapFunc<TInput, TYield, TNext>} mapper - A function that converts each value from the source iterator as it is yielded.
          * @param {*} [thisArg] - An optional object to which the this keyword can refer in the mapper function.
          * @return {Iterator<TYield, TReturn, TNext>} The iterator with mapped values.
          * @static
@@ -663,7 +515,7 @@ var x_g_inte_site_17;
                         if (typeof source["return"] === 'undefined')
                             context["return"] = { done: true, value: null };
                         else {
-                            var result = source["return"](value);
+                            var result = assertIteratorResult("return", (arguments.length > 0) ? source["return"](value) : source["return"]());
                             if (result.done) {
                                 context["return"] = result;
                                 return result;
@@ -680,7 +532,7 @@ var x_g_inte_site_17;
                         if (typeof source["throw"] === 'undefined')
                             context["return"] = { done: true, value: null };
                         else {
-                            var result = source["throw"](e);
+                            var result = assertIteratorResult("throw", (arguments.length > 0) ? source["throw"](e) : source["throw"]());
                             if (result.done) {
                                 context["return"] = result;
                                 return result;
@@ -751,7 +603,7 @@ var x_g_inte_site_17;
          * @template TAcc - The type of aggregated value.
          * @param {Iterator<TInput>} source - The source iterator.
          * @param {TAcc} initialValue - The initial aggregated value.
-         * @param {{ (acc: TAcc, cur: TInput): TAcc }} reducerFn - The function that calculates the aggregated value for each yielded iterator value.
+         * @param {IReducerFunc<TAcc, TInput>} reducerFn - The function that calculates the aggregated value for each yielded iterator value.
          * @param {*} [thisArg] - An optional object to which the this keyword can refer in the reducer function.
          * @return {TAcc} The final aggregated value.
          * @static
@@ -775,7 +627,7 @@ var x_g_inte_site_17;
          * Gets the first yielded result from an iterator.
          * @template TYield - The yielded result type for the iterator.
          * @param {Iterator<TYield, TReturn, TNext>} source - The source iterator.
-         * @param {{ (value: TYield): boolean; }} [predicate] - Optional predicate that determines whether to ignore a yielded value.
+         * @param {IPredicate<TYield>} [predicate] - Optional predicate that determines whether to ignore a yielded value.
          * @param {*} [thisArg] - An optional object to which the this keyword can refer in the predicate function.
          * @return {(TYield | undefined)} The first yielded result that wasn't filered out by the predicate.
          * @static
@@ -805,7 +657,7 @@ var x_g_inte_site_17;
          * @template TYield - The yielded result type for the iterator.
          * @param {Iterator<TYield>} source - The source iterator.
          * @param {(TYield | { (): TYield; })} ifEmpty - Default value or function that produces the default value if no value was yieled which was not filtered out.
-         * @param {{ (value: TYield): boolean; }} [predicate] - Optional predicate that determines whether to ignore a yielded value.
+         * @param {IPredicate<TYield>} [predicate] - Optional predicate that determines whether to ignore a yielded value.
          * @param {*} [thisArg] - An optional object to which the this keyword can refer in the predicate function.
          * @return {TYield} The first yeilded value that was not filtered out or the default value.
          * @static
@@ -848,56 +700,25 @@ var x_g_inte_site_17;
             if (isNaN(count))
                 count = 0;
             var context = { iterations: 0 };
-            var iterator = {
-                next: function () {
-                    var args = [];
-                    for (var _i = 0; _i < arguments.length; _i++) {
-                        args[_i] = arguments[_i];
-                    }
-                    if (typeof context["return"] !== 'undefined')
-                        return context["return"];
-                    context.iterations++;
-                    if (context.iterations > count) {
-                        context["return"] = { done: true, value: null };
-                        return context["return"];
-                    }
-                    var result = source.next.apply(source, args);
-                    if (result.done) {
-                        context["return"] = result;
-                        return result;
-                    }
+            return createRelayIterator(context, source, function () {
+                var args = [];
+                for (var _i = 0; _i < arguments.length; _i++) {
+                    args[_i] = arguments[_i];
+                }
+                if (typeof context["return"] !== 'undefined')
+                    return context["return"];
+                context.iterations++;
+                if (context.iterations > count) {
+                    context["return"] = { done: true, value: null };
+                    return context["return"];
+                }
+                var result = source.next.apply(source, args);
+                if (result.done) {
+                    context["return"] = result;
                     return result;
                 }
-            };
-            if (typeof source["return"] !== 'undefined')
-                iterator["return"] = function (value) {
-                    if (typeof source["return"] === 'undefined') {
-                        context["return"] = { done: true, value: null };
-                        if (typeof value !== 'undefined')
-                            context["return"].value = value;
-                        return context["return"];
-                    }
-                    var result = source["return"](value);
-                    if (result.done)
-                        context["return"] = result;
-                    else
-                        context["return"] = { done: true, value: null };
-                    return result;
-                };
-            if (typeof source["throw"] !== 'undefined')
-                iterator["throw"] = function (e) {
-                    if (typeof source["throw"] === 'undefined') {
-                        context["return"] = { done: true, value: null };
-                        return context["return"];
-                    }
-                    var result = source["throw"](e);
-                    if (result.done)
-                        context["return"] = result;
-                    else
-                        context["return"] = { done: true, value: null };
-                    return result;
-                };
-            return iterator;
+                return result;
+            });
         };
         /**
          * Converts the yielded values of an interator to an array.
@@ -931,7 +752,7 @@ var x_g_inte_site_17;
          * @param {T[]} arr - The source array.
          * @param {boolean} [supportsReturn] - If true, the iterator will implement the "return" method.
          * @param {TReturn} [finalReturnValue] - The value to return with the iteration result when all items have been iterated.
-         * @param {{ (e?: any): TReturn | undefined }} [onThrow] - If defined, the iterator will implement the "throw" method, using this method to get the result value.
+         * @param {IIteratorThrowHandler<TReturn>} [onThrow] - If defined, the iterator will implement the "throw" method, using this method to get the result value.
          * @return {Iterator<T, TReturn, TNext>} - The iterator created from the array.
          * @static
          * @memberof Site17Util
@@ -984,6 +805,7 @@ var x_g_inte_site_17;
                 };
             return iterator;
         };
+        // #endregion
         // #endregion
         constructor.prototype = Object.extendsObject(global.AbstractAjaxProcessor, {
             /**
@@ -1280,6 +1102,51 @@ var x_g_inte_site_17;
             if (sourceDN.trim().length == 0)
                 return constructor.includeEmptyGroupSource();
             return isDnContainedBy(sourceDN, containerDN);
+        }
+        function assertIteratorResult(methodName, iteratorResult) {
+            if (typeof iteratorResult !== 'object' || iteratorResult === null)
+                throw new TypeError("iterator." + methodName + "() returned a non-object value");
+            if (typeof iteratorResult.done !== 'boolean' && typeof iteratorResult.value === 'undefined')
+                throw new TypeError("Object returned by iterator." + methodName + "() does not imlement the IteratorResult interface");
+            return iteratorResult;
+        }
+        function createRelayIterator(context, source, onNext) {
+            var relayIterator = { next: onNext };
+            if (typeof source["return"] !== 'undefined')
+                relayIterator["return"] = function (value) {
+                    var iteratorResult;
+                    if (typeof source["return"] === 'undefined') {
+                        iteratorResult = (typeof value === 'undefined') ? { done: true, value: null } : { done: true, value: value };
+                        if (typeof context["return"] === 'undefined')
+                            context["return"] = iteratorResult;
+                    }
+                    else {
+                        iteratorResult = assertIteratorResult("return", (arguments.length > 0) ? source["return"](value) : source["return"]());
+                        if (typeof context["return"] === 'undefined') {
+                            if (iteratorResult.done === true)
+                                context["return"] = iteratorResult;
+                            else
+                                context["return"] = (typeof value === 'undefined') ? { done: true, value: null } : { done: true, value: value };
+                        }
+                    }
+                    return iteratorResult;
+                };
+            if (typeof source["throw"] !== 'undefined')
+                relayIterator["throw"] = function (e) {
+                    var iteratorResult;
+                    if (typeof source["throw"] === 'undefined') {
+                        iteratorResult = { done: true, value: null };
+                        if (typeof context["return"] === 'undefined')
+                            context["return"] = iteratorResult;
+                    }
+                    else {
+                        iteratorResult = assertIteratorResult("throw", (arguments.length > 0) ? source["throw"](e) : source["throw"]());
+                        if (typeof context["return"] === 'undefined')
+                            context["return"] = (iteratorResult.done === true) ? iteratorResult : { done: true, value: null };
+                    }
+                    return iteratorResult;
+                };
+            return relayIterator;
         }
         // #endregion
         return constructor;
