@@ -93,15 +93,17 @@ declare namespace x_g_inte_site_17 {
      * @interface IThrowFunc
      * @template TYield - The type of value yielded by the target {@link Iterator}.
      * @template TReturn - The final value type returned by the target {@link Iterator}.
+     * @template TThis - The type of object to which the 'this' keyword can refer.
      */
-    interface IThrowFunc<TYield, TReturn = any> {
+    interface IThrowFunc<TYield, TReturn = any, TThis = any> {
         /**
          * Produces an {@link IteratorResult} object when the {@link Iterator.throw} method is invoked on the target {@link Iterator}.
+         * @param {TThis} this - The 'this' object for the method invocation.
          * @param {*} [e] - An optional object representing the exception.
          * @return {IteratorResult<TYield, TReturn>} The iterator result object representing a yielded value or the end of the iteration.
          * @memberof IThrowFunc
          */
-        (e?: any): IteratorResult<TYield, TReturn>;
+        (this: TThis, e?: any): IteratorResult<TYield, TReturn>;
     }
     /**
      * Predicate function for testing yielded value from the {@link Iterator.next} method of an {@link Iterator} object, including the arguments that were passed to the {@link Iterator.next} method.
@@ -109,16 +111,18 @@ declare namespace x_g_inte_site_17 {
      * @interface IIterationPredicate
      * @template TYield - The type of value yielded by the target {@link Iterator}.
      * @template TNext - The type of value may be passed to the {@link Iterator.next} method on the target {@link Iterator}.
+     * @template TThis - The type of object to which the 'this' keyword can refer.
      */
-    interface IIterationPredicate<TYield, TNext = undefined> {
+    interface IIterationPredicate<TYield, TNext = undefined, TThis = any> {
         /**
          * Tests the yielded value from the {@link Iterator.next} method of the target {@link Iterator} object.
+         * @param {TThis} this - The 'this' object for the method invocation.
          * @param {TYield} value - The yielded value.
          * @param {(...[] | [TNext])} args - The arguments that were passed to the {@link Iterator.next} method.
          * @return {boolean} A value indicating whether the test passed.
          * @memberof IIterationPredicate
          */
-        (value: TYield, ...args: [] | [TNext]): boolean;
+        (this: TThis, value: TYield, ...args: [] | [TNext]): boolean;
     }
     /**
      * Callback function for processing a yielded value from the {@link Iterator.next} method of an {@link Iterator} object, including the arguments that were passed to the {@link Iterator.next} method.
@@ -126,15 +130,17 @@ declare namespace x_g_inte_site_17 {
      * @interface IIteratorNextCallback
      * @template TYield - The type of value yielded by the target {@link Iterator}.
      * @template TNext - The type of value may be passed to the {@link Iterator.next} method on the target {@link Iterator}.
+     * @template TThis - The type of object to which the 'this' keyword can refer.
      */
-    interface IIteratorNextCallback<TYield, TNext = undefined> {
+    interface IIteratorNextCallback<TYield, TNext = undefined, TThis = any> {
         /**
          * Tests the yielded value from the {@link Iterator.next} method of the target {@link Iterator} object.
+         * @param {TThis} this - The 'this' object for the method invocation.
          * @param {TYield} value - The yielded value.
          * @param {(...[] | [TNext])} args - The arguments that were passed to the {@link Iterator.next} method.
          * @memberof IIterationPredicate
          */
-        (value: TYield, ...args: [] | [TNext]): void;
+        (this: TThis, value: TYield, ...args: [] | [TNext]): void;
     }
     /**
      * Function that converts the yielded value from the {@link Iterator.next} method of an {@link Iterator} object, including the arguments that were passed to the {@link Iterator.next} method.
@@ -143,16 +149,18 @@ declare namespace x_g_inte_site_17 {
      * @template TInput - The type of value yielded by the target {@link Iterator}.
      * @template TResult - The type of converted value.
      * @template TNext - The type of value may be passed to the {@link Iterator.next} method on the target {@link Iterator}.
+     * @template TThis - The type of object to which the 'this' keyword can refer.
      */
-    interface IMapFunc<TInput, TResult, TNext = undefined> {
+    interface IMapFunc<TInput, TResult, TNext = undefined, TThis = any> {
         /**
          * Converts the yielded value from the {@link Iterator.next} method of the target {@link Iterator} object.
+         * @param {TThis} this - The 'this' object for the method invocation.
          * @param {TInput} value - The yielded value.
          * @param {(...[] | [TNext])} args - The arguments that were passed to the {@link Iterator.next} method.
          * @return {TResult} The converted value.
          * @memberof IMapFunc
          */
-        (value: TInput, ...args: [] | [TNext]): TResult;
+        (this: TThis, value: TInput, ...args: [] | [TNext]): TResult;
     }
     /**
      * Function that calculates an aggregate value from the next input value.
@@ -160,46 +168,52 @@ declare namespace x_g_inte_site_17 {
      * @interface IReducerFunc
      * @template TAcc - The type of aggregated value.
      * @template TInput - The input value type.
+     * @template TThis - The type of object to which the 'this' keyword can refer.
      */
-    interface IReducerFunc<TAcc, TInput> {
+    interface IReducerFunc<TAcc, TInput, TThis = any> {
         /**
          * Calculates an aggregated value from the next input value.
+         * @param {TThis} this - The 'this' object for the method invocation.
          * @param {TAcc} acc - The current aggregated value.
          * @param {TInput} cur - The next input value.
          * @return {TAcc} The accumulated aggregate value.
          * @memberof IReducerFunc
          */
-        (acc: TAcc, cur: TInput): TAcc;
+        (this: TThis, acc: TAcc, cur: TInput): TAcc;
     }
     /**
      * Function for testing a value.
      * @export
      * @interface IPredicate
      * @template T - The type of value to be tested.
+     * @template TThis - The type of object to which the 'this' keyword can refer.
      */
-    interface IPredicate<T> {
+    interface IPredicate<T, TThis = any> {
         /**
          * Tests a value.
+         * @param {TThis} this - The 'this' object for the method invocation.
          * @param {T} value - The value to be tested.
          * @return {boolean} A value indictating whether the test passed.
          * @memberof IPredicate
          */
-        (value: T): boolean;
+        (this: TThis, value: T): boolean;
     }
     /**
      * Function that produces an optional return value from an error state.
      * @export
      * @interface IIteratorThrowHandler
      * @template TReturn
+     * @template TThis - The type of object to which the 'this' keyword can refer.
      */
-    interface IIteratorThrowHandler<TReturn = any> {
+    interface IIteratorThrowHandler<TReturn = any, TThis = any> {
         /**
          * Produces an optional return value from an error state.
+         * @param {TThis} this - The 'this' object for the method invocation.
          * @param {*} [e] - An optional object representing the exception.
          * @return {(TReturn | undefined)} The optional return value.
          * @memberof IIteratorThrowHandler
          */
-        (e?: any): TReturn | undefined;
+        (this: TThis, e?: any): TReturn | undefined;
     }
     /**
      * Defines the constructor for the Site17Util API
@@ -384,11 +398,23 @@ declare namespace x_g_inte_site_17 {
          * @template TNext - The optional parameter type for obtaining a yielded result.
          * @param {Iterator<TYield, TReturn, TNext>} source - The source iterator.
          * @param {IIterationPredicate<TYield, TNext>} predicate - Determines whether a value will be yielded in the result iterator.
-         * @param {*} [thisArg] - An optional object to which the this keyword can refer in the predicate function.
          * @return {Iterator<TYield, TReturn, TNext>} The iterator yielding filtered results.
          * @memberof Site17UtilConstructor
          */
-        filterIterator<TYield, TReturn = any, TNext = undefined>(source: Iterator<TYield, TReturn, TNext>, predicate: IIterationPredicate<TYield, TNext>, thisArg?: any): Iterator<TYield, TReturn, TNext>;
+        filterIterator<TYield, TReturn = any, TNext = undefined>(source: Iterator<TYield, TReturn, TNext>, predicate: IIterationPredicate<TYield, TNext>): Iterator<TYield, TReturn, TNext>;
+        /**
+         * Creates a new iterator which is a filtered result set of a given iterator.
+         * @template TYield - The yielded result type for the iterator.
+         * @template TReturn - The optional final value type for the iterator.
+         * @template TNext - The optional parameter type for obtaining a yielded result.
+         * @template TThis - The type of object to which the 'this' keyword can refer.
+         * @param {Iterator<TYield, TReturn, TNext>} source - The source iterator.
+         * @param {IIterationPredicate<TYield, TNext, TThis>} predicate - Determines whether a value will be yielded in the result iterator.
+         * @param {TThis} thisArg - An object to which the this keyword can refer in the predicate function.
+         * @return {Iterator<TYield, TReturn, TNext>} The iterator yielding filtered results.
+         * @memberof Site17UtilConstructor
+         */
+        filterIterator<TYield, TReturn = any, TNext = undefined, TThis = any>(source: Iterator<TYield, TReturn, TNext>, predicate: IIterationPredicate<TYield, TNext, TThis>, thisArg: TThis): Iterator<TYield, TReturn, TNext>;
         /**
          * Creates a new iterator which applies a given function before each value is yielded.
          * @template TYield - The yielded result type for the iterator.
@@ -400,7 +426,20 @@ declare namespace x_g_inte_site_17 {
          * @return {Iterator<TYield, TReturn, TNext>} A wrapper for the original iterator.
          * @memberof Site17UtilConstructor
          */
-        reiterate<TYield, TReturn = any, TNext = undefined>(source: Iterator<TYield, TReturn, TNext>, callbackFn: IIteratorNextCallback<TYield, TNext>, thisArg?: any): Iterator<TYield, TReturn, TNext>;
+        reiterate<TYield, TReturn = any, TNext = undefined>(source: Iterator<TYield, TReturn, TNext>, callbackFn: IIteratorNextCallback<TYield, TNext>): Iterator<TYield, TReturn, TNext>;
+        /**
+         * Creates a new iterator which applies a given function before each value is yielded.
+         * @template TYield - The yielded result type for the iterator.
+         * @template TReturn - The optional final value type for the iterator.
+         * @template TNext - The optional parameter type for obtaining a yielded result.
+         * @template TThis - The type of object to which the 'this' keyword can refer.
+         * @param {Iterator<TYield, TReturn, TNext>} source - The source iterator.
+         * @param {IIteratorNextCallback<TYield, TNext, TThis>} callbackFn - The function that is applied to each value before it is yielded in the result iterator.
+         * @param {TThis} thisArg - An object to which the this keyword can refer in the callback function.
+         * @return {Iterator<TYield, TReturn, TNext>} A wrapper for the original iterator.
+         * @memberof Site17UtilConstructor
+         */
+        reiterate<TYield, TReturn = any, TNext = undefined, TThis = any>(source: Iterator<TYield, TReturn, TNext>, callbackFn: IIteratorNextCallback<TYield, TNext, TThis>, thisArg: TThis): Iterator<TYield, TReturn, TNext>;
         /**
          * Maps the yielded results of an iterator to another value or type.
          * @template TInput - The yielded result type for the source iterator.
@@ -409,11 +448,24 @@ declare namespace x_g_inte_site_17 {
          * @template TNext - The optional parameter type for obtaining a yielded result.
          * @param {Iterator<TInput, TReturn, TNext>} source - The source iterator.
          * @param {IMapFunc<TInput, TYield, TNext>} mapper - A function that converts each value from the source iterator as it is yielded.
-         * @param {*} [thisArg] - An optional object to which the this keyword can refer in the mapper function.
          * @return {Iterator<TYield, TReturn, TNext>} The iterator with mapped values.
          * @memberof Site17UtilConstructor
          */
-        mapIterator<TInput, TYield, TReturn = any, TNext = undefined>(source: Iterator<TInput, TReturn, TNext>, mapper: IMapFunc<TInput, TYield, TNext>, thisArg?: any): Iterator<TYield, TReturn, TNext>;
+        mapIterator<TInput, TYield, TReturn = any, TNext = undefined>(source: Iterator<TInput, TReturn, TNext>, mapper: IMapFunc<TInput, TYield, TNext>): Iterator<TYield, TReturn, TNext>;
+        /**
+         * Maps the yielded results of an iterator to another value or type.
+         * @template TInput - The yielded result type for the source iterator.
+         * @template TYield - The yielded result type for the mapped iterator.
+         * @template TReturn - The optional final value type for the iterator.
+         * @template TNext - The optional parameter type for obtaining a yielded result.
+         * @template TThis - The type of object to which the 'this' keyword can refer.
+         * @param {Iterator<TInput, TReturn, TNext>} source - The source iterator.
+         * @param {IMapFunc<TInput, TYield, TNext, TThis>} mapper- A function that converts each value from the source iterator as it is yielded.
+         * @param {TThis} thisArg - An object to which the this keyword can refer in the mapper function.
+         * @return {Iterator<TYield, TReturn, TNext>} The iterator with mapped values.
+         * @memberof Site17UtilConstructor
+         */
+        mapIterator<TInput, TYield, TReturn = any, TNext = undefined, TThis = any>(source: Iterator<TInput, TReturn, TNext>, mapper: IMapFunc<TInput, TYield, TNext, TThis>, thisArg: TThis): Iterator<TYield, TReturn, TNext>;
         /**
          * Creates an aggregated value from all yielded values of an iterator.
          * @template TInput - The yielded result type for the source iterator.
@@ -421,34 +473,69 @@ declare namespace x_g_inte_site_17 {
          * @param {Iterator<TInput>} source - The source iterator.
          * @param {TAcc} initialValue - The initial aggregated value.
          * @param {IReducerFunc<TAcc, TInput>} reducerFn - The function that calculates the aggregated value for each yielded iterator value.
-         * @param {*} [thisArg] - An optional object to which the this keyword can refer in the reducer function.
          * @return {TAcc} The final aggregated value.
          * @memberof Site17UtilConstructor
          */
-        reduceIterator<TInput, TAcc>(source: Iterator<TInput>, initialValue: TAcc, reducerFn: IReducerFunc<TAcc, TInput>, thisArg?: any): TAcc;
+        reduceIterator<TInput, TAcc>(source: Iterator<TInput>, initialValue: TAcc, reducerFn: IReducerFunc<TAcc, TInput>): TAcc;
+        /**
+         * Creates an aggregated value from all yielded values of an iterator.
+         * @template TInput - The yielded result type for the source iterator.
+         * @template TAcc - The type of aggregated value.
+         * @template TThis - The type of object to which the 'this' keyword can refer.
+         * @param {Iterator<TInput>} source - The source iterator.
+         * @param {TAcc} initialValue - The initial aggregated value.
+         * @param {IReducerFunc<TAcc, TInput, TThis>} reducerFn - The function that calculates the aggregated value for each yielded iterator value.
+         * @param {TThis} thisArg - An object to which the this keyword can refer in the reducer function.
+         * @return {TAcc} The final aggregated value.
+         * @memberof Site17UtilConstructor
+         */
+        reduceIterator<TInput, TAcc, TThis = any>(source: Iterator<TInput>, initialValue: TAcc, reducerFn: IReducerFunc<TAcc, TInput, TThis>, thisArg: TThis): TAcc;
         /**
          * Gets the first yielded result from an iterator.
          * @template TYield - The yielded result type for the iterator.
          * @param {Iterator<TYield, TReturn, TNext>} source - The source iterator.
          * @param {IPredicate<TYield>} [predicate] - Optional predicate that determines whether to ignore a yielded value.
-         * @param {*} [thisArg] - An optional object to which the this keyword can refer in the predicate function.
          * @return {(TYield | undefined)} The first yielded result that wasn't filered out by the predicate.
          * @memberof Site17UtilConstructor
          */
-        firstIterated<TYield>(source: Iterator<TYield>, predicate?: IPredicate<TYield>, thisArg?: any): TYield | undefined;
+        firstIterated<TYield>(source: Iterator<TYield>, predicate?: IPredicate<TYield>): TYield | undefined;
+        /**
+         * Gets the first yielded result from an iterator.
+         * @template TYield - The yielded result type for the iterator.
+         * @template TThis - The type of object to which the 'this' keyword can refer.
+         * @param {Iterator<TYield>} source - The source iterator.
+         * @param {(IPredicate<TYield, TThis> | undefined)} predicate - Optional predicate that determines whether to ignore a yielded value.
+         * @param {TThis} thisArg - An object to which the this keyword can refer in the predicate function.
+         * @return {(TYield | undefined)} The first yielded result that wasn't filered out by the predicate.
+         * @memberof Site17UtilConstructor
+         */
+        firstIterated<TYield, TThis = any>(source: Iterator<TYield>, predicate: IPredicate<TYield, TThis> | undefined, thisArg: TThis): TYield | undefined;
         /**
          * Gets the first yielded or default result from an iterator.
          * @template TYield - The yielded result type for the iterator.
          * @param {Iterator<TYield>} source - The source iterator.
          * @param {(TYield | { (): TYield; })} ifEmpty - Default value or function that produces the default value if no value was yieled which was not filtered out.
          * @param {IPredicate<TYield>} [predicate] - Optional predicate that determines whether to ignore a yielded value.
-         * @param {*} [thisArg] - An optional object to which the this keyword can refer in the predicate function.
          * @return {TYield} The first yeilded value that was not filtered out or the default value.
          * @memberof Site17UtilConstructor
          */
         firstIteratedOrDefault<TYield>(source: Iterator<TYield>, ifEmpty: TYield | {
             (): TYield;
-        }, predicate?: IPredicate<TYield>, thisArg?: any): TYield;
+        }, predicate?: IPredicate<TYield>): TYield;
+        /**
+         * Gets the first yielded or default result from an iterator.
+         * @template TYield - The yielded result type for the iterator.
+         * @template TThis - The type of object to which the 'this' keyword can refer.
+         * @param {Iterator<TYield>} source - The source iterator.
+         * @param {(TYield | { (this: TThis): TYield; })} ifEmpty - Default value or function that produces the default value if no value was yieled which was not filtered out.
+         * @param {(IPredicate<TYield, TThis> | undefined)} predicate - Optional predicate that determines whether to ignore a yielded value.
+         * @param {TThis} thisArg - An object to which the this keyword can refer in the predicate and/or ifEmpty function.
+         * @return {TYield} The first yeilded value that was not filtered out or the default value.
+         * @memberof Site17UtilConstructor
+         */
+        firstIteratedOrDefault<TYield, TThis = any>(source: Iterator<TYield>, ifEmpty: TYield | {
+            (this: TThis): TYield;
+        }, predicate: IPredicate<TYield, TThis> | undefined, thisArg: TThis): TYield;
         /**
          * Creates a wrapper iterator that limits the number of iterations from a source iterator.
          * @template TYield - The yielded result type for the mapped iterator.
