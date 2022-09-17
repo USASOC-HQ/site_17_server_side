@@ -14,5 +14,5 @@
     "declaration": true,
     "declarationDir": "../../types/x_g_inte_site_17/api",
     "outDir": "../../transpiled/api"
-  },
+  }
 }

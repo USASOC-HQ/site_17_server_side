@@ -42,7 +42,7 @@ namespace site17Util_DistinguishedNameTest {
             { value: "My,List", expected: false },
             { value: "ID=My\\,List", expected: true }
         ];
-    
+
         var dnContainedByTestData: IDnContainedByTestData[] = [
             { sourceDN: '', containerDN: '', expected: false },
             { sourceDN: 'DC=Fabrikam,DC=COM', containerDN: 'DC=Fabrikam,DC=COM', expected: true },
@@ -54,7 +54,7 @@ namespace site17Util_DistinguishedNameTest {
             { sourceDN: "CN=Joey Bag O' Donuts,OU=Sales,DC=Fabrikam,DC=COM", containerDN: 'DC=Fabrikam,DC=COM ', expected: false },
             { sourceDN: " CN=Joey Bag O' Donuts,OU=Sales,DC=Fabrikam,DC=COM", containerDN: 'DC=Fabrikam,DC=COM', expected: false }
         ];
-    
+
         var returnValue: boolean | undefined;
         var pseudoCode: string;
         for (var dnTestData of testDnTestData) {
@@ -72,7 +72,7 @@ namespace site17Util_DistinguishedNameTest {
                 value: returnValue
             });
         }
-    
+
         for (var containedByTestData of dnContainedByTestData) {
             pseudoCode = 'isDnContainedBy(' + JSON.stringify(containedByTestData.sourceDN) + ', ' + JSON.stringify(containedByTestData.containerDN) + ')';
             stepResult.setOutputMessage("Executing " + pseudoCode);
@@ -123,7 +123,7 @@ namespace site17Util_IteratorFromArrayTest {
     (function(outputs: sn_atf.ITestStepOutputs, steps: sn_atf.ITestStepsFunc, stepResult: sn_atf.ITestStepResult, assertEqual: sn_atf.IAssertEqualFunc): boolean {
         var atfHelper: x_g_inte_site_17.AtfHelper = new x_g_inte_site_17.AtfHelper(steps, stepResult);
         var zeroDuration = new GlideDuration('0 0:0:0');
-        
+
         function createIterator(testParams: ITestParams, iteratorInfo: IIteratorInfo, prefix?: string): boolean {
             iteratorInfo.throwInvoked = false;
             iteratorInfo.thrown = undefined;
@@ -347,7 +347,7 @@ namespace site17Util_IteratorFromArrayTest {
                 }
                 stepResult.setOutputMessage("Return: Executed " + pseudoCode);
                 iteratorInfo.assertionCount += assertIteratorResult(iterationResult, true);
-                
+
                 if (!createIterator(testParams, iteratorInfo, "Return")) return -1;
                 pseudoCode = iteratorInfo.pseudoCode + ";\niterator.return(new GlideDuration('0 0:0:0')); // iteration: 0";
                 stepResult.setOutputMessage("Return: Executing " + pseudoCode);
@@ -421,7 +421,7 @@ namespace site17Util_IteratorFromArrayTest {
                 stepResult.setOutputMessage('All assertions evaluated');
                 return iteratorInfo.assertionCount;
             }
-            
+
             if (!createIterator(testParams, iteratorInfo, "Throw")) return -1;
             pseudoCode = iteratorInfo.pseudoCode + ";\niterator.throw(\"Error!!!\"); // iteration: 0";
             stepResult.setOutputMessage("Throw: Executing " + pseudoCode);
@@ -760,7 +760,7 @@ namespace site17Util_IteratorFromArrayTest {
                 return false;
             }
         }
-        
+
         stepResult.setOutputMessage(totalAssertionCount + ' assertions evaluated');
         return true;
     })(outputs, steps, stepResult, assertEqual);
@@ -803,7 +803,7 @@ namespace site17Util_ReiterateTest {
     (function(outputs: sn_atf.ITestStepOutputs, steps: sn_atf.ITestStepsFunc, stepResult: sn_atf.ITestStepResult, assertEqual: sn_atf.IAssertEqualFunc): boolean {
         var atfHelper: x_g_inte_site_17.AtfHelper = new x_g_inte_site_17.AtfHelper(steps, stepResult);
         var zeroDuration = new GlideDuration('0 0:0:0');
-        
+
         function createIterator(testParams: ITestParams, iteratorInfo: IIteratorInfo, thisObj: IThisObj, prefix?: string): boolean {
             thisObj.nextArgs = [];
             thisObj.reiterated = [];
@@ -823,7 +823,7 @@ namespace site17Util_ReiterateTest {
                             iteratorInfo.pseudoCode = 'reiterate<string, GlideDuration, number>(' + pseudoCode + ', (value,...args)=>{...}, thisArg)';
                         }
                         stepResult.setOutputMessage(((typeof prefix === 'string') ? "Executing " : prefix + ": Executing ") + pseudoCode);
-                        iteratorInfo.source = x_g_inte_site_17.Site17Util.iteratorFromArray(iteratorInfo.values, testParams.supportsReturn, testParams.finalReturnValue, function(e?: any): GlideDuration | undefined { 
+                        iteratorInfo.source = x_g_inte_site_17.Site17Util.iteratorFromArray(iteratorInfo.values, testParams.supportsReturn, testParams.finalReturnValue, function(e?: any): GlideDuration | undefined {
                             thisObj.throwCalled = true;
                             thisObj.thrown = e;
                             return;
@@ -1128,7 +1128,7 @@ namespace site17Util_ReiterateTest {
                 stepResult.setOutputMessage("Return: Executed " + pseudoCode);
                 iteratorInfo.assertionCount += assertIterationResult(iterationResult, true);
                 assertIteratedValues(testParams, iteratorInfo, thisObj, 0);
-    
+
                 if (!createIterator(testParams, iteratorInfo, thisObj, "Return")) return -1;
                 pseudoCode = iteratorInfo.pseudoCode + ";\niterator.return(new GlideDuration('0 0:0:0')); // iteration: 0";
                 stepResult.setOutputMessage("Return: Executing " + pseudoCode);
@@ -1170,7 +1170,7 @@ namespace site17Util_ReiterateTest {
                     stepResult.setOutputMessage("Return: Executed " + pseudoCode);
                     iteratorInfo.assertionCount += assertIterationResult(iterationResult, true);
                     assertIteratedValues(testParams, iteratorInfo, thisObj, limit);
-                    
+
                     if (!(createIterator(testParams, iteratorInfo, thisObj, "Return") && testIterations(testParams, iteratorInfo, limit, "Return"))) return -1;
                     pseudoCode = iteratorInfo.pseudoCode + ";\niterator.return(new GlideDuration('0 0:0:0')); // iteration: " + limit;
                     stepResult.setOutputMessage("Return: Executing " + pseudoCode);
@@ -1195,7 +1195,7 @@ namespace site17Util_ReiterateTest {
             }
 
             if (typeof testParams.onThrow === 'undefined') return iteratorInfo.assertionCount;
-            
+
             if (!createIterator(testParams, iteratorInfo, thisObj, "Throw")) return -1;
             pseudoCode = iteratorInfo.pseudoCode + ";\niterator.throw(\"Error!!!\"); // iteration: 0";
             stepResult.setOutputMessage("Throw: Executing " + pseudoCode);
@@ -2005,7 +2005,7 @@ namespace site17Util_MapIteratorTest {
             shouldbe: expectedNextArgs.map(function(value: boolean | null | undefined): string { return (typeof value === 'undefined') ? 'undefined' : JSON.stringify(value); }).join(','),
             value: thisArg.nextArgs.map(function(value: boolean | null | undefined): string { return (typeof value === 'undefined') ? 'undefined' : JSON.stringify(value); }).join(',')
         });
-        
+
         stepResult.setOutputMessage((8 + (3 * values.length)) + ' assertions evaluated');
         return true;
     })(outputs, steps, stepResult, assertEqual);
@@ -2300,7 +2300,7 @@ namespace site17Util_firstIteratedOrDefault {
 
     (function(outputs: sn_atf.ITestStepOutputs, steps: sn_atf.ITestStepsFunc, stepResult: sn_atf.ITestStepResult, assertEqual: sn_atf.IAssertEqualFunc): boolean {
         var atfHelper: x_g_inte_site_17.AtfHelper = new x_g_inte_site_17.AtfHelper(steps, stepResult);
-        
+
         var testDataArr: ITestData[] = [
             {
                 values: [ 1, 2, 3, 5, 7, 11 ],
@@ -2480,7 +2480,7 @@ namespace site17Util_firstIteratedOrDefault {
                 value: thisArg.count
             });
         }
-        
+
         stepResult.setOutputMessage((testDataArr.length * 2) + ' assertions evaluated');
         return true;
     })(outputs, steps, stepResult, assertEqual);
@@ -2969,7 +2969,7 @@ namespace site17Util_LimitIteratorTest {
                             shouldbe: 'undefined',
                             value: (iterationResult.value === null) ? 'undefined' : typeof iterationResult.value
                         });
-                        
+
                         stepResult.setOutputMessage("Executing " + pseudoCode);
                         try { iterator = x_g_inte_site_17.Site17Util.limitIterator<number, string, boolean>(source, count); }
                         catch (e) {
@@ -3061,7 +3061,7 @@ namespace site17Util_LimitIteratorTest {
                 }
 
                 if (typeof testDataItem.onThrow !== 'number') continue;
-                
+
                 stepResult.setOutputMessage("Executing " + pseudoCode);
                 try { iterator = x_g_inte_site_17.Site17Util.limitIterator<number, string, boolean>(source, count); }
                 catch (e) {
@@ -3069,7 +3069,7 @@ namespace site17Util_LimitIteratorTest {
                     return false;
                 }
                 stepResult.setOutputMessage("Executed " + pseudoCode);
-                
+
                 iterationPseudoCode = pseudoCode + ";\niterator.throw(); // iteration: 0";
                 stepResult.setOutputMessage("Executing " + iterationPseudoCode);
                 try { iterationResult = (<{ (e?: any): IteratorResult<number, string>; }>iterator.throw)(); }
@@ -3116,7 +3116,7 @@ namespace site17Util_LimitIteratorTest {
                     shouldbe: "Error Code " + testDataItem.onThrow,
                     value: iterationResult.value
                 });
-                
+
                 stepResult.setOutputMessage("Executing " + pseudoCode);
                 try { iterator = x_g_inte_site_17.Site17Util.limitIterator<number, string, boolean>(source, count); }
                 catch (e) {
@@ -3261,7 +3261,7 @@ namespace site17Util_LimitIteratorTest {
                         shouldbe: "Error Code " + testDataItem.onThrow,
                         value: iterationResult.value
                     });
-                    
+
                     stepResult.setOutputMessage("Executing " + pseudoCode);
                     try { iterator = x_g_inte_site_17.Site17Util.limitIterator<number, string, boolean>(source, count); }
                     catch (e) {
@@ -3366,7 +3366,7 @@ namespace site17Util_IteratorToArrayTest {
 
     (function(outputs: sn_atf.ITestStepOutputs, steps: sn_atf.ITestStepsFunc, stepResult: sn_atf.ITestStepResult, assertEqual: sn_atf.IAssertEqualFunc): boolean {
         var atfHelper: x_g_inte_site_17.AtfHelper = new x_g_inte_site_17.AtfHelper(steps, stepResult);
-        
+
         var values: number[] = [ 1, 2, 3, 5, 7, 11 ];
         stepResult.setOutputMessage("Executing iteratorFromArray(" + JSON.stringify(values) + ")");
         var source: Iterator<number> = x_g_inte_site_17.Site17Util.iteratorFromArray(values);

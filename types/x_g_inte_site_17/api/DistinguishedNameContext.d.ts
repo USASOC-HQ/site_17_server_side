@@ -73,7 +73,6 @@ declare namespace x_g_inte_site_17 {
         new (source: string | GlideRecord | GlideElementReference): IDistinguishedNameContextInfo;
         /**
          * Creates a new {@link DistinguishedNameContext} instance.
-         *
          * @constructor
          * @param {(string | GlideRecord | GlideElementReference)} source - The source of the Distinguished Name context
          * @memberof DistinguishedNameContextConstructor
