@@ -98,6 +98,7 @@ declare namespace x_g_inte_site_17 {
         endOfRelativeDay(daysFromToday: number): string;
         isNil(obj: any | undefined): obj is undefined | null | "";
         areAnyNil(...obj: (any | undefined)[]): boolean;
+        typeOfEx(obj: any | undefined): "null" | "string" | "number" | "bigint" | "boolean" | "symbol" | "undefined" | "object" | "function";
         createPseudoCodeBuilder(statement: string, ...additionalStatements: string[]): PseudoCodeBuilder;
     }
     const AtfHelper: AtfHelperConstructor;

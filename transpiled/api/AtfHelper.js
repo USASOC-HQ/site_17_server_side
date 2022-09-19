@@ -89,6 +89,9 @@ var x_g_inte_site_17;
                     return true;
             return false;
         }
+        function typeOfEx(obj) {
+            return (obj === null) ? 'null' : typeof obj;
+        }
         function setFailed(stepResult, reason, e) {
             var m = isNil(e.message) ? '' : ((typeof e.message === 'string') ? e.message : '' + e.message).trim();
             var name = isNil(e.name) ? '' : ((typeof e.name === 'string') ? e.name : '' + e.name).trim();
@@ -117,6 +120,7 @@ var x_g_inte_site_17;
         }
         constructor.isNil = isNil;
         constructor.areAnyNil = areAnyNil;
+        constructor.typeOfEx = typeOfEx;
         constructor.setFailed = setFailed;
         constructor.endOfRelativeDay = function (daysFromToday) {
             var dateTime = new GlideDateTime();

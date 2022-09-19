@@ -113,6 +113,8 @@ namespace x_g_inte_site_17 {
 
         areAnyNil(...obj: (any | undefined)[]): boolean;
         
+        typeOfEx(obj: any | undefined): "null" | "string" | "number" | "bigint" | "boolean" | "symbol" | "undefined" | "object" | "function";
+
         createPseudoCodeBuilder(statement: string, ...additionalStatements: string[]): PseudoCodeBuilder;
     }
 
@@ -206,6 +208,10 @@ namespace x_g_inte_site_17 {
             return false;
         }
 
+        function typeOfEx(obj: any | undefined): "null" | "string" | "number" | "bigint" | "boolean" | "symbol" | "undefined" | "object" | "function" {
+            return (obj === null) ? 'null' : typeof obj;
+        }
+
         function setFailed(stepResult: sn_atf.ITestStepResult, reason: string, e: any): void {
             var m = isNil(e.message) ? '' : ((typeof e.message === 'string') ? e.message : '' + e.message).trim();
             var name = isNil(e.name) ? '' : ((typeof e.name === 'string') ? e.name : '' + e.name).trim();
@@ -236,6 +242,8 @@ namespace x_g_inte_site_17 {
 
         constructor.areAnyNil = areAnyNil;
 
+        constructor.typeOfEx = typeOfEx;
+        
         constructor.setFailed = setFailed;
 
         constructor.endOfRelativeDay = function(daysFromToday: number): string {
