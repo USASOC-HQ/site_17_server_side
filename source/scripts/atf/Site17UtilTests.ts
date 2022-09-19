@@ -1758,19 +1758,18 @@ namespace site17Util_FilterIteratorTest {
             return value.length > 0;
         }
         var idx: number;
-        var arg: number | undefined;
         var iterationResult: IteratorResult<string, boolean>;
         var item: INextWithArg;
         var thisArg: IThisObj = { nextArgs: [] };
-        var pseudoCode = 'filterIterator<string, boolean, number>(' + JSON.stringify(values) + '.iterator(), ' + JSON.stringify(predicate) + ', ' + JSON.stringify(thisArg) + ')';
-        stepResult.setOutputMessage("Executing " + pseudoCode);
+        var methodPseudoCode = 'filterIterator<string, boolean, number>(' + JSON.stringify(values) + '.iterator(), ' + JSON.stringify(predicate) + ', ' + JSON.stringify(thisArg) + ')';
+        stepResult.setOutputMessage("Executing " + methodPseudoCode);
         var iterator: Iterator<string, boolean, number>;
         try { iterator = x_g_inte_site_17.Site17Util.filterIterator<string, boolean, number>(source, predicate, thisArg); }
         catch (e) {
-            atfHelper.setFailed('Unexpected exception while invoking ' + pseudoCode, e);
+            atfHelper.setFailed('Unexpected exception while invoking ' + methodPseudoCode, e);
             return false;
         }
-        stepResult.setOutputMessage("Executed " + pseudoCode);
+        stepResult.setOutputMessage("Executed " + methodPseudoCode);
         assertEqual({
             name: 'typeof iterator',
             shouldbe: 'object',
@@ -1781,22 +1780,23 @@ namespace site17Util_FilterIteratorTest {
             shouldbe: 'function',
             value: typeof iterator.next
         });
-        // assertEqual({
-        //     name: 'typeof iterator.return',
-        //     shouldbe: 'function',
-        //     value: typeof iterator.return
-        // });
-        // assertEqual({
-        //     name: 'typeof iterator.throw',
-        //     shouldbe: 'function',
-        //     value: typeof iterator.throw
-        // });
-        var iterationPseudoCode;
+        assertEqual({
+            name: 'typeof iterator.return',
+            shouldbe: 'undefined',
+            value: typeof iterator.return
+        });
+        assertEqual({
+            name: 'typeof iterator.throw',
+            shouldbe: 'undefined',
+            value: typeof iterator.throw
+        });
+        var assignmentPseudoCode = x_g_inte_site_17.AtfHelper.createPseudoCodeBuilder('iterator = ' + methodPseudoCode);
+        var pseudoCode: x_g_inte_site_17.PseudoCodeBuilder;
         for (idx = 0; idx < expected.length; idx++) {
             item = expected[idx];
             if (typeof item.arg === 'undefined') {
-                iterationPseudoCode = pseudoCode + ";\niterator.next(); // iteration: " + idx;
-                stepResult.setOutputMessage("Executing " + iterationPseudoCode);
+                pseudoCode = assignmentPseudoCode.appendStatement('iterator.next()').setComment('iteration: ' + idx);
+                stepResult.setOutputMessage("Executing " + pseudoCode.toString());
                 try {
                     iterationResult = iterator.next();
                 } catch (e) {
@@ -1804,8 +1804,8 @@ namespace site17Util_FilterIteratorTest {
                     return false;
                 }
             } else {
-                iterationPseudoCode = pseudoCode + ";\niterator.next(" + JSON.stringify(item.arg) + "); // iteration: " + idx;
-                stepResult.setOutputMessage("Executing " + iterationPseudoCode);
+                pseudoCode = assignmentPseudoCode.appendStatement('iterator.next(' + JSON.stringify(item.arg) + ')').setComment('iteration: ' + idx);
+                stepResult.setOutputMessage("Executing " + pseudoCode.toString());
                 try {
                     iterationResult = iterator.next(item.arg);
                 } catch (e) {
@@ -1813,7 +1813,7 @@ namespace site17Util_FilterIteratorTest {
                     return false;
                 }
             }
-            stepResult.setOutputMessage("Executed " + iterationPseudoCode);
+            stepResult.setOutputMessage("Executed " + pseudoCode.toString());
             assertEqual({
                 name: 'typeof iterationResult',
                 shouldbe: 'object',
@@ -1821,8 +1821,8 @@ namespace site17Util_FilterIteratorTest {
             });
             assertEqual({
                 name: 'iterationResult.done',
-                shouldbe: true,
-                value: iterationResult.done !== true
+                shouldbe: false,
+                value: iterationResult.done === true
             });
             assertEqual({
                 name: 'iterationResult.value',
@@ -1830,14 +1830,14 @@ namespace site17Util_FilterIteratorTest {
                 value: iterationResult.value
             });
         }
-        iterationPseudoCode = pseudoCode + ";\niterator.next(); // iteration: " + values.length;
-        stepResult.setOutputMessage("Executing " + iterationPseudoCode);
+        pseudoCode = assignmentPseudoCode.appendStatement('iterator.next()').setComment('iteration: ' + values.length);
+        stepResult.setOutputMessage("Executing " + pseudoCode.toString());
         try { iterationResult = iterator.next(); }
         catch (e) {
             atfHelper.setFailed('Unexpected exception while invoking iterator.next()', e);
             return false;
         }
-        stepResult.setOutputMessage("Executed " + iterationPseudoCode);
+        stepResult.setOutputMessage("Executed " + pseudoCode.toString());
         assertEqual({
             name: 'typeof iterationResult',
             shouldbe: 'object',
@@ -1968,8 +1968,8 @@ namespace site17Util_MapIteratorTest {
             });
             assertEqual({
                 name: 'iterationResult.done',
-                shouldbe: true,
-                value: iterationResult.done !== true
+                shouldbe: false,
+                value: iterationResult.done === true
             });
             assertEqual({
                 name: 'iterationResult.value',
@@ -2635,35 +2635,44 @@ namespace site17Util_LimitIteratorTest {
             var values = testDataItem.iterations.map(function(value: INextWithArg): number { return value.value; });
             for (var count of testDataItem.counts) {
                 var sourcePseudoCode: string;
-                var source: Iterator<number, string, boolean>;
+                var createSource: { (): Iterator<number, string, boolean>; }
+                //var source: Iterator<number, string, boolean>;
                 if (typeof testDataItem.onThrow === 'number') {
                     if (typeof testDataItem.finalReturnValue === 'string')
                         sourcePseudoCode = "iteratorFromArray(" + JSON.stringify(values) + ', ' + JSON.stringify(testDataItem.supportsReturn) + ', ' + JSON.stringify(testDataItem.finalReturnValue) + ', (e) => (e.length > 0) ? e + " (Code ' + testDataItem.onThrow + ')" : "Error Code ' + testDataItem.onThrow + '")';
                     else
                         sourcePseudoCode = "iteratorFromArray(" + JSON.stringify(values) + ', ' + JSON.stringify(testDataItem.supportsReturn) + ', undefined, (e) => (e.length > 0) ? e + " (Code ' + testDataItem.onThrow + ')" : "Error Code ' + testDataItem.onThrow + '")';
                     stepResult.setOutputMessage("Executing " + sourcePseudoCode);
-                    source = x_g_inte_site_17.Site17Util.iteratorFromArray<number, string, boolean>(values, testDataItem.supportsReturn, testDataItem.finalReturnValue, function(e?: any): string | undefined {
-                        if (typeof e !== 'undefined' && e !== null) {
-                            var s = ('' + e).trim();
-                            if (s.length > 0) return s + ' (Code ' + testDataItem.onThrow + ')';
-                        }
-                        return 'Error Code ' + testDataItem.onThrow;
-                    });
+                    createSource = function(): Iterator<number, string, boolean> {
+                        return x_g_inte_site_17.Site17Util.iteratorFromArray<number, string, boolean>(values, testDataItem.supportsReturn, testDataItem.finalReturnValue, function(e?: any): string | undefined {
+                            if (typeof e !== 'undefined' && e !== null) {
+                                var s = ('' + e).trim();
+                                if (s.length > 0) return s + ' (Code ' + testDataItem.onThrow + ')';
+                            }
+                            return 'Error Code ' + testDataItem.onThrow;
+                        });
+                    };
                 } else if (typeof testDataItem.finalReturnValue === 'string') {
                     sourcePseudoCode = "iteratorFromArray(" + JSON.stringify(values) + ', ' + JSON.stringify(testDataItem.supportsReturn) + ', ' + JSON.stringify(testDataItem.finalReturnValue) + ')';
                     stepResult.setOutputMessage("Executing " + sourcePseudoCode);
-                    source = x_g_inte_site_17.Site17Util.iteratorFromArray<number, string, boolean>(values, testDataItem.supportsReturn, testDataItem.finalReturnValue);
+                    createSource = function(): Iterator<number, string, boolean> {
+                        return x_g_inte_site_17.Site17Util.iteratorFromArray<number, string, boolean>(values, testDataItem.supportsReturn, testDataItem.finalReturnValue);
+                    };
                 } else if (testDataItem.supportsReturn) {
                     sourcePseudoCode = "iteratorFromArray(" + JSON.stringify(values) + ', ' + JSON.stringify(testDataItem.supportsReturn) + ')';
                     stepResult.setOutputMessage("Executing " + sourcePseudoCode);
-                    source = x_g_inte_site_17.Site17Util.iteratorFromArray<number, string, boolean>(values, testDataItem.supportsReturn);
+                    createSource = function(): Iterator<number, string, boolean> {
+                        return x_g_inte_site_17.Site17Util.iteratorFromArray<number, string, boolean>(values, testDataItem.supportsReturn);
+                    };
                 } else {
                     sourcePseudoCode = "iteratorFromArray(" + JSON.stringify(values) + ')';
                     stepResult.setOutputMessage("Executing " + sourcePseudoCode);
-                    source = x_g_inte_site_17.Site17Util.iteratorFromArray<number, string, boolean>(values, testDataItem.supportsReturn);
+                    createSource = function(): Iterator<number, string, boolean> {
+                        return x_g_inte_site_17.Site17Util.iteratorFromArray<number, string, boolean>(values, testDataItem.supportsReturn);
+                    };
                 }
                 stepResult.setOutputMessage("Executed " + sourcePseudoCode);
-                var pseudoCode = 'limitIterator<number, string, boolean>(' + sourcePseudoCode + ', ' + count + ')';
+                var methodPseudoCode = 'limitIterator<number, string, boolean>(' + sourcePseudoCode + ', ' + count + ')';
                 var expectedCount: number;
                 if (count < 1) {
                     expectedCount = 0;
@@ -2675,13 +2684,13 @@ namespace site17Util_LimitIteratorTest {
                 var idx: number;
                 var iterator: Iterator<number, string, boolean>;
                 var iterationResult: IteratorResult<number, string>;
-                stepResult.setOutputMessage("Executing " + pseudoCode);
-                try { iterator = x_g_inte_site_17.Site17Util.limitIterator<number, string, boolean>(source, count); }
+                stepResult.setOutputMessage("Executing " + methodPseudoCode);
+                try { iterator = x_g_inte_site_17.Site17Util.limitIterator<number, string, boolean>(createSource(), count); }
                 catch (e) {
-                    atfHelper.setFailed('Unexpected exception while invoking ' + pseudoCode, e);
+                    atfHelper.setFailed('Unexpected exception while invoking ' + methodPseudoCode, e);
                     return false;
                 }
-                stepResult.setOutputMessage("Executed " + pseudoCode);
+                stepResult.setOutputMessage("Executed " + methodPseudoCode);
                 assertEqual({
                     name: 'typeof iterator',
                     shouldbe: 'object',
@@ -2702,28 +2711,28 @@ namespace site17Util_LimitIteratorTest {
                     shouldbe: (typeof testDataItem.onThrow === 'number') ? 'function' : 'undefined',
                     value: (iterator.throw === null) ? 'null' : typeof iterator.throw
                 });
-                var iterationPseudoCode;
+                var assignmentPsb = x_g_inte_site_17.AtfHelper.createPseudoCodeBuilder('iterator = ' + methodPseudoCode);
+                var psb: x_g_inte_site_17.PseudoCodeBuilder;
                 var arg: boolean | undefined;
                 for (idx = 0; idx < expectedCount; idx++) {
                     arg = testDataItem.iterations[idx].arg;
                     if (typeof arg === 'undefined') {
-                        iterationPseudoCode = pseudoCode + ";\niterator.next(); // iteration: " + idx;
-                        stepResult.setOutputMessage("Executing " + iterationPseudoCode);
+                        psb = assignmentPsb.appendStatement('iterator.next()').setComment('iteration: ' + idx);
+                        stepResult.setOutputMessage("Executing " + psb.toString());
                         try { iterationResult = iterator.next(); }
                         catch (e) {
-                            atfHelper.setFailed('Unexpected exception while invoking ' + iterationPseudoCode, e);
+                            atfHelper.setFailed('Unexpected exception while invoking ' + psb.statement(), e);
                             return false;
                         }
                     } else {
-                        iterationPseudoCode = pseudoCode + ";\niterator.next(" + JSON.stringify(arg) + "); // iteration: " + idx;
-                        stepResult.setOutputMessage("Executing " + iterationPseudoCode);
+                        psb = assignmentPsb.appendStatement('iterator.next(' + JSON.stringify(arg) + ')').setComment('iteration: ' + idx);
                         try { iterationResult = iterator.next(arg); }
                         catch (e) {
-                            atfHelper.setFailed('Unexpected exception while invoking ' + iterationPseudoCode, e);
+                            atfHelper.setFailed('Unexpected exception while invoking ' + psb.statement(), e);
                             return false;
                         }
                     }
-                    stepResult.setOutputMessage("Executed " + iterationPseudoCode);
+                    stepResult.setOutputMessage("Executed " + psb.toString());
                     assertEqual({
                         name: 'typeof iterationResult',
                         shouldbe: 'object',
@@ -2732,7 +2741,7 @@ namespace site17Util_LimitIteratorTest {
                     assertEqual({
                         name: 'iterationResult.done',
                         shouldbe: false,
-                        value: iterationResult.done !== true
+                        value: iterationResult.done === true
                     });
                     assertEqual({
                         name: 'iterationResult.value',
@@ -2740,14 +2749,14 @@ namespace site17Util_LimitIteratorTest {
                         value: iterationResult.value
                     });
                 }
-                iterationPseudoCode = pseudoCode + ";\niterator.next(); // iteration: " + expectedCount;
-                stepResult.setOutputMessage("Executing " + iterationPseudoCode);
+                psb = assignmentPsb.appendStatement('iterator.next()').setComment('iteration: ' + expectedCount);
+                stepResult.setOutputMessage("Executing " + psb.toString());
                 try { iterationResult = iterator.next(); }
                 catch (e) {
-                    atfHelper.setFailed('Unexpected exception while invoking ' + iterationPseudoCode, e);
+                    atfHelper.setFailed('Unexpected exception while invoking ' + psb.statement(), e);
                     return false;
                 }
-                stepResult.setOutputMessage("Executed " + iterationPseudoCode);
+                stepResult.setOutputMessage("Executed " + psb.toString());
                 assertEqual({
                     name: 'typeof iterationResult',
                     shouldbe: 'object',
@@ -2758,7 +2767,7 @@ namespace site17Util_LimitIteratorTest {
                     shouldbe: true,
                     value: iterationResult.done
                 });
-                if (typeof testDataItem.finalReturnValue === 'string')
+                if (typeof testDataItem.finalReturnValue === 'string' && values.length == expectedCount)
                     assertEqual({
                         name: 'iterationResult.value',
                         shouldbe: testDataItem.finalReturnValue,
@@ -2772,21 +2781,21 @@ namespace site17Util_LimitIteratorTest {
                     });
                 assertionCount += 7 + (expectedCount * 3);
                 if (testDataItem.supportsReturn) {
-                    stepResult.setOutputMessage("Executing " + pseudoCode);
-                    try { iterator = x_g_inte_site_17.Site17Util.limitIterator<number, string, boolean>(source, count); }
+                    stepResult.setOutputMessage("Executing " + methodPseudoCode);
+                    try { iterator = x_g_inte_site_17.Site17Util.limitIterator<number, string, boolean>(createSource(), count); }
                     catch (e) {
-                        atfHelper.setFailed('Unexpected exception while invoking ' + pseudoCode, e);
+                        atfHelper.setFailed('Unexpected exception while invoking ' + methodPseudoCode, e);
                         return false;
                     }
-                    stepResult.setOutputMessage("Executed " + pseudoCode);
-                    iterationPseudoCode = pseudoCode + ";\niterator.return(); // iteration: 0";
-                    stepResult.setOutputMessage("Executing " + iterationPseudoCode);
+                    stepResult.setOutputMessage("Executed " + methodPseudoCode);
+                    psb = assignmentPsb.appendStatement('iterator.return()');
+                    stepResult.setOutputMessage("Executing " + psb.toString());
                     try { iterationResult = (<{ (value?: string): IteratorResult<number, string>; }>iterator.return)(); }
                     catch (e) {
-                        atfHelper.setFailed('Unexpected exception while invoking ' + iterationPseudoCode, e);
+                        atfHelper.setFailed('Unexpected exception while invoking ' + psb.statement(), e);
                         return false;
                     }
-                    stepResult.setOutputMessage("Executed " + iterationPseudoCode);
+                    stepResult.setOutputMessage("Executed " + psb.toString());
                     assertEqual({
                         name: 'typeof iterationResult',
                         shouldbe: 'object',
@@ -2802,14 +2811,14 @@ namespace site17Util_LimitIteratorTest {
                         shouldbe: 'undefined',
                         value: (iterationResult.value === null) ? 'undefined' : typeof iterationResult.value
                     });
-                    iterationPseudoCode = pseudoCode + ";\niterator.next(); // iteration: 0";
-                    stepResult.setOutputMessage("Executing " + iterationPseudoCode);
+                    psb = psb.appendStatement('iterator.next()');
+                    stepResult.setOutputMessage("Executing " + psb.toString());
                     try { iterationResult = iterator.next(); }
                     catch (e) {
-                        atfHelper.setFailed('Unexpected exception while invoking ' + iterationPseudoCode, e);
+                        atfHelper.setFailed('Unexpected exception while invoking ' + psb.statement(), e);
                         return false;
                     }
-                    stepResult.setOutputMessage("Executed " + iterationPseudoCode);
+                    stepResult.setOutputMessage("Executed " + psb.toString());
                     assertEqual({
                         name: 'typeof iterationResult',
                         shouldbe: 'object',
@@ -2826,21 +2835,21 @@ namespace site17Util_LimitIteratorTest {
                         value: (iterationResult.value === null) ? 'undefined' : typeof iterationResult.value
                     });
 
-                    stepResult.setOutputMessage("Executing " + pseudoCode);
-                    try { iterator = x_g_inte_site_17.Site17Util.limitIterator<number, string, boolean>(source, count); }
+                    stepResult.setOutputMessage("Executing " + methodPseudoCode);
+                    try { iterator = x_g_inte_site_17.Site17Util.limitIterator<number, string, boolean>(createSource(), count); }
                     catch (e) {
-                        atfHelper.setFailed('Unexpected exception while invoking ' + pseudoCode, e);
+                        atfHelper.setFailed('Unexpected exception while invoking ' + methodPseudoCode, e);
                         return false;
                     }
-                    stepResult.setOutputMessage("Executed " + pseudoCode);
-                    iterationPseudoCode = pseudoCode + ";\niterator.return(\"Finally\"); // iteration: 0";
-                    stepResult.setOutputMessage("Executing " + iterationPseudoCode);
+                    stepResult.setOutputMessage("Executed " + methodPseudoCode);
+                    psb = assignmentPsb.appendStatement('iterator.return("Finally)');
+                    stepResult.setOutputMessage("Executing " + psb.toString());
                     try { iterationResult = (<{ (value?: string): IteratorResult<number, string>; }>iterator.return)("Finally"); }
                     catch (e) {
-                        atfHelper.setFailed('Unexpected exception while invoking ' + iterationPseudoCode, e);
+                        atfHelper.setFailed('Unexpected exception while invoking ' + psb.statement(), e);
                         return false;
                     }
-                    stepResult.setOutputMessage("Executed " + iterationPseudoCode);
+                    stepResult.setOutputMessage("Executed " + psb.toString());
                     assertEqual({
                         name: 'typeof iterationResult',
                         shouldbe: 'object',
@@ -2856,14 +2865,14 @@ namespace site17Util_LimitIteratorTest {
                         shouldbe: 'Finally',
                         value: iterationResult.value
                     });
-                    iterationPseudoCode = pseudoCode + ";\niterator.next(); // iteration: 0";
-                    stepResult.setOutputMessage("Executing " + iterationPseudoCode);
+                    psb = psb.appendStatement('iterator.next()');
+                    stepResult.setOutputMessage("Executing " + psb.toString());
                     try { iterationResult = iterator.next(); }
                     catch (e) {
-                        atfHelper.setFailed('Unexpected exception while invoking ' + iterationPseudoCode, e);
+                        atfHelper.setFailed('Unexpected exception while invoking ' + psb.statement(), e);
                         return false;
                     }
-                    stepResult.setOutputMessage("Executed " + iterationPseudoCode);
+                    stepResult.setOutputMessage("Executed " + psb.toString());
                     assertEqual({
                         name: 'typeof iterationResult',
                         shouldbe: 'object',
@@ -2882,32 +2891,33 @@ namespace site17Util_LimitIteratorTest {
                     assertionCount += 12;
 
                     if (expectedCount > 0) {
-                        stepResult.setOutputMessage("Executing " + pseudoCode);
-                        try { iterator = x_g_inte_site_17.Site17Util.limitIterator<number, string, boolean>(source, count); }
+                        stepResult.setOutputMessage("Executing " + methodPseudoCode);
+                        try { iterator = x_g_inte_site_17.Site17Util.limitIterator<number, string, boolean>(createSource(), count); }
                         catch (e) {
-                            atfHelper.setFailed('Unexpected exception while invoking ' + pseudoCode, e);
+                            atfHelper.setFailed('Unexpected exception while invoking ' + methodPseudoCode, e);
                             return false;
                         }
-                        stepResult.setOutputMessage("Executed " + pseudoCode);
+                        stepResult.setOutputMessage("Executed " + methodPseudoCode);
+                        assignmentPsb.setComment('return test');
                         arg = testDataItem.iterations[0].arg;
                         if (typeof arg === 'undefined') {
-                            iterationPseudoCode = pseudoCode + ";\niterator.next(); // iteration: 0";
-                            stepResult.setOutputMessage("Executing " + iterationPseudoCode);
+                            psb = assignmentPsb.appendStatement('iterator.next()').setComment('iteration: 0');
+                            stepResult.setOutputMessage("Executing " + psb.toString());
                             try { iterationResult = iterator.next(); }
                             catch (e) {
-                                atfHelper.setFailed('Unexpected exception while invoking ' + iterationPseudoCode, e);
+                                atfHelper.setFailed('Unexpected exception while invoking ' + psb.statement(), e);
                                 return false;
                             }
                         } else {
-                            iterationPseudoCode = pseudoCode + ";\niterator.next(" + JSON.stringify(arg) + "); // iteration: 0";
-                            stepResult.setOutputMessage("Executing " + iterationPseudoCode);
+                            psb = assignmentPsb.appendStatement('iterator.next(' + JSON.stringify(arg) + ')').setComment('iteration: 0');
+                            stepResult.setOutputMessage("Executing " + psb.toString());
                             try { iterationResult = iterator.next(arg); }
                             catch (e) {
-                                atfHelper.setFailed('Unexpected exception while invoking ' + iterationPseudoCode, e);
+                                atfHelper.setFailed('Unexpected exception while invoking ' + psb.statement(), e);
                                 return false;
                             }
                         }
-                        stepResult.setOutputMessage("Executed " + iterationPseudoCode);
+                        stepResult.setOutputMessage("Executed " + psb.toString());
                         assertEqual({
                             name: 'typeof iterationResult',
                             shouldbe: 'object',
@@ -2916,21 +2926,21 @@ namespace site17Util_LimitIteratorTest {
                         assertEqual({
                             name: 'iterationResult.done',
                             shouldbe: false,
-                            value: iterationResult.done !== true
+                            value: iterationResult.done === true
                         });
                         assertEqual({
                             name: 'iterationResult.value',
                             shouldbe: values[0],
                             value: iterationResult.value
                         });
-                        iterationPseudoCode = pseudoCode + ";\niterator.return(); // iteration: 1";
-                        stepResult.setOutputMessage("Executing " + iterationPseudoCode);
+                        psb = psb.appendStatement('iterator.return()');
+                        stepResult.setOutputMessage("Executing " + psb.toString());
                         try { iterationResult = (<{ (value?: string): IteratorResult<number, string>; }>iterator.return)(); }
                         catch (e) {
-                            atfHelper.setFailed('Unexpected exception while invoking ' + iterationPseudoCode, e);
+                            atfHelper.setFailed('Unexpected exception while invoking ' + psb.statement(), e);
                             return false;
                         }
-                        stepResult.setOutputMessage("Executed " + iterationPseudoCode);
+                        stepResult.setOutputMessage("Executed " + psb.toString());
                         assertEqual({
                             name: 'typeof iterationResult',
                             shouldbe: 'object',
@@ -2946,14 +2956,14 @@ namespace site17Util_LimitIteratorTest {
                             shouldbe: 'undefined',
                             value: (iterationResult.value === null) ? 'undefined' : typeof iterationResult.value
                         });
-                        iterationPseudoCode = pseudoCode + ";\niterator.next(); // iteration: 1";
-                        stepResult.setOutputMessage("Executing " + iterationPseudoCode);
+                        psb = psb.appendStatement('iterator.next()');
+                        stepResult.setOutputMessage("Executing " + psb.toString());
                         try { iterationResult = iterator.next(); }
                         catch (e) {
-                            atfHelper.setFailed('Unexpected exception while invoking ' + iterationPseudoCode, e);
+                            atfHelper.setFailed('Unexpected exception while invoking ' + psb.statement(), e);
                             return false;
                         }
-                        stepResult.setOutputMessage("Executed " + iterationPseudoCode);
+                        stepResult.setOutputMessage("Executed " + psb.toString());
                         assertEqual({
                             name: 'typeof iterationResult',
                             shouldbe: 'object',
@@ -2970,31 +2980,31 @@ namespace site17Util_LimitIteratorTest {
                             value: (iterationResult.value === null) ? 'undefined' : typeof iterationResult.value
                         });
 
-                        stepResult.setOutputMessage("Executing " + pseudoCode);
-                        try { iterator = x_g_inte_site_17.Site17Util.limitIterator<number, string, boolean>(source, count); }
+                        stepResult.setOutputMessage("Executing " + methodPseudoCode);
+                        try { iterator = x_g_inte_site_17.Site17Util.limitIterator<number, string, boolean>(createSource(), count); }
                         catch (e) {
-                            atfHelper.setFailed('Unexpected exception while invoking ' + pseudoCode, e);
+                            atfHelper.setFailed('Unexpected exception while invoking ' + methodPseudoCode, e);
                             return false;
                         }
-                        stepResult.setOutputMessage("Executed " + pseudoCode);
+                        stepResult.setOutputMessage("Executed " + methodPseudoCode);
                         if (typeof arg === 'undefined') {
-                            iterationPseudoCode = pseudoCode + ";\niterator.next(); // iteration: 0";
-                            stepResult.setOutputMessage("Executing " + iterationPseudoCode);
+                            psb = psb.appendStatement('iterator.next()').setComment('iteration: 0');
+                            stepResult.setOutputMessage("Executing " + psb.toString());
                             try { iterationResult = iterator.next(); }
                             catch (e) {
-                                atfHelper.setFailed('Unexpected exception while invoking ' + iterationPseudoCode, e);
+                                atfHelper.setFailed('Unexpected exception while invoking ' + psb.statement(), e);
                                 return false;
                             }
                         } else {
-                            iterationPseudoCode = pseudoCode + ";\niterator.next(" + JSON.stringify(arg) + "); // iteration: 0";
-                            stepResult.setOutputMessage("Executing " + iterationPseudoCode);
+                            psb = psb.appendStatement('iterator.next(' + JSON.stringify(arg) + ')').setComment('iteration: 0');
+                            stepResult.setOutputMessage("Executing " + psb.toString());
                             try { iterationResult = iterator.next(arg); }
                             catch (e) {
-                                atfHelper.setFailed('Unexpected exception while invoking ' + iterationPseudoCode, e);
+                                atfHelper.setFailed('Unexpected exception while invoking ' + psb.statement(), e);
                                 return false;
                             }
                         }
-                        stepResult.setOutputMessage("Executed " + iterationPseudoCode);
+                        stepResult.setOutputMessage("Executed " + psb.toString());
                         assertEqual({
                             name: 'typeof iterationResult',
                             shouldbe: 'object',
@@ -3003,21 +3013,21 @@ namespace site17Util_LimitIteratorTest {
                         assertEqual({
                             name: 'iterationResult.done',
                             shouldbe: false,
-                            value: iterationResult.done !== true
+                            value: iterationResult.done === true
                         });
                         assertEqual({
                             name: 'iterationResult.value',
                             shouldbe: values[0],
                             value: iterationResult.value
                         });
-                        iterationPseudoCode = pseudoCode + ";\niterator.return(\"Finally\"); // iteration: 1";
-                        stepResult.setOutputMessage("Executing " + iterationPseudoCode);
+                        psb = psb.appendStatement('iterator.return("Finally")');
+                        stepResult.setOutputMessage("Executing " + psb.toString());
                         try { iterationResult = (<{ (value?: string): IteratorResult<number, string>; }>iterator.return)("Finally"); }
                         catch (e) {
-                            atfHelper.setFailed('Unexpected exception while invoking ' + iterationPseudoCode, e);
+                            atfHelper.setFailed('Unexpected exception while invoking ' + psb.statement(), e);
                             return false;
                         }
-                        stepResult.setOutputMessage("Executed " + iterationPseudoCode);
+                        stepResult.setOutputMessage("Executed " + psb.toString());
                         assertEqual({
                             name: 'typeof iterationResult',
                             shouldbe: 'object',
@@ -3033,14 +3043,14 @@ namespace site17Util_LimitIteratorTest {
                             shouldbe: 'Finally',
                             value: iterationResult.value
                         });
-                        iterationPseudoCode = pseudoCode + ";\niterator.next(); // iteration: 1";
-                        stepResult.setOutputMessage("Executing " + iterationPseudoCode);
+                        psb = psb.appendStatement('iterator.next()');
+                        stepResult.setOutputMessage("Executing " + psb.toString());
                         try { iterationResult = iterator.next(); }
                         catch (e) {
-                            atfHelper.setFailed('Unexpected exception while invoking ' + iterationPseudoCode, e);
+                            atfHelper.setFailed('Unexpected exception while invoking ' + psb.statement(), e);
                             return false;
                         }
-                        stepResult.setOutputMessage("Executed " + iterationPseudoCode);
+                        stepResult.setOutputMessage("Executed " + psb.toString());
                         assertEqual({
                             name: 'typeof iterationResult',
                             shouldbe: 'object',
@@ -3062,22 +3072,21 @@ namespace site17Util_LimitIteratorTest {
 
                 if (typeof testDataItem.onThrow !== 'number') continue;
 
-                stepResult.setOutputMessage("Executing " + pseudoCode);
-                try { iterator = x_g_inte_site_17.Site17Util.limitIterator<number, string, boolean>(source, count); }
+                stepResult.setOutputMessage("Executing " + methodPseudoCode);
+                try { iterator = x_g_inte_site_17.Site17Util.limitIterator<number, string, boolean>(createSource(), count); }
                 catch (e) {
-                    atfHelper.setFailed('Unexpected exception while invoking ' + pseudoCode, e);
+                    atfHelper.setFailed('Unexpected exception while invoking ' + methodPseudoCode, e);
                     return false;
                 }
-                stepResult.setOutputMessage("Executed " + pseudoCode);
-
-                iterationPseudoCode = pseudoCode + ";\niterator.throw(); // iteration: 0";
-                stepResult.setOutputMessage("Executing " + iterationPseudoCode);
+                stepResult.setOutputMessage("Executed " + methodPseudoCode);
+                psb = assignmentPsb.setComment().appendStatement('iterator.throw()');
+                stepResult.setOutputMessage("Executing " + psb.toString());
                 try { iterationResult = (<{ (e?: any): IteratorResult<number, string>; }>iterator.throw)(); }
                 catch (e) {
-                    atfHelper.setFailed('Unexpected exception while invoking ' + iterationPseudoCode, e);
+                    atfHelper.setFailed('Unexpected exception while invoking ' + psb.statement(), e);
                     return false;
                 }
-                stepResult.setOutputMessage("Executed " + iterationPseudoCode);
+                stepResult.setOutputMessage("Executed " + psb.toString());
                 assertEqual({
                     name: 'typeof iterationResult',
                     shouldbe: 'object',
@@ -3093,14 +3102,14 @@ namespace site17Util_LimitIteratorTest {
                     shouldbe: "Error Code " + testDataItem.onThrow,
                     value: iterationResult.value
                 });
-                iterationPseudoCode = pseudoCode + ";\niterator.next(); // iteration: 0";
-                stepResult.setOutputMessage("Executing " + iterationPseudoCode);
+                psb = psb.appendStatement('iterator.next()');
+                stepResult.setOutputMessage("Executing " + psb.toString());
                 try { iterationResult = iterator.next(); }
                 catch (e) {
-                    atfHelper.setFailed('Unexpected exception while invoking ' + iterationPseudoCode, e);
+                    atfHelper.setFailed('Unexpected exception while invoking ' + psb.statement(), e);
                     return false;
                 }
-                stepResult.setOutputMessage("Executed " + iterationPseudoCode);
+                stepResult.setOutputMessage("Executed " + psb.toString());
                 assertEqual({
                     name: 'typeof iterationResult',
                     shouldbe: 'object',
@@ -3117,21 +3126,21 @@ namespace site17Util_LimitIteratorTest {
                     value: iterationResult.value
                 });
 
-                stepResult.setOutputMessage("Executing " + pseudoCode);
-                try { iterator = x_g_inte_site_17.Site17Util.limitIterator<number, string, boolean>(source, count); }
+                stepResult.setOutputMessage("Executing " + methodPseudoCode);
+                try { iterator = x_g_inte_site_17.Site17Util.limitIterator<number, string, boolean>(createSource(), count); }
                 catch (e) {
-                    atfHelper.setFailed('Unexpected exception while invoking ' + pseudoCode, e);
+                    atfHelper.setFailed('Unexpected exception while invoking ' + methodPseudoCode, e);
                     return false;
                 }
-                stepResult.setOutputMessage("Executed " + pseudoCode);
-                iterationPseudoCode = pseudoCode + ";\niterator.throw(\"Abort!\"); // iteration: 0";
-                stepResult.setOutputMessage("Executing " + iterationPseudoCode);
+                stepResult.setOutputMessage("Executed " + methodPseudoCode);
+                psb = assignmentPsb.appendStatement('iterator.throw("Abort!")');
+                stepResult.setOutputMessage("Executing " + psb.toString());
                 try { iterationResult = (<{ (value?: string): IteratorResult<number, string>; }>iterator.throw)("Abort!"); }
                 catch (e) {
-                    atfHelper.setFailed('Unexpected exception while invoking ' + iterationPseudoCode, e);
+                    atfHelper.setFailed('Unexpected exception while invoking ' + psb.statement(), e);
                     return false;
                 }
-                stepResult.setOutputMessage("Executed " + iterationPseudoCode);
+                stepResult.setOutputMessage("Executed " + psb.toString());
                 assertEqual({
                     name: 'typeof iterationResult',
                     shouldbe: 'object',
@@ -3147,14 +3156,14 @@ namespace site17Util_LimitIteratorTest {
                     shouldbe: 'Abort! (Code ' + testDataItem.onThrow + ')',
                     value: iterationResult.value
                 });
-                iterationPseudoCode = pseudoCode + ";\niterator.next(); // iteration: 0";
-                stepResult.setOutputMessage("Executing " + iterationPseudoCode);
+                psb = psb.appendStatement('iterator.next()');
+                stepResult.setOutputMessage("Executing " + psb.toString());
                 try { iterationResult = iterator.next(); }
                 catch (e) {
-                    atfHelper.setFailed('Unexpected exception while invoking ' + iterationPseudoCode, e);
+                    atfHelper.setFailed('Unexpected exception while invoking ' + psb.statement(), e);
                     return false;
                 }
-                stepResult.setOutputMessage("Executed " + iterationPseudoCode);
+                stepResult.setOutputMessage("Executed " + psb.toString());
                 assertEqual({
                     name: 'typeof iterationResult',
                     shouldbe: 'object',
@@ -3174,32 +3183,33 @@ namespace site17Util_LimitIteratorTest {
                 assertionCount += 12;
 
                 if (expectedCount > 0) {
-                    stepResult.setOutputMessage("Executing " + pseudoCode);
-                    try { iterator = x_g_inte_site_17.Site17Util.limitIterator<number, string, boolean>(source, count); }
+                    stepResult.setOutputMessage("Executing " + methodPseudoCode);
+                    try { iterator = x_g_inte_site_17.Site17Util.limitIterator<number, string, boolean>(createSource(), count); }
                     catch (e) {
-                        atfHelper.setFailed('Unexpected exception while invoking ' + pseudoCode, e);
+                        atfHelper.setFailed('Unexpected exception while invoking ' + methodPseudoCode, e);
                         return false;
                     }
-                    stepResult.setOutputMessage("Executed " + pseudoCode);
+                    stepResult.setOutputMessage("Executed " + methodPseudoCode);
+                    assignmentPsb.setComment('throw test');
                     arg = testDataItem.iterations[0].arg;
                     if (typeof arg === 'undefined') {
-                        iterationPseudoCode = pseudoCode + ";\niterator.next(); // iteration: 0";
-                        stepResult.setOutputMessage("Executing " + iterationPseudoCode);
+                        psb = assignmentPsb.appendStatement('iterator.next()').setComment('iteration: 0');
+                        stepResult.setOutputMessage("Executing " + psb.toString());
                         try { iterationResult = iterator.next(); }
                         catch (e) {
-                            atfHelper.setFailed('Unexpected exception while invoking ' + iterationPseudoCode, e);
+                            atfHelper.setFailed('Unexpected exception while invoking ' + psb.statement(), e);
                             return false;
                         }
                     } else {
-                        iterationPseudoCode = pseudoCode + ";\niterator.next(" + JSON.stringify(arg) + "); // iteration: 0";
-                        stepResult.setOutputMessage("Executing " + iterationPseudoCode);
+                        psb = assignmentPsb.appendStatement('iterator.next(' + JSON.stringify(arg) + ')').setComment('iteration: 0');
+                        stepResult.setOutputMessage("Executing " + psb.toString());
                         try { iterationResult = iterator.next(arg); }
                         catch (e) {
-                            atfHelper.setFailed('Unexpected exception while invoking ' + iterationPseudoCode, e);
+                            atfHelper.setFailed('Unexpected exception while invoking ' + psb.statement(), e);
                             return false;
                         }
                     }
-                    stepResult.setOutputMessage("Executed " + iterationPseudoCode);
+                    stepResult.setOutputMessage("Executed " + psb.toString());
                     assertEqual({
                         name: 'typeof iterationResult',
                         shouldbe: 'object',
@@ -3208,21 +3218,21 @@ namespace site17Util_LimitIteratorTest {
                     assertEqual({
                         name: 'iterationResult.done',
                         shouldbe: false,
-                        value: iterationResult.done !== true
+                        value: iterationResult.done === true
                     });
                     assertEqual({
                         name: 'iterationResult.value',
                         shouldbe: values[0],
                         value: iterationResult.value
                     });
-                    iterationPseudoCode = pseudoCode + ";\niterator.throw(); // iteration: 1";
-                    stepResult.setOutputMessage("Executing " + iterationPseudoCode);
+                    psb = assignmentPsb.appendStatement('iterator.throw()');
+                    stepResult.setOutputMessage("Executing " + psb.toString());
                     try { iterationResult = (<{ (e?: any): IteratorResult<number, string>; }>iterator.throw)(); }
                     catch (e) {
-                        atfHelper.setFailed('Unexpected exception while invoking ' + iterationPseudoCode, e);
+                        atfHelper.setFailed('Unexpected exception while invoking ' + psb.statement(), e);
                         return false;
                     }
-                    stepResult.setOutputMessage("Executed " + iterationPseudoCode);
+                    stepResult.setOutputMessage("Executed " + psb.toString());
                     assertEqual({
                         name: 'typeof iterationResult',
                         shouldbe: 'object',
@@ -3238,14 +3248,14 @@ namespace site17Util_LimitIteratorTest {
                         shouldbe: "Error Code " + testDataItem.onThrow,
                         value: iterationResult.value
                     });
-                    iterationPseudoCode = pseudoCode + ";\niterator.next(); // iteration: 1";
-                    stepResult.setOutputMessage("Executing " + iterationPseudoCode);
+                    psb = assignmentPsb.appendStatement('iterator.next()');
+                    stepResult.setOutputMessage("Executing " + psb.toString());
                     try { iterationResult = iterator.next(); }
                     catch (e) {
-                        atfHelper.setFailed('Unexpected exception while invoking ' + iterationPseudoCode, e);
+                        atfHelper.setFailed('Unexpected exception while invoking ' + psb.statement(), e);
                         return false;
                     }
-                    stepResult.setOutputMessage("Executed " + iterationPseudoCode);
+                    stepResult.setOutputMessage("Executed " + psb.toString());
                     assertEqual({
                         name: 'typeof iterationResult',
                         shouldbe: 'object',
@@ -3262,31 +3272,31 @@ namespace site17Util_LimitIteratorTest {
                         value: iterationResult.value
                     });
 
-                    stepResult.setOutputMessage("Executing " + pseudoCode);
-                    try { iterator = x_g_inte_site_17.Site17Util.limitIterator<number, string, boolean>(source, count); }
+                    stepResult.setOutputMessage("Executing " + methodPseudoCode);
+                    try { iterator = x_g_inte_site_17.Site17Util.limitIterator<number, string, boolean>(createSource(), count); }
                     catch (e) {
-                        atfHelper.setFailed('Unexpected exception while invoking ' + pseudoCode, e);
+                        atfHelper.setFailed('Unexpected exception while invoking ' + methodPseudoCode, e);
                         return false;
                     }
-                    stepResult.setOutputMessage("Executed " + pseudoCode);
+                    stepResult.setOutputMessage("Executed " + methodPseudoCode);
                     if (typeof arg === 'undefined') {
-                        iterationPseudoCode = pseudoCode + ";\niterator.next(); // iteration: 0";
-                        stepResult.setOutputMessage("Executing " + iterationPseudoCode);
+                        psb = assignmentPsb.appendStatement('iterator.next()').setComment('iteration: 0');
+                        stepResult.setOutputMessage("Executing " + psb.toString());
                         try { iterationResult = iterator.next(); }
                         catch (e) {
-                            atfHelper.setFailed('Unexpected exception while invoking ' + iterationPseudoCode, e);
+                            atfHelper.setFailed('Unexpected exception while invoking ' + psb.statement(), e);
                             return false;
                         }
                     } else {
-                        iterationPseudoCode = pseudoCode + ";\niterator.next(" + JSON.stringify(arg) + "); // iteration: 0";
-                        stepResult.setOutputMessage("Executing " + iterationPseudoCode);
+                        psb = assignmentPsb.appendStatement('iterator.next(' + JSON.stringify(arg) + ')').setComment('iteration: 0');
+                        stepResult.setOutputMessage("Executing " + psb.toString());
                         try { iterationResult = iterator.next(arg); }
                         catch (e) {
-                            atfHelper.setFailed('Unexpected exception while invoking ' + iterationPseudoCode, e);
+                            atfHelper.setFailed('Unexpected exception while invoking ' + psb.statement(), e);
                             return false;
                         }
                     }
-                    stepResult.setOutputMessage("Executed " + iterationPseudoCode);
+                    stepResult.setOutputMessage("Executed " + psb.toString());
                     assertEqual({
                         name: 'typeof iterationResult',
                         shouldbe: 'object',
@@ -3295,21 +3305,21 @@ namespace site17Util_LimitIteratorTest {
                     assertEqual({
                         name: 'iterationResult.done',
                         shouldbe: false,
-                        value: iterationResult.done !== true
+                        value: iterationResult.done === true
                     });
                     assertEqual({
                         name: 'iterationResult.value',
                         shouldbe: values[0],
                         value: iterationResult.value
                     });
-                    iterationPseudoCode = pseudoCode + ";\niterator.throw(\"Abort!\"); // iteration: 1";
-                    stepResult.setOutputMessage("Executing " + iterationPseudoCode);
+                    psb = assignmentPsb.appendStatement('iterator.throw("Abort!")');
+                    stepResult.setOutputMessage("Executing " + psb.toString());
                     try { iterationResult = (<{ (value?: string): IteratorResult<number, string>; }>iterator.throw)("Abort!"); }
                     catch (e) {
-                        atfHelper.setFailed('Unexpected exception while invoking ' + iterationPseudoCode, e);
+                        atfHelper.setFailed('Unexpected exception while invoking ' + psb.statement(), e);
                         return false;
                     }
-                    stepResult.setOutputMessage("Executed " + iterationPseudoCode);
+                    stepResult.setOutputMessage("Executed " + psb.toString());
                     assertEqual({
                         name: 'typeof iterationResult',
                         shouldbe: 'object',
@@ -3325,14 +3335,14 @@ namespace site17Util_LimitIteratorTest {
                         shouldbe: 'Abort! (Code ' + testDataItem.onThrow + ')',
                         value: iterationResult.value
                     });
-                    iterationPseudoCode = pseudoCode + ";\niterator.next(); // iteration: 1";
-                    stepResult.setOutputMessage("Executing " + iterationPseudoCode);
+                    psb = assignmentPsb.appendStatement('iterator.next()');
+                    stepResult.setOutputMessage("Executing " + psb.toString());
                     try { iterationResult = iterator.next(); }
                     catch (e) {
-                        atfHelper.setFailed('Unexpected exception while invoking ' + iterationPseudoCode, e);
+                        atfHelper.setFailed('Unexpected exception while invoking ' + psb.statement(), e);
                         return false;
                     }
-                    stepResult.setOutputMessage("Executed " + iterationPseudoCode);
+                    stepResult.setOutputMessage("Executed " + psb.toString());
                     assertEqual({
                         name: 'typeof iterationResult',
                         shouldbe: 'object',

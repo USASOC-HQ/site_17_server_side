@@ -231,7 +231,7 @@ namespace x_g_inte_site_17 {
          * @memberof IIteratorThrowHandler
          */
         (this: TThis, e?: any): TReturn | undefined;
-    };
+    }
 
     /**
      * Defines the constructor for the Site17Util API
@@ -1252,7 +1252,7 @@ namespace x_g_inte_site_17 {
                     if (predicate.call(thisArg, result.value)) return result.value;
                     result = source.next();
                 }
-        }
+        };
 
         /**
          * Gets the first yielded or default result from an iterator.
@@ -1299,19 +1299,18 @@ namespace x_g_inte_site_17 {
             var context: IReturnContext<TReturn> & { iterations: number; } = { iterations: 0 };
             return createRelayIterator<TYield, TReturn, TNext>(context, source, function(...args: [] | [TNext]): IteratorResult<TYield, TReturn> {
                 if (typeof context.return !== 'undefined') return context.return;
-                context.iterations++;
-                if (context.iterations > count) {
-                    context.return = <IteratorReturnResult<TReturn>><any>{ done: true, value: null };
-                    return context.return;
-                }
                 var result = source.next.apply(source, args);
-                if (result.done) {
-                    context.return = result;
-                    return result;
+                if (result.done !== true) {
+                    if (context.iterations < count) {
+                        context.iterations++;
+                        return result;
+                    }
+                    result = <IteratorReturnResult<TReturn>><any>{ done: true, value: null };
                 }
+                context.return = result;
                 return result;
             });
-        }
+        };
 
         /**
          * Converts the yielded values of an interator to an array.
@@ -1336,7 +1335,7 @@ namespace x_g_inte_site_17 {
                     yielded = source.next();
                 }
             return result;
-        }
+        };
 
         /**
          * Creates an interator from an array.
@@ -1502,7 +1501,7 @@ namespace x_g_inte_site_17 {
          * @readonly
          * @enum {string}
          */
-         enum PARAM_NAME {
+        enum PARAM_NAME {
             /** Required by {@link ISite17Util#isDnContainedBy}, {@link ISite17Util#isUserDN} and {@link ISite17Util#isGroupDN} to specify the target Distinguished Name. */
             target_dn = 'sys_parm_target_dn',
 
