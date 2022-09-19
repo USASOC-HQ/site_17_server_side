@@ -2,7 +2,6 @@
 /// <reference path="../../types/sn_typings_server_scoped/dist/index.d.ts" />
 var x_g_inte_site_17;
 (function (x_g_inte_site_17) {
-    ;
     x_g_inte_site_17.Site17Util = (function () {
         var constructor = Class.create();
         // #region Static members
@@ -707,16 +706,15 @@ var x_g_inte_site_17;
                 }
                 if (typeof context["return"] !== 'undefined')
                     return context["return"];
-                context.iterations++;
-                if (context.iterations > count) {
-                    context["return"] = { done: true, value: null };
-                    return context["return"];
-                }
                 var result = source.next.apply(source, args);
-                if (result.done) {
-                    context["return"] = result;
-                    return result;
+                if (result.done !== true) {
+                    if (context.iterations < count) {
+                        context.iterations++;
+                        return result;
+                    }
+                    result = { done: true, value: null };
                 }
+                context["return"] = result;
                 return result;
             });
         };

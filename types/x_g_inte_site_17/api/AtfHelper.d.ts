@@ -1,4 +1,22 @@
 declare namespace x_g_inte_site_17 {
+    interface IPseudoCodeBuilder extends $$snClass.ICustomClassBase<IPseudoCodeBuilder, "AtfHelper.PseudoCodeBuilder"> {
+        getComment(): string | undefined;
+        setComment(comment?: string | null): PseudoCodeBuilder;
+        statement(): string;
+        previous(): PseudoCodeBuilder | undefined;
+        appendStatement(statement: string, ...additionalStatements: string[]): PseudoCodeBuilder;
+        toString(): string;
+    }
+    interface IPseudoCodeBuilderPrototype extends $$snClass.ICustomClassPrototype1<IPseudoCodeBuilder, IPseudoCodeBuilderPrototype, "AtfHelper.PseudoCodeBuilder", string>, IPseudoCodeBuilder {
+        _statement: string;
+        _previous?: PseudoCodeBuilder;
+        _comment?: string;
+    }
+    type PseudoCodeBuilder = Readonly<IPseudoCodeBuilder>;
+    interface PseudoCodeBuilderConstructor extends $$snClass.CustomClassConstructor1<IPseudoCodeBuilder, IPseudoCodeBuilderPrototype, PseudoCodeBuilder, string> {
+        new (statement: string, ...additionalStatements: string[]): PseudoCodeBuilder;
+        (statement: string, ...additionalStatements: string[]): PseudoCodeBuilder;
+    }
     /**
      * Base interface for the AtfHelper API
      * @export
@@ -80,6 +98,7 @@ declare namespace x_g_inte_site_17 {
         endOfRelativeDay(daysFromToday: number): string;
         isNil(obj: any | undefined): obj is undefined | null | "";
         areAnyNil(...obj: (any | undefined)[]): boolean;
+        createPseudoCodeBuilder(statement: string, ...additionalStatements: string[]): PseudoCodeBuilder;
     }
     const AtfHelper: AtfHelperConstructor;
 }

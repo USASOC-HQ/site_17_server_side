@@ -1741,21 +1741,20 @@ var site17Util_FilterIteratorTest;
             return value.length > 0;
         }
         var idx;
-        var arg;
         var iterationResult;
         var item;
         var thisArg = { nextArgs: [] };
-        var pseudoCode = 'filterIterator<string, boolean, number>(' + JSON.stringify(values) + '.iterator(), ' + JSON.stringify(predicate) + ', ' + JSON.stringify(thisArg) + ')';
-        stepResult.setOutputMessage("Executing " + pseudoCode);
+        var methodPseudoCode = 'filterIterator<string, boolean, number>(' + JSON.stringify(values) + '.iterator(), ' + JSON.stringify(predicate) + ', ' + JSON.stringify(thisArg) + ')';
+        stepResult.setOutputMessage("Executing " + methodPseudoCode);
         var iterator;
         try {
             iterator = x_g_inte_site_17.Site17Util.filterIterator(source, predicate, thisArg);
         }
         catch (e) {
-            atfHelper.setFailed('Unexpected exception while invoking ' + pseudoCode, e);
+            atfHelper.setFailed('Unexpected exception while invoking ' + methodPseudoCode, e);
             return false;
         }
-        stepResult.setOutputMessage("Executed " + pseudoCode);
+        stepResult.setOutputMessage("Executed " + methodPseudoCode);
         assertEqual({
             name: 'typeof iterator',
             shouldbe: 'object',
@@ -1766,22 +1765,23 @@ var site17Util_FilterIteratorTest;
             shouldbe: 'function',
             value: typeof iterator.next
         });
-        // assertEqual({
-        //     name: 'typeof iterator.return',
-        //     shouldbe: 'function',
-        //     value: typeof iterator.return
-        // });
-        // assertEqual({
-        //     name: 'typeof iterator.throw',
-        //     shouldbe: 'function',
-        //     value: typeof iterator.throw
-        // });
-        var iterationPseudoCode;
+        assertEqual({
+            name: 'typeof iterator.return',
+            shouldbe: 'undefined',
+            value: typeof iterator["return"]
+        });
+        assertEqual({
+            name: 'typeof iterator.throw',
+            shouldbe: 'undefined',
+            value: typeof iterator["throw"]
+        });
+        var assignmentPseudoCode = x_g_inte_site_17.AtfHelper.createPseudoCodeBuilder('iterator = ' + methodPseudoCode);
+        var pseudoCode;
         for (idx = 0; idx < expected.length; idx++) {
             item = expected[idx];
             if (typeof item.arg === 'undefined') {
-                iterationPseudoCode = pseudoCode + ";\niterator.next(); // iteration: " + idx;
-                stepResult.setOutputMessage("Executing " + iterationPseudoCode);
+                pseudoCode = assignmentPseudoCode.appendStatement('iterator.next()').setComment('iteration: ' + idx);
+                stepResult.setOutputMessage("Executing " + pseudoCode.toString());
                 try {
                     iterationResult = iterator.next();
                 }
@@ -1791,8 +1791,8 @@ var site17Util_FilterIteratorTest;
                 }
             }
             else {
-                iterationPseudoCode = pseudoCode + ";\niterator.next(" + JSON.stringify(item.arg) + "); // iteration: " + idx;
-                stepResult.setOutputMessage("Executing " + iterationPseudoCode);
+                pseudoCode = assignmentPseudoCode.appendStatement('iterator.next(' + JSON.stringify(item.arg) + ')').setComment('iteration: ' + idx);
+                stepResult.setOutputMessage("Executing " + pseudoCode.toString());
                 try {
                     iterationResult = iterator.next(item.arg);
                 }
@@ -1801,7 +1801,7 @@ var site17Util_FilterIteratorTest;
                     return false;
                 }
             }
-            stepResult.setOutputMessage("Executed " + iterationPseudoCode);
+            stepResult.setOutputMessage("Executed " + pseudoCode.toString());
             assertEqual({
                 name: 'typeof iterationResult',
                 shouldbe: 'object',
@@ -1809,8 +1809,8 @@ var site17Util_FilterIteratorTest;
             });
             assertEqual({
                 name: 'iterationResult.done',
-                shouldbe: true,
-                value: iterationResult.done !== true
+                shouldbe: false,
+                value: iterationResult.done === true
             });
             assertEqual({
                 name: 'iterationResult.value',
@@ -1818,8 +1818,8 @@ var site17Util_FilterIteratorTest;
                 value: iterationResult.value
             });
         }
-        iterationPseudoCode = pseudoCode + ";\niterator.next(); // iteration: " + values.length;
-        stepResult.setOutputMessage("Executing " + iterationPseudoCode);
+        pseudoCode = assignmentPseudoCode.appendStatement('iterator.next()').setComment('iteration: ' + values.length);
+        stepResult.setOutputMessage("Executing " + pseudoCode.toString());
         try {
             iterationResult = iterator.next();
         }
@@ -1827,7 +1827,7 @@ var site17Util_FilterIteratorTest;
             atfHelper.setFailed('Unexpected exception while invoking iterator.next()', e);
             return false;
         }
-        stepResult.setOutputMessage("Executed " + iterationPseudoCode);
+        stepResult.setOutputMessage("Executed " + pseudoCode.toString());
         assertEqual({
             name: 'typeof iterationResult',
             shouldbe: 'object',
@@ -1951,8 +1951,8 @@ var site17Util_MapIteratorTest;
             });
             assertEqual({
                 name: 'iterationResult.done',
-                shouldbe: true,
-                value: iterationResult.done !== true
+                shouldbe: false,
+                value: iterationResult.done === true
             });
             assertEqual({
                 name: 'iterationResult.value',
@@ -2579,39 +2579,48 @@ var site17Util_LimitIteratorTest;
             for (var _a = 0, _b = testDataItem.counts; _a < _b.length; _a++) {
                 var count = _b[_a];
                 var sourcePseudoCode;
-                var source;
+                var createSource;
+                //var source: Iterator<number, string, boolean>;
                 if (typeof testDataItem.onThrow === 'number') {
                     if (typeof testDataItem.finalReturnValue === 'string')
                         sourcePseudoCode = "iteratorFromArray(" + JSON.stringify(values) + ', ' + JSON.stringify(testDataItem.supportsReturn) + ', ' + JSON.stringify(testDataItem.finalReturnValue) + ', (e) => (e.length > 0) ? e + " (Code ' + testDataItem.onThrow + ')" : "Error Code ' + testDataItem.onThrow + '")';
                     else
                         sourcePseudoCode = "iteratorFromArray(" + JSON.stringify(values) + ', ' + JSON.stringify(testDataItem.supportsReturn) + ', undefined, (e) => (e.length > 0) ? e + " (Code ' + testDataItem.onThrow + ')" : "Error Code ' + testDataItem.onThrow + '")';
                     stepResult.setOutputMessage("Executing " + sourcePseudoCode);
-                    source = x_g_inte_site_17.Site17Util.iteratorFromArray(values, testDataItem.supportsReturn, testDataItem.finalReturnValue, function (e) {
-                        if (typeof e !== 'undefined' && e !== null) {
-                            var s = ('' + e).trim();
-                            if (s.length > 0)
-                                return s + ' (Code ' + testDataItem.onThrow + ')';
-                        }
-                        return 'Error Code ' + testDataItem.onThrow;
-                    });
+                    createSource = function () {
+                        return x_g_inte_site_17.Site17Util.iteratorFromArray(values, testDataItem.supportsReturn, testDataItem.finalReturnValue, function (e) {
+                            if (typeof e !== 'undefined' && e !== null) {
+                                var s = ('' + e).trim();
+                                if (s.length > 0)
+                                    return s + ' (Code ' + testDataItem.onThrow + ')';
+                            }
+                            return 'Error Code ' + testDataItem.onThrow;
+                        });
+                    };
                 }
                 else if (typeof testDataItem.finalReturnValue === 'string') {
                     sourcePseudoCode = "iteratorFromArray(" + JSON.stringify(values) + ', ' + JSON.stringify(testDataItem.supportsReturn) + ', ' + JSON.stringify(testDataItem.finalReturnValue) + ')';
                     stepResult.setOutputMessage("Executing " + sourcePseudoCode);
-                    source = x_g_inte_site_17.Site17Util.iteratorFromArray(values, testDataItem.supportsReturn, testDataItem.finalReturnValue);
+                    createSource = function () {
+                        return x_g_inte_site_17.Site17Util.iteratorFromArray(values, testDataItem.supportsReturn, testDataItem.finalReturnValue);
+                    };
                 }
                 else if (testDataItem.supportsReturn) {
                     sourcePseudoCode = "iteratorFromArray(" + JSON.stringify(values) + ', ' + JSON.stringify(testDataItem.supportsReturn) + ')';
                     stepResult.setOutputMessage("Executing " + sourcePseudoCode);
-                    source = x_g_inte_site_17.Site17Util.iteratorFromArray(values, testDataItem.supportsReturn);
+                    createSource = function () {
+                        return x_g_inte_site_17.Site17Util.iteratorFromArray(values, testDataItem.supportsReturn);
+                    };
                 }
                 else {
                     sourcePseudoCode = "iteratorFromArray(" + JSON.stringify(values) + ')';
                     stepResult.setOutputMessage("Executing " + sourcePseudoCode);
-                    source = x_g_inte_site_17.Site17Util.iteratorFromArray(values, testDataItem.supportsReturn);
+                    createSource = function () {
+                        return x_g_inte_site_17.Site17Util.iteratorFromArray(values, testDataItem.supportsReturn);
+                    };
                 }
                 stepResult.setOutputMessage("Executed " + sourcePseudoCode);
-                var pseudoCode = 'limitIterator<number, string, boolean>(' + sourcePseudoCode + ', ' + count + ')';
+                var methodPseudoCode = 'limitIterator<number, string, boolean>(' + sourcePseudoCode + ', ' + count + ')';
                 var expectedCount;
                 if (count < 1) {
                     expectedCount = 0;
@@ -2625,15 +2634,15 @@ var site17Util_LimitIteratorTest;
                 var idx;
                 var iterator;
                 var iterationResult;
-                stepResult.setOutputMessage("Executing " + pseudoCode);
+                stepResult.setOutputMessage("Executing " + methodPseudoCode);
                 try {
-                    iterator = x_g_inte_site_17.Site17Util.limitIterator(source, count);
+                    iterator = x_g_inte_site_17.Site17Util.limitIterator(createSource(), count);
                 }
                 catch (e) {
-                    atfHelper.setFailed('Unexpected exception while invoking ' + pseudoCode, e);
+                    atfHelper.setFailed('Unexpected exception while invoking ' + methodPseudoCode, e);
                     return false;
                 }
-                stepResult.setOutputMessage("Executed " + pseudoCode);
+                stepResult.setOutputMessage("Executed " + methodPseudoCode);
                 assertEqual({
                     name: 'typeof iterator',
                     shouldbe: 'object',
@@ -2654,33 +2663,33 @@ var site17Util_LimitIteratorTest;
                     shouldbe: (typeof testDataItem.onThrow === 'number') ? 'function' : 'undefined',
                     value: (iterator["throw"] === null) ? 'null' : typeof iterator["throw"]
                 });
-                var iterationPseudoCode;
+                var assignmentPsb = x_g_inte_site_17.AtfHelper.createPseudoCodeBuilder('iterator = ' + methodPseudoCode);
+                var psb;
                 var arg;
                 for (idx = 0; idx < expectedCount; idx++) {
                     arg = testDataItem.iterations[idx].arg;
                     if (typeof arg === 'undefined') {
-                        iterationPseudoCode = pseudoCode + ";\niterator.next(); // iteration: " + idx;
-                        stepResult.setOutputMessage("Executing " + iterationPseudoCode);
+                        psb = assignmentPsb.appendStatement('iterator.next()').setComment('iteration: ' + idx);
+                        stepResult.setOutputMessage("Executing " + psb.toString());
                         try {
                             iterationResult = iterator.next();
                         }
                         catch (e) {
-                            atfHelper.setFailed('Unexpected exception while invoking ' + iterationPseudoCode, e);
+                            atfHelper.setFailed('Unexpected exception while invoking ' + psb.statement(), e);
                             return false;
                         }
                     }
                     else {
-                        iterationPseudoCode = pseudoCode + ";\niterator.next(" + JSON.stringify(arg) + "); // iteration: " + idx;
-                        stepResult.setOutputMessage("Executing " + iterationPseudoCode);
+                        psb = assignmentPsb.appendStatement('iterator.next(' + JSON.stringify(arg) + ')').setComment('iteration: ' + idx);
                         try {
                             iterationResult = iterator.next(arg);
                         }
                         catch (e) {
-                            atfHelper.setFailed('Unexpected exception while invoking ' + iterationPseudoCode, e);
+                            atfHelper.setFailed('Unexpected exception while invoking ' + psb.statement(), e);
                             return false;
                         }
                     }
-                    stepResult.setOutputMessage("Executed " + iterationPseudoCode);
+                    stepResult.setOutputMessage("Executed " + psb.toString());
                     assertEqual({
                         name: 'typeof iterationResult',
                         shouldbe: 'object',
@@ -2689,7 +2698,7 @@ var site17Util_LimitIteratorTest;
                     assertEqual({
                         name: 'iterationResult.done',
                         shouldbe: false,
-                        value: iterationResult.done !== true
+                        value: iterationResult.done === true
                     });
                     assertEqual({
                         name: 'iterationResult.value',
@@ -2697,16 +2706,16 @@ var site17Util_LimitIteratorTest;
                         value: iterationResult.value
                     });
                 }
-                iterationPseudoCode = pseudoCode + ";\niterator.next(); // iteration: " + expectedCount;
-                stepResult.setOutputMessage("Executing " + iterationPseudoCode);
+                psb = assignmentPsb.appendStatement('iterator.next()').setComment('iteration: ' + expectedCount);
+                stepResult.setOutputMessage("Executing " + psb.toString());
                 try {
                     iterationResult = iterator.next();
                 }
                 catch (e) {
-                    atfHelper.setFailed('Unexpected exception while invoking ' + iterationPseudoCode, e);
+                    atfHelper.setFailed('Unexpected exception while invoking ' + psb.statement(), e);
                     return false;
                 }
-                stepResult.setOutputMessage("Executed " + iterationPseudoCode);
+                stepResult.setOutputMessage("Executed " + psb.toString());
                 assertEqual({
                     name: 'typeof iterationResult',
                     shouldbe: 'object',
@@ -2717,7 +2726,7 @@ var site17Util_LimitIteratorTest;
                     shouldbe: true,
                     value: iterationResult.done
                 });
-                if (typeof testDataItem.finalReturnValue === 'string')
+                if (typeof testDataItem.finalReturnValue === 'string' && values.length == expectedCount)
                     assertEqual({
                         name: 'iterationResult.value',
                         shouldbe: testDataItem.finalReturnValue,
@@ -2731,25 +2740,25 @@ var site17Util_LimitIteratorTest;
                     });
                 assertionCount += 7 + (expectedCount * 3);
                 if (testDataItem.supportsReturn) {
-                    stepResult.setOutputMessage("Executing " + pseudoCode);
+                    stepResult.setOutputMessage("Executing " + methodPseudoCode);
                     try {
-                        iterator = x_g_inte_site_17.Site17Util.limitIterator(source, count);
+                        iterator = x_g_inte_site_17.Site17Util.limitIterator(createSource(), count);
                     }
                     catch (e) {
-                        atfHelper.setFailed('Unexpected exception while invoking ' + pseudoCode, e);
+                        atfHelper.setFailed('Unexpected exception while invoking ' + methodPseudoCode, e);
                         return false;
                     }
-                    stepResult.setOutputMessage("Executed " + pseudoCode);
-                    iterationPseudoCode = pseudoCode + ";\niterator.return(); // iteration: 0";
-                    stepResult.setOutputMessage("Executing " + iterationPseudoCode);
+                    stepResult.setOutputMessage("Executed " + methodPseudoCode);
+                    psb = assignmentPsb.appendStatement('iterator.return()');
+                    stepResult.setOutputMessage("Executing " + psb.toString());
                     try {
                         iterationResult = iterator["return"]();
                     }
                     catch (e) {
-                        atfHelper.setFailed('Unexpected exception while invoking ' + iterationPseudoCode, e);
+                        atfHelper.setFailed('Unexpected exception while invoking ' + psb.statement(), e);
                         return false;
                     }
-                    stepResult.setOutputMessage("Executed " + iterationPseudoCode);
+                    stepResult.setOutputMessage("Executed " + psb.toString());
                     assertEqual({
                         name: 'typeof iterationResult',
                         shouldbe: 'object',
@@ -2765,16 +2774,16 @@ var site17Util_LimitIteratorTest;
                         shouldbe: 'undefined',
                         value: (iterationResult.value === null) ? 'undefined' : typeof iterationResult.value
                     });
-                    iterationPseudoCode = pseudoCode + ";\niterator.next(); // iteration: 0";
-                    stepResult.setOutputMessage("Executing " + iterationPseudoCode);
+                    psb = psb.appendStatement('iterator.next()');
+                    stepResult.setOutputMessage("Executing " + psb.toString());
                     try {
                         iterationResult = iterator.next();
                     }
                     catch (e) {
-                        atfHelper.setFailed('Unexpected exception while invoking ' + iterationPseudoCode, e);
+                        atfHelper.setFailed('Unexpected exception while invoking ' + psb.statement(), e);
                         return false;
                     }
-                    stepResult.setOutputMessage("Executed " + iterationPseudoCode);
+                    stepResult.setOutputMessage("Executed " + psb.toString());
                     assertEqual({
                         name: 'typeof iterationResult',
                         shouldbe: 'object',
@@ -2790,25 +2799,25 @@ var site17Util_LimitIteratorTest;
                         shouldbe: 'undefined',
                         value: (iterationResult.value === null) ? 'undefined' : typeof iterationResult.value
                     });
-                    stepResult.setOutputMessage("Executing " + pseudoCode);
+                    stepResult.setOutputMessage("Executing " + methodPseudoCode);
                     try {
-                        iterator = x_g_inte_site_17.Site17Util.limitIterator(source, count);
+                        iterator = x_g_inte_site_17.Site17Util.limitIterator(createSource(), count);
                     }
                     catch (e) {
-                        atfHelper.setFailed('Unexpected exception while invoking ' + pseudoCode, e);
+                        atfHelper.setFailed('Unexpected exception while invoking ' + methodPseudoCode, e);
                         return false;
                     }
-                    stepResult.setOutputMessage("Executed " + pseudoCode);
-                    iterationPseudoCode = pseudoCode + ";\niterator.return(\"Finally\"); // iteration: 0";
-                    stepResult.setOutputMessage("Executing " + iterationPseudoCode);
+                    stepResult.setOutputMessage("Executed " + methodPseudoCode);
+                    psb = assignmentPsb.appendStatement('iterator.return("Finally)');
+                    stepResult.setOutputMessage("Executing " + psb.toString());
                     try {
                         iterationResult = iterator["return"]("Finally");
                     }
                     catch (e) {
-                        atfHelper.setFailed('Unexpected exception while invoking ' + iterationPseudoCode, e);
+                        atfHelper.setFailed('Unexpected exception while invoking ' + psb.statement(), e);
                         return false;
                     }
-                    stepResult.setOutputMessage("Executed " + iterationPseudoCode);
+                    stepResult.setOutputMessage("Executed " + psb.toString());
                     assertEqual({
                         name: 'typeof iterationResult',
                         shouldbe: 'object',
@@ -2824,16 +2833,16 @@ var site17Util_LimitIteratorTest;
                         shouldbe: 'Finally',
                         value: iterationResult.value
                     });
-                    iterationPseudoCode = pseudoCode + ";\niterator.next(); // iteration: 0";
-                    stepResult.setOutputMessage("Executing " + iterationPseudoCode);
+                    psb = psb.appendStatement('iterator.next()');
+                    stepResult.setOutputMessage("Executing " + psb.toString());
                     try {
                         iterationResult = iterator.next();
                     }
                     catch (e) {
-                        atfHelper.setFailed('Unexpected exception while invoking ' + iterationPseudoCode, e);
+                        atfHelper.setFailed('Unexpected exception while invoking ' + psb.statement(), e);
                         return false;
                     }
-                    stepResult.setOutputMessage("Executed " + iterationPseudoCode);
+                    stepResult.setOutputMessage("Executed " + psb.toString());
                     assertEqual({
                         name: 'typeof iterationResult',
                         shouldbe: 'object',
@@ -2851,39 +2860,40 @@ var site17Util_LimitIteratorTest;
                     });
                     assertionCount += 12;
                     if (expectedCount > 0) {
-                        stepResult.setOutputMessage("Executing " + pseudoCode);
+                        stepResult.setOutputMessage("Executing " + methodPseudoCode);
                         try {
-                            iterator = x_g_inte_site_17.Site17Util.limitIterator(source, count);
+                            iterator = x_g_inte_site_17.Site17Util.limitIterator(createSource(), count);
                         }
                         catch (e) {
-                            atfHelper.setFailed('Unexpected exception while invoking ' + pseudoCode, e);
+                            atfHelper.setFailed('Unexpected exception while invoking ' + methodPseudoCode, e);
                             return false;
                         }
-                        stepResult.setOutputMessage("Executed " + pseudoCode);
+                        stepResult.setOutputMessage("Executed " + methodPseudoCode);
+                        assignmentPsb.setComment('return test');
                         arg = testDataItem.iterations[0].arg;
                         if (typeof arg === 'undefined') {
-                            iterationPseudoCode = pseudoCode + ";\niterator.next(); // iteration: 0";
-                            stepResult.setOutputMessage("Executing " + iterationPseudoCode);
+                            psb = assignmentPsb.appendStatement('iterator.next()').setComment('iteration: 0');
+                            stepResult.setOutputMessage("Executing " + psb.toString());
                             try {
                                 iterationResult = iterator.next();
                             }
                             catch (e) {
-                                atfHelper.setFailed('Unexpected exception while invoking ' + iterationPseudoCode, e);
+                                atfHelper.setFailed('Unexpected exception while invoking ' + psb.statement(), e);
                                 return false;
                             }
                         }
                         else {
-                            iterationPseudoCode = pseudoCode + ";\niterator.next(" + JSON.stringify(arg) + "); // iteration: 0";
-                            stepResult.setOutputMessage("Executing " + iterationPseudoCode);
+                            psb = assignmentPsb.appendStatement('iterator.next(' + JSON.stringify(arg) + ')').setComment('iteration: 0');
+                            stepResult.setOutputMessage("Executing " + psb.toString());
                             try {
                                 iterationResult = iterator.next(arg);
                             }
                             catch (e) {
-                                atfHelper.setFailed('Unexpected exception while invoking ' + iterationPseudoCode, e);
+                                atfHelper.setFailed('Unexpected exception while invoking ' + psb.statement(), e);
                                 return false;
                             }
                         }
-                        stepResult.setOutputMessage("Executed " + iterationPseudoCode);
+                        stepResult.setOutputMessage("Executed " + psb.toString());
                         assertEqual({
                             name: 'typeof iterationResult',
                             shouldbe: 'object',
@@ -2892,23 +2902,23 @@ var site17Util_LimitIteratorTest;
                         assertEqual({
                             name: 'iterationResult.done',
                             shouldbe: false,
-                            value: iterationResult.done !== true
+                            value: iterationResult.done === true
                         });
                         assertEqual({
                             name: 'iterationResult.value',
                             shouldbe: values[0],
                             value: iterationResult.value
                         });
-                        iterationPseudoCode = pseudoCode + ";\niterator.return(); // iteration: 1";
-                        stepResult.setOutputMessage("Executing " + iterationPseudoCode);
+                        psb = psb.appendStatement('iterator.return()');
+                        stepResult.setOutputMessage("Executing " + psb.toString());
                         try {
                             iterationResult = iterator["return"]();
                         }
                         catch (e) {
-                            atfHelper.setFailed('Unexpected exception while invoking ' + iterationPseudoCode, e);
+                            atfHelper.setFailed('Unexpected exception while invoking ' + psb.statement(), e);
                             return false;
                         }
-                        stepResult.setOutputMessage("Executed " + iterationPseudoCode);
+                        stepResult.setOutputMessage("Executed " + psb.toString());
                         assertEqual({
                             name: 'typeof iterationResult',
                             shouldbe: 'object',
@@ -2924,16 +2934,16 @@ var site17Util_LimitIteratorTest;
                             shouldbe: 'undefined',
                             value: (iterationResult.value === null) ? 'undefined' : typeof iterationResult.value
                         });
-                        iterationPseudoCode = pseudoCode + ";\niterator.next(); // iteration: 1";
-                        stepResult.setOutputMessage("Executing " + iterationPseudoCode);
+                        psb = psb.appendStatement('iterator.next()');
+                        stepResult.setOutputMessage("Executing " + psb.toString());
                         try {
                             iterationResult = iterator.next();
                         }
                         catch (e) {
-                            atfHelper.setFailed('Unexpected exception while invoking ' + iterationPseudoCode, e);
+                            atfHelper.setFailed('Unexpected exception while invoking ' + psb.statement(), e);
                             return false;
                         }
-                        stepResult.setOutputMessage("Executed " + iterationPseudoCode);
+                        stepResult.setOutputMessage("Executed " + psb.toString());
                         assertEqual({
                             name: 'typeof iterationResult',
                             shouldbe: 'object',
@@ -2949,38 +2959,38 @@ var site17Util_LimitIteratorTest;
                             shouldbe: 'undefined',
                             value: (iterationResult.value === null) ? 'undefined' : typeof iterationResult.value
                         });
-                        stepResult.setOutputMessage("Executing " + pseudoCode);
+                        stepResult.setOutputMessage("Executing " + methodPseudoCode);
                         try {
-                            iterator = x_g_inte_site_17.Site17Util.limitIterator(source, count);
+                            iterator = x_g_inte_site_17.Site17Util.limitIterator(createSource(), count);
                         }
                         catch (e) {
-                            atfHelper.setFailed('Unexpected exception while invoking ' + pseudoCode, e);
+                            atfHelper.setFailed('Unexpected exception while invoking ' + methodPseudoCode, e);
                             return false;
                         }
-                        stepResult.setOutputMessage("Executed " + pseudoCode);
+                        stepResult.setOutputMessage("Executed " + methodPseudoCode);
                         if (typeof arg === 'undefined') {
-                            iterationPseudoCode = pseudoCode + ";\niterator.next(); // iteration: 0";
-                            stepResult.setOutputMessage("Executing " + iterationPseudoCode);
+                            psb = psb.appendStatement('iterator.next()').setComment('iteration: 0');
+                            stepResult.setOutputMessage("Executing " + psb.toString());
                             try {
                                 iterationResult = iterator.next();
                             }
                             catch (e) {
-                                atfHelper.setFailed('Unexpected exception while invoking ' + iterationPseudoCode, e);
+                                atfHelper.setFailed('Unexpected exception while invoking ' + psb.statement(), e);
                                 return false;
                             }
                         }
                         else {
-                            iterationPseudoCode = pseudoCode + ";\niterator.next(" + JSON.stringify(arg) + "); // iteration: 0";
-                            stepResult.setOutputMessage("Executing " + iterationPseudoCode);
+                            psb = psb.appendStatement('iterator.next(' + JSON.stringify(arg) + ')').setComment('iteration: 0');
+                            stepResult.setOutputMessage("Executing " + psb.toString());
                             try {
                                 iterationResult = iterator.next(arg);
                             }
                             catch (e) {
-                                atfHelper.setFailed('Unexpected exception while invoking ' + iterationPseudoCode, e);
+                                atfHelper.setFailed('Unexpected exception while invoking ' + psb.statement(), e);
                                 return false;
                             }
                         }
-                        stepResult.setOutputMessage("Executed " + iterationPseudoCode);
+                        stepResult.setOutputMessage("Executed " + psb.toString());
                         assertEqual({
                             name: 'typeof iterationResult',
                             shouldbe: 'object',
@@ -2989,23 +2999,23 @@ var site17Util_LimitIteratorTest;
                         assertEqual({
                             name: 'iterationResult.done',
                             shouldbe: false,
-                            value: iterationResult.done !== true
+                            value: iterationResult.done === true
                         });
                         assertEqual({
                             name: 'iterationResult.value',
                             shouldbe: values[0],
                             value: iterationResult.value
                         });
-                        iterationPseudoCode = pseudoCode + ";\niterator.return(\"Finally\"); // iteration: 1";
-                        stepResult.setOutputMessage("Executing " + iterationPseudoCode);
+                        psb = psb.appendStatement('iterator.return("Finally")');
+                        stepResult.setOutputMessage("Executing " + psb.toString());
                         try {
                             iterationResult = iterator["return"]("Finally");
                         }
                         catch (e) {
-                            atfHelper.setFailed('Unexpected exception while invoking ' + iterationPseudoCode, e);
+                            atfHelper.setFailed('Unexpected exception while invoking ' + psb.statement(), e);
                             return false;
                         }
-                        stepResult.setOutputMessage("Executed " + iterationPseudoCode);
+                        stepResult.setOutputMessage("Executed " + psb.toString());
                         assertEqual({
                             name: 'typeof iterationResult',
                             shouldbe: 'object',
@@ -3021,16 +3031,16 @@ var site17Util_LimitIteratorTest;
                             shouldbe: 'Finally',
                             value: iterationResult.value
                         });
-                        iterationPseudoCode = pseudoCode + ";\niterator.next(); // iteration: 1";
-                        stepResult.setOutputMessage("Executing " + iterationPseudoCode);
+                        psb = psb.appendStatement('iterator.next()');
+                        stepResult.setOutputMessage("Executing " + psb.toString());
                         try {
                             iterationResult = iterator.next();
                         }
                         catch (e) {
-                            atfHelper.setFailed('Unexpected exception while invoking ' + iterationPseudoCode, e);
+                            atfHelper.setFailed('Unexpected exception while invoking ' + psb.statement(), e);
                             return false;
                         }
-                        stepResult.setOutputMessage("Executed " + iterationPseudoCode);
+                        stepResult.setOutputMessage("Executed " + psb.toString());
                         assertEqual({
                             name: 'typeof iterationResult',
                             shouldbe: 'object',
@@ -3051,25 +3061,25 @@ var site17Util_LimitIteratorTest;
                 }
                 if (typeof testDataItem.onThrow !== 'number')
                     continue;
-                stepResult.setOutputMessage("Executing " + pseudoCode);
+                stepResult.setOutputMessage("Executing " + methodPseudoCode);
                 try {
-                    iterator = x_g_inte_site_17.Site17Util.limitIterator(source, count);
+                    iterator = x_g_inte_site_17.Site17Util.limitIterator(createSource(), count);
                 }
                 catch (e) {
-                    atfHelper.setFailed('Unexpected exception while invoking ' + pseudoCode, e);
+                    atfHelper.setFailed('Unexpected exception while invoking ' + methodPseudoCode, e);
                     return false;
                 }
-                stepResult.setOutputMessage("Executed " + pseudoCode);
-                iterationPseudoCode = pseudoCode + ";\niterator.throw(); // iteration: 0";
-                stepResult.setOutputMessage("Executing " + iterationPseudoCode);
+                stepResult.setOutputMessage("Executed " + methodPseudoCode);
+                psb = assignmentPsb.setComment().appendStatement('iterator.throw()');
+                stepResult.setOutputMessage("Executing " + psb.toString());
                 try {
                     iterationResult = iterator["throw"]();
                 }
                 catch (e) {
-                    atfHelper.setFailed('Unexpected exception while invoking ' + iterationPseudoCode, e);
+                    atfHelper.setFailed('Unexpected exception while invoking ' + psb.statement(), e);
                     return false;
                 }
-                stepResult.setOutputMessage("Executed " + iterationPseudoCode);
+                stepResult.setOutputMessage("Executed " + psb.toString());
                 assertEqual({
                     name: 'typeof iterationResult',
                     shouldbe: 'object',
@@ -3085,16 +3095,16 @@ var site17Util_LimitIteratorTest;
                     shouldbe: "Error Code " + testDataItem.onThrow,
                     value: iterationResult.value
                 });
-                iterationPseudoCode = pseudoCode + ";\niterator.next(); // iteration: 0";
-                stepResult.setOutputMessage("Executing " + iterationPseudoCode);
+                psb = psb.appendStatement('iterator.next()');
+                stepResult.setOutputMessage("Executing " + psb.toString());
                 try {
                     iterationResult = iterator.next();
                 }
                 catch (e) {
-                    atfHelper.setFailed('Unexpected exception while invoking ' + iterationPseudoCode, e);
+                    atfHelper.setFailed('Unexpected exception while invoking ' + psb.statement(), e);
                     return false;
                 }
-                stepResult.setOutputMessage("Executed " + iterationPseudoCode);
+                stepResult.setOutputMessage("Executed " + psb.toString());
                 assertEqual({
                     name: 'typeof iterationResult',
                     shouldbe: 'object',
@@ -3110,25 +3120,25 @@ var site17Util_LimitIteratorTest;
                     shouldbe: "Error Code " + testDataItem.onThrow,
                     value: iterationResult.value
                 });
-                stepResult.setOutputMessage("Executing " + pseudoCode);
+                stepResult.setOutputMessage("Executing " + methodPseudoCode);
                 try {
-                    iterator = x_g_inte_site_17.Site17Util.limitIterator(source, count);
+                    iterator = x_g_inte_site_17.Site17Util.limitIterator(createSource(), count);
                 }
                 catch (e) {
-                    atfHelper.setFailed('Unexpected exception while invoking ' + pseudoCode, e);
+                    atfHelper.setFailed('Unexpected exception while invoking ' + methodPseudoCode, e);
                     return false;
                 }
-                stepResult.setOutputMessage("Executed " + pseudoCode);
-                iterationPseudoCode = pseudoCode + ";\niterator.throw(\"Abort!\"); // iteration: 0";
-                stepResult.setOutputMessage("Executing " + iterationPseudoCode);
+                stepResult.setOutputMessage("Executed " + methodPseudoCode);
+                psb = assignmentPsb.appendStatement('iterator.throw("Abort!")');
+                stepResult.setOutputMessage("Executing " + psb.toString());
                 try {
                     iterationResult = iterator["throw"]("Abort!");
                 }
                 catch (e) {
-                    atfHelper.setFailed('Unexpected exception while invoking ' + iterationPseudoCode, e);
+                    atfHelper.setFailed('Unexpected exception while invoking ' + psb.statement(), e);
                     return false;
                 }
-                stepResult.setOutputMessage("Executed " + iterationPseudoCode);
+                stepResult.setOutputMessage("Executed " + psb.toString());
                 assertEqual({
                     name: 'typeof iterationResult',
                     shouldbe: 'object',
@@ -3144,16 +3154,16 @@ var site17Util_LimitIteratorTest;
                     shouldbe: 'Abort! (Code ' + testDataItem.onThrow + ')',
                     value: iterationResult.value
                 });
-                iterationPseudoCode = pseudoCode + ";\niterator.next(); // iteration: 0";
-                stepResult.setOutputMessage("Executing " + iterationPseudoCode);
+                psb = psb.appendStatement('iterator.next()');
+                stepResult.setOutputMessage("Executing " + psb.toString());
                 try {
                     iterationResult = iterator.next();
                 }
                 catch (e) {
-                    atfHelper.setFailed('Unexpected exception while invoking ' + iterationPseudoCode, e);
+                    atfHelper.setFailed('Unexpected exception while invoking ' + psb.statement(), e);
                     return false;
                 }
-                stepResult.setOutputMessage("Executed " + iterationPseudoCode);
+                stepResult.setOutputMessage("Executed " + psb.toString());
                 assertEqual({
                     name: 'typeof iterationResult',
                     shouldbe: 'object',
@@ -3171,39 +3181,40 @@ var site17Util_LimitIteratorTest;
                 });
                 assertionCount += 12;
                 if (expectedCount > 0) {
-                    stepResult.setOutputMessage("Executing " + pseudoCode);
+                    stepResult.setOutputMessage("Executing " + methodPseudoCode);
                     try {
-                        iterator = x_g_inte_site_17.Site17Util.limitIterator(source, count);
+                        iterator = x_g_inte_site_17.Site17Util.limitIterator(createSource(), count);
                     }
                     catch (e) {
-                        atfHelper.setFailed('Unexpected exception while invoking ' + pseudoCode, e);
+                        atfHelper.setFailed('Unexpected exception while invoking ' + methodPseudoCode, e);
                         return false;
                     }
-                    stepResult.setOutputMessage("Executed " + pseudoCode);
+                    stepResult.setOutputMessage("Executed " + methodPseudoCode);
+                    assignmentPsb.setComment('throw test');
                     arg = testDataItem.iterations[0].arg;
                     if (typeof arg === 'undefined') {
-                        iterationPseudoCode = pseudoCode + ";\niterator.next(); // iteration: 0";
-                        stepResult.setOutputMessage("Executing " + iterationPseudoCode);
+                        psb = assignmentPsb.appendStatement('iterator.next()').setComment('iteration: 0');
+                        stepResult.setOutputMessage("Executing " + psb.toString());
                         try {
                             iterationResult = iterator.next();
                         }
                         catch (e) {
-                            atfHelper.setFailed('Unexpected exception while invoking ' + iterationPseudoCode, e);
+                            atfHelper.setFailed('Unexpected exception while invoking ' + psb.statement(), e);
                             return false;
                         }
                     }
                     else {
-                        iterationPseudoCode = pseudoCode + ";\niterator.next(" + JSON.stringify(arg) + "); // iteration: 0";
-                        stepResult.setOutputMessage("Executing " + iterationPseudoCode);
+                        psb = assignmentPsb.appendStatement('iterator.next(' + JSON.stringify(arg) + ')').setComment('iteration: 0');
+                        stepResult.setOutputMessage("Executing " + psb.toString());
                         try {
                             iterationResult = iterator.next(arg);
                         }
                         catch (e) {
-                            atfHelper.setFailed('Unexpected exception while invoking ' + iterationPseudoCode, e);
+                            atfHelper.setFailed('Unexpected exception while invoking ' + psb.statement(), e);
                             return false;
                         }
                     }
-                    stepResult.setOutputMessage("Executed " + iterationPseudoCode);
+                    stepResult.setOutputMessage("Executed " + psb.toString());
                     assertEqual({
                         name: 'typeof iterationResult',
                         shouldbe: 'object',
@@ -3212,23 +3223,23 @@ var site17Util_LimitIteratorTest;
                     assertEqual({
                         name: 'iterationResult.done',
                         shouldbe: false,
-                        value: iterationResult.done !== true
+                        value: iterationResult.done === true
                     });
                     assertEqual({
                         name: 'iterationResult.value',
                         shouldbe: values[0],
                         value: iterationResult.value
                     });
-                    iterationPseudoCode = pseudoCode + ";\niterator.throw(); // iteration: 1";
-                    stepResult.setOutputMessage("Executing " + iterationPseudoCode);
+                    psb = assignmentPsb.appendStatement('iterator.throw()');
+                    stepResult.setOutputMessage("Executing " + psb.toString());
                     try {
                         iterationResult = iterator["throw"]();
                     }
                     catch (e) {
-                        atfHelper.setFailed('Unexpected exception while invoking ' + iterationPseudoCode, e);
+                        atfHelper.setFailed('Unexpected exception while invoking ' + psb.statement(), e);
                         return false;
                     }
-                    stepResult.setOutputMessage("Executed " + iterationPseudoCode);
+                    stepResult.setOutputMessage("Executed " + psb.toString());
                     assertEqual({
                         name: 'typeof iterationResult',
                         shouldbe: 'object',
@@ -3244,16 +3255,16 @@ var site17Util_LimitIteratorTest;
                         shouldbe: "Error Code " + testDataItem.onThrow,
                         value: iterationResult.value
                     });
-                    iterationPseudoCode = pseudoCode + ";\niterator.next(); // iteration: 1";
-                    stepResult.setOutputMessage("Executing " + iterationPseudoCode);
+                    psb = assignmentPsb.appendStatement('iterator.next()');
+                    stepResult.setOutputMessage("Executing " + psb.toString());
                     try {
                         iterationResult = iterator.next();
                     }
                     catch (e) {
-                        atfHelper.setFailed('Unexpected exception while invoking ' + iterationPseudoCode, e);
+                        atfHelper.setFailed('Unexpected exception while invoking ' + psb.statement(), e);
                         return false;
                     }
-                    stepResult.setOutputMessage("Executed " + iterationPseudoCode);
+                    stepResult.setOutputMessage("Executed " + psb.toString());
                     assertEqual({
                         name: 'typeof iterationResult',
                         shouldbe: 'object',
@@ -3269,38 +3280,38 @@ var site17Util_LimitIteratorTest;
                         shouldbe: "Error Code " + testDataItem.onThrow,
                         value: iterationResult.value
                     });
-                    stepResult.setOutputMessage("Executing " + pseudoCode);
+                    stepResult.setOutputMessage("Executing " + methodPseudoCode);
                     try {
-                        iterator = x_g_inte_site_17.Site17Util.limitIterator(source, count);
+                        iterator = x_g_inte_site_17.Site17Util.limitIterator(createSource(), count);
                     }
                     catch (e) {
-                        atfHelper.setFailed('Unexpected exception while invoking ' + pseudoCode, e);
+                        atfHelper.setFailed('Unexpected exception while invoking ' + methodPseudoCode, e);
                         return false;
                     }
-                    stepResult.setOutputMessage("Executed " + pseudoCode);
+                    stepResult.setOutputMessage("Executed " + methodPseudoCode);
                     if (typeof arg === 'undefined') {
-                        iterationPseudoCode = pseudoCode + ";\niterator.next(); // iteration: 0";
-                        stepResult.setOutputMessage("Executing " + iterationPseudoCode);
+                        psb = assignmentPsb.appendStatement('iterator.next()').setComment('iteration: 0');
+                        stepResult.setOutputMessage("Executing " + psb.toString());
                         try {
                             iterationResult = iterator.next();
                         }
                         catch (e) {
-                            atfHelper.setFailed('Unexpected exception while invoking ' + iterationPseudoCode, e);
+                            atfHelper.setFailed('Unexpected exception while invoking ' + psb.statement(), e);
                             return false;
                         }
                     }
                     else {
-                        iterationPseudoCode = pseudoCode + ";\niterator.next(" + JSON.stringify(arg) + "); // iteration: 0";
-                        stepResult.setOutputMessage("Executing " + iterationPseudoCode);
+                        psb = assignmentPsb.appendStatement('iterator.next(' + JSON.stringify(arg) + ')').setComment('iteration: 0');
+                        stepResult.setOutputMessage("Executing " + psb.toString());
                         try {
                             iterationResult = iterator.next(arg);
                         }
                         catch (e) {
-                            atfHelper.setFailed('Unexpected exception while invoking ' + iterationPseudoCode, e);
+                            atfHelper.setFailed('Unexpected exception while invoking ' + psb.statement(), e);
                             return false;
                         }
                     }
-                    stepResult.setOutputMessage("Executed " + iterationPseudoCode);
+                    stepResult.setOutputMessage("Executed " + psb.toString());
                     assertEqual({
                         name: 'typeof iterationResult',
                         shouldbe: 'object',
@@ -3309,23 +3320,23 @@ var site17Util_LimitIteratorTest;
                     assertEqual({
                         name: 'iterationResult.done',
                         shouldbe: false,
-                        value: iterationResult.done !== true
+                        value: iterationResult.done === true
                     });
                     assertEqual({
                         name: 'iterationResult.value',
                         shouldbe: values[0],
                         value: iterationResult.value
                     });
-                    iterationPseudoCode = pseudoCode + ";\niterator.throw(\"Abort!\"); // iteration: 1";
-                    stepResult.setOutputMessage("Executing " + iterationPseudoCode);
+                    psb = assignmentPsb.appendStatement('iterator.throw("Abort!")');
+                    stepResult.setOutputMessage("Executing " + psb.toString());
                     try {
                         iterationResult = iterator["throw"]("Abort!");
                     }
                     catch (e) {
-                        atfHelper.setFailed('Unexpected exception while invoking ' + iterationPseudoCode, e);
+                        atfHelper.setFailed('Unexpected exception while invoking ' + psb.statement(), e);
                         return false;
                     }
-                    stepResult.setOutputMessage("Executed " + iterationPseudoCode);
+                    stepResult.setOutputMessage("Executed " + psb.toString());
                     assertEqual({
                         name: 'typeof iterationResult',
                         shouldbe: 'object',
@@ -3341,16 +3352,16 @@ var site17Util_LimitIteratorTest;
                         shouldbe: 'Abort! (Code ' + testDataItem.onThrow + ')',
                         value: iterationResult.value
                     });
-                    iterationPseudoCode = pseudoCode + ";\niterator.next(); // iteration: 1";
-                    stepResult.setOutputMessage("Executing " + iterationPseudoCode);
+                    psb = assignmentPsb.appendStatement('iterator.next()');
+                    stepResult.setOutputMessage("Executing " + psb.toString());
                     try {
                         iterationResult = iterator.next();
                     }
                     catch (e) {
-                        atfHelper.setFailed('Unexpected exception while invoking ' + iterationPseudoCode, e);
+                        atfHelper.setFailed('Unexpected exception while invoking ' + psb.statement(), e);
                         return false;
                     }
-                    stepResult.setOutputMessage("Executed " + iterationPseudoCode);
+                    stepResult.setOutputMessage("Executed " + psb.toString());
                     assertEqual({
                         name: 'typeof iterationResult',
                         shouldbe: 'object',
@@ -3469,6 +3480,215 @@ var site17Util_RecordTypesTest;
 (function (site17Util_RecordTypesTest) {
     (function (outputs, steps, stepResult, assertEqual) {
         var atfHelper = new x_g_inte_site_17.AtfHelper(steps, stepResult);
+        var testData = [
+            { tableName: 'sys_user_group', step_id: '1d3020991b4a1510ec0320efe54bcbe5' },
+            { tableName: 'core_company', step_id: '45616c991b4a1510ec0320efe54bcb55' },
+            { tableName: 'cmn_location', step_id: '69e168d91b4a1510ec0320efe54bcb2a' },
+            { tableName: 'cmn_building', step_id: 'ff82a81d1b4a1510ec0320efe54bcbaf' },
+            { tableName: 'business_unit', step_id: '9103e05d1b4a1510ec0320efe54bcb83' },
+            { tableName: 'business_unit', step_id: '90e3a85d1b4a1510ec0320efe54bcbdc' },
+            { tableName: 'sys_user', step_id: '4f34a85d1b4a1510ec0320efe54bcbfc' },
+            { tableName: 'cmn_department', step_id: '1c16e8dd1b4a1510ec0320efe54bcba5' },
+            { tableName: 'sys_user', step_id: '9f56e8dd1b4a1510ec0320efe54bcb1c' } // Step 19, VIP, Has Department
+        ];
+        for (var _i = 0, testData_1 = testData; _i < testData_1.length; _i++) {
+            var rawTestData = testData_1[_i];
+            rawTestData.gr = new GlideRecord(rawTestData.tableName);
+            stepResult.setOutputMessage('Executing: ("" + steps(' + JSON.stringify(rawTestData.step_id) + ').record_id).trim()');
+            try {
+                rawTestData.sys_id = ('' + steps(rawTestData.step_id).record_id).trim();
+            }
+            catch (e) {
+                atfHelper.setFailed('Unexpected exception while executing ("" + steps(' + JSON.stringify(rawTestData.step_id) + ').record_id).trim()', e);
+                return false;
+            }
+            assertEqual({
+                name: JSON.stringify(rawTestData.sys_id) + '.length == 32 (steps(' + JSON.stringify(rawTestData.step_id) + ').record_id))',
+                shouldbe: 32,
+                value: rawTestData.sys_id.length
+            });
+            stepResult.setOutputMessage('Executing: gr = new GlideRecord(' + JSON.stringify(rawTestData.tableName) + ');');
+            var success;
+            var msg;
+            try {
+                msg = ' from ' + rawTestData.gr.getTableName() + ' with sys_id ' + rawTestData.sys_id + ' (step(' + rawTestData.step_id + ').record_id)';
+                rawTestData.gr = new GlideRecord(rawTestData.tableName);
+                stepResult.setOutputMessage('Executing: gr.addQuery("sys_id", ' + JSON.stringify(rawTestData.step_id) + ');');
+                rawTestData.gr.addQuery('sys_id', rawTestData.sys_id);
+                stepResult.setOutputMessage('Executing: gr.query();');
+                rawTestData.gr.query();
+                stepResult.setOutputMessage('Executing: gr.next();');
+                success = rawTestData.gr.next();
+            }
+            catch (e) {
+                atfHelper.setFailed('Unexpected exception while querying GlideRecord', e);
+                return false;
+            }
+            stepResult.setOutputMessage('Executed: gr = new GlideRecord(' + JSON.stringify(rawTestData.tableName) + ');');
+            assertEqual({
+                name: 'gr.next()',
+                shouldbe: true,
+                value: success
+            });
+        }
+        function testTargetItem(target, tableName, comment) {
+            var basePseudoCode = '(' + tableName + ((target instanceof GlideRecord) ? 'GlideRecord' : 'GlideElement') + ') // ' + comment;
+            var pseudoCode = 'Site17Util.isGroup' + basePseudoCode;
+            var actual;
+            try {
+                actual = x_g_inte_site_17.Site17Util.isGroup(target);
+            }
+            catch (e) {
+                atfHelper.setFailed('Unexpected error executing ' + pseudoCode, e);
+                return false;
+            }
+            assertEqual({
+                name: pseudoCode,
+                shouldbe: tableName === 'sys_user_group',
+                value: actual
+            });
+            pseudoCode = 'Site17Util.isCompany' + basePseudoCode;
+            try {
+                actual = x_g_inte_site_17.Site17Util.isCompany(target);
+            }
+            catch (e) {
+                atfHelper.setFailed('Unexpected error executing ' + pseudoCode, e);
+                return false;
+            }
+            assertEqual({
+                name: pseudoCode,
+                shouldbe: tableName === 'core_company',
+                value: actual
+            });
+            pseudoCode = 'Site17Util.isLocation' + basePseudoCode;
+            try {
+                actual = x_g_inte_site_17.Site17Util.isLocation(target);
+            }
+            catch (e) {
+                atfHelper.setFailed('Unexpected error executing ' + pseudoCode, e);
+                return false;
+            }
+            assertEqual({
+                name: pseudoCode,
+                shouldbe: tableName === 'cmn_location',
+                value: actual
+            });
+            pseudoCode = 'Site17Util.isBuilding' + basePseudoCode;
+            try {
+                actual = x_g_inte_site_17.Site17Util.isBuilding(target);
+            }
+            catch (e) {
+                atfHelper.setFailed('Unexpected error executing ' + pseudoCode, e);
+                return false;
+            }
+            assertEqual({
+                name: pseudoCode,
+                shouldbe: tableName === 'cmn_building',
+                value: actual
+            });
+            pseudoCode = 'Site17Util.isBusinessUnit' + basePseudoCode;
+            try {
+                actual = x_g_inte_site_17.Site17Util.isBusinessUnit(target);
+            }
+            catch (e) {
+                atfHelper.setFailed('Unexpected error executing ' + pseudoCode, e);
+                return false;
+            }
+            assertEqual({
+                name: pseudoCode,
+                shouldbe: tableName === 'business_unit',
+                value: actual
+            });
+            pseudoCode = 'Site17Util.isDepartment' + basePseudoCode;
+            try {
+                actual = x_g_inte_site_17.Site17Util.isDepartment(target);
+            }
+            catch (e) {
+                atfHelper.setFailed('Unexpected error executing ' + pseudoCode, e);
+                return false;
+            }
+            assertEqual({
+                name: pseudoCode,
+                shouldbe: tableName === 'cmn_department',
+                value: actual
+            });
+            pseudoCode = 'Site17Util.isUser' + basePseudoCode;
+            try {
+                actual = x_g_inte_site_17.Site17Util.isUser(target);
+            }
+            catch (e) {
+                atfHelper.setFailed('Unexpected error executing ' + pseudoCode, e);
+                return false;
+            }
+            assertEqual({
+                name: pseudoCode,
+                shouldbe: tableName === 'sys_user',
+                value: actual
+            });
+            return true;
+        }
+        for (var _a = 0, testData_2 = testData; _a < testData_2.length; _a++) {
+            var data = testData_2[_a];
+            if (!testTargetItem(data.gr, data.tableName, 'step_id: ' + data.step_id))
+                switch (data.tableName) {
+                    case 'business_unit':
+                        if (!(gs.nil(data.gr.company) || testTargetItem(data.gr.company, 'core_company', 'business_unit.company; step_id: ' + data.step_id)))
+                            return false;
+                        if (!(gs.nil(data.gr.parent) || testTargetItem(data.gr.parent, 'business_unit', 'business_unit.parent; step_id: ' + data.step_id)))
+                            return false;
+                        if (!(gs.nil(data.gr.bu_head) || testTargetItem(data.gr.bu_head, 'sys_user', 'cmn_location.bu_head; step_id: ' + data.step_id)))
+                            return false;
+                        break;
+                    case 'cmn_building':
+                        if (!(gs.nil(data.gr.location) || testTargetItem(data.gr.location, 'cmn_location', 'cmn_building.location; step_id: ' + data.step_id)))
+                            return false;
+                        if (!(gs.nil(data.gr.contact) || testTargetItem(data.gr.contact, 'sys_user', 'cmn_building.contact; step_id: ' + data.step_id)))
+                            return false;
+                        break;
+                    case 'cmn_department':
+                        if (!(gs.nil(data.gr.business_unit) || testTargetItem(data.gr.business_unit, 'business_unit', 'cmn_department.business_unit; step_id: ' + data.step_id)))
+                            return false;
+                        if (!(gs.nil(data.gr.company) || testTargetItem(data.gr.company, 'core_company', 'cmn_department.company; step_id: ' + data.step_id)))
+                            return false;
+                        if (!(gs.nil(data.gr.dept_head) || testTargetItem(data.gr.company, 'sys_user', 'cmn_department.dept_head; step_id: ' + data.step_id)))
+                            return false;
+                        if (!(gs.nil(data.gr.parent) || testTargetItem(data.gr.parent, 'cmn_department', 'cmn_department.parent; step_id: ' + data.step_id)))
+                            return false;
+                        break;
+                    case 'cmn_location':
+                        if (!(gs.nil(data.gr.company) || testTargetItem(data.gr.company, 'core_company', 'cmn_location.company; step_id: ' + data.step_id)))
+                            return false;
+                        if (!(gs.nil(data.gr.contact) || testTargetItem(data.gr.contact, 'sys_user', 'cmn_location.contact; step_id: ' + data.step_id)))
+                            return false;
+                        if (!(gs.nil(data.gr.parent) || testTargetItem(data.gr.parent, 'cmn_location', 'cmn_location.parent; step_id: ' + data.step_id)))
+                            return false;
+                        break;
+                    case 'core_company':
+                        if (!(gs.nil(data.gr.contact) || testTargetItem(data.gr.contact, 'sys_user', 'core_company.contact; step_id: ' + data.step_id)))
+                            return false;
+                        if (!(gs.nil(data.gr.parent) || testTargetItem(data.gr.parent, 'core_company', 'core_company.parent; step_id: ' + data.step_id)))
+                            return false;
+                        break;
+                    case 'sys_user':
+                        if (!(gs.nil(data.gr.building) || testTargetItem(data.gr.building, 'cmn_building', 'sys_user.building; step_id: ' + data.step_id)))
+                            return false;
+                        if (!(gs.nil(data.gr.company) || testTargetItem(data.gr.company, 'core_company', 'sys_user.company; step_id: ' + data.step_id)))
+                            return false;
+                        if (!(gs.nil(data.gr.department) || testTargetItem(data.gr.department, 'cmn_department', 'sys_user.department; step_id: ' + data.step_id)))
+                            return false;
+                        if (!(gs.nil(data.gr.location) || testTargetItem(data.gr.location, 'cmn_location', 'sys_user.location; step_id: ' + data.step_id)))
+                            return false;
+                        if (!(gs.nil(data.gr.manager) || testTargetItem(data.gr.manager, 'sys_user', 'sys_user.manager; step_id: ' + data.step_id)))
+                            return false;
+                        break;
+                    case 'sys_user_group':
+                        if (!(gs.nil(data.gr.manager) || testTargetItem(data.gr.manager, 'sys_user', 'sys_user_group.manager; step_id: ' + data.step_id)))
+                            return false;
+                        if (!(gs.nil(data.gr.parent) || testTargetItem(data.gr.parent, 'sys_user_group', 'sys_user_group.parent; step_id: ' + data.step_id)))
+                            return false;
+                        break;
+                }
+        }
         return true;
     })(outputs, steps, stepResult, assertEqual);
 })(site17Util_RecordTypesTest || (site17Util_RecordTypesTest = {}));
@@ -3476,6 +3696,7 @@ var site17Util_isVipTest;
 (function (site17Util_isVipTest) {
     (function (outputs, steps, stepResult, assertEqual) {
         var atfHelper = new x_g_inte_site_17.AtfHelper(steps, stepResult);
+        // TODO: Test x_g_inte_site_17.Site17Util.isVip
         return true;
     })(outputs, steps, stepResult, assertEqual);
 })(site17Util_isVipTest || (site17Util_isVipTest = {}));
@@ -3483,6 +3704,165 @@ var site17Util_RelatedRecordsTest;
 (function (site17Util_RelatedRecordsTest) {
     (function (outputs, steps, stepResult, assertEqual) {
         var atfHelper = new x_g_inte_site_17.AtfHelper(steps, stepResult);
+        var testData = [
+            { tableName: 'sys_user_group', step_id: '1d3020991b4a1510ec0320efe54bcbe5' },
+            { tableName: 'core_company', step_id: '45616c991b4a1510ec0320efe54bcb55' },
+            { tableName: 'cmn_location', step_id: '69e168d91b4a1510ec0320efe54bcb2a', companyStepId: '45616c991b4a1510ec0320efe54bcb55' },
+            { tableName: 'cmn_building', step_id: 'ff82a81d1b4a1510ec0320efe54bcbaf', locationStepId: '69e168d91b4a1510ec0320efe54bcb2a', companyStepId: '45616c991b4a1510ec0320efe54bcb55' },
+            { tableName: 'business_unit', step_id: '9103e05d1b4a1510ec0320efe54bcb83', companyStepId: '45616c991b4a1510ec0320efe54bcb55' },
+            { tableName: 'business_unit', step_id: '90e3a85d1b4a1510ec0320efe54bcbdc' },
+            { tableName: 'sys_user', step_id: '4f34a85d1b4a1510ec0320efe54bcbfc', locationStepId: '69e168d91b4a1510ec0320efe54bcb2a', companyStepId: '45616c991b4a1510ec0320efe54bcb55' },
+            { tableName: 'cmn_department', step_id: '1c16e8dd1b4a1510ec0320efe54bcba5' },
+            { tableName: 'sys_user', step_id: '9f56e8dd1b4a1510ec0320efe54bcb1c' } // Step 19, VIP, Has Department
+        ];
+        var map = {};
+        for (var _i = 0, testData_3 = testData; _i < testData_3.length; _i++) {
+            var rawTestData = testData_3[_i];
+            rawTestData.gr = new GlideRecord(rawTestData.tableName);
+            stepResult.setOutputMessage('Executing: ("" + steps(' + JSON.stringify(rawTestData.step_id) + ').record_id).trim()');
+            try {
+                rawTestData.sys_id = ('' + steps(rawTestData.step_id).record_id).trim();
+                if (rawTestData.sys_id.length != 16) {
+                    stepResult.setOutputMessage('Could not find sys_id from step(' + rawTestData.step_id + ').record_id');
+                    return false;
+                }
+            }
+            catch (e) {
+                atfHelper.setFailed('Unexpected exception while executing ("" + steps(' + JSON.stringify(rawTestData.step_id) + ').record_id).trim()', e);
+                return false;
+            }
+            stepResult.setOutputMessage('Executing: gnew GlideRecord(' + JSON.stringify(rawTestData.tableName) + ');');
+            try {
+                rawTestData.gr = new GlideRecord(rawTestData.tableName);
+                stepResult.setOutputMessage('Executing: gr.addQuery("sys_id", ' + JSON.stringify(rawTestData.step_id) + ');');
+                rawTestData.gr.addQuery('sys_id', rawTestData.sys_id);
+                stepResult.setOutputMessage('Executing: gr.query();');
+                rawTestData.gr.query();
+                stepResult.setOutputMessage('Executing: gr.next();');
+                var msg = ' from ' + rawTestData.gr.getTableName() + ' with sys_id ' + rawTestData.sys_id + ' (step(' + rawTestData.step_id + ').record_id)';
+                if (!rawTestData.gr.next()) {
+                    stepResult.setOutputMessage('Failed to find record' + msg);
+                    return false;
+                }
+            }
+            catch (e) {
+                atfHelper.setFailed('Unexpected exception while querying GlideRecord', e);
+                return false;
+            }
+            map[rawTestData.step_id] = rawTestData.gr;
+            for (var _a = 0, testData_4 = testData; _a < testData_4.length; _a++) {
+                var data = testData_4[_a];
+                var basePseudoCode = '(' + data.tableName + 'GlideRecord) // step_id: ' + data.step_id;
+                var pseudoCode = 'gr = Site17Util.getBusinessUnit' + basePseudoCode;
+                var gr;
+                stepResult.setOutputMessage("Executing: " + pseudoCode);
+                try {
+                    gr = x_g_inte_site_17.Site17Util.getBusinessUnit(data.gr);
+                }
+                catch (e) {
+                    atfHelper.setFailed('Unexpected error executing ' + pseudoCode, e);
+                    return false;
+                }
+                stepResult.setOutputMessage("Executed: " + pseudoCode);
+                var sys_id;
+                if (typeof data.businessUnitStepId === 'undefined')
+                    assertEqual({
+                        name: 'typeof gr',
+                        shouldbe: 'undefined',
+                        value: typeof gr
+                    });
+                else {
+                    assertEqual({
+                        name: 'gr instanceof GlideRecord',
+                        shouldbe: true,
+                        value: gr instanceof GlideRecord
+                    });
+                    assertEqual({
+                        name: 'gr.getTableName() == "business_unit"',
+                        shouldbe: true,
+                        value: gr.getTableName() == "business_unit"
+                    });
+                    sys_id = map[data.businessUnitStepId].getValue('sys_id');
+                    assertEqual({
+                        name: 'gr.getValue("sys_id") == ',
+                        shouldbe: true,
+                        value: gr.getValue('sys_id') == sys_id
+                    });
+                }
+                pseudoCode = 'gr = Site17Util.getCompany' + basePseudoCode;
+                stepResult.setOutputMessage("Executing: " + pseudoCode);
+                try {
+                    gr = x_g_inte_site_17.Site17Util.getCompany(data.gr);
+                }
+                catch (e) {
+                    atfHelper.setFailed('Unexpected error executing ' + pseudoCode, e);
+                    return false;
+                }
+                stepResult.setOutputMessage("Executed: " + pseudoCode);
+                if (typeof data.companyStepId === 'undefined')
+                    assertEqual({
+                        name: 'typeof gr',
+                        shouldbe: 'undefined',
+                        value: typeof gr
+                    });
+                else {
+                    assertEqual({
+                        name: 'gr instanceof GlideRecord',
+                        shouldbe: true,
+                        value: gr instanceof GlideRecord
+                    });
+                    assertEqual({
+                        name: 'gr.getTableName() == "core_company"',
+                        shouldbe: true,
+                        value: gr.getTableName() == "core_company"
+                    });
+                    sys_id = map[data.companyStepId].getValue('sys_id');
+                    assertEqual({
+                        name: 'gr.getValue("sys_id") == ',
+                        shouldbe: true,
+                        value: gr.getValue('sys_id') == sys_id
+                    });
+                }
+                pseudoCode = 'gr = Site17Util.getLocation' + basePseudoCode;
+                stepResult.setOutputMessage("Executing: " + pseudoCode);
+                try {
+                    gr = x_g_inte_site_17.Site17Util.getLocation(data.gr);
+                }
+                catch (e) {
+                    atfHelper.setFailed('Unexpected error executing ' + pseudoCode, e);
+                    return false;
+                }
+                stepResult.setOutputMessage("Executed: " + pseudoCode);
+                if (typeof data.locationStepId === 'undefined')
+                    assertEqual({
+                        name: 'typeof gr',
+                        shouldbe: 'undefined',
+                        value: typeof gr
+                    });
+                else {
+                    assertEqual({
+                        name: 'gr instanceof GlideRecord',
+                        shouldbe: true,
+                        value: gr instanceof GlideRecord
+                    });
+                    assertEqual({
+                        name: 'gr.getTableName() == "cmn_location"',
+                        shouldbe: true,
+                        value: gr.getTableName() == "cmn_location"
+                    });
+                    sys_id = map[data.locationStepId].getValue('sys_id');
+                    assertEqual({
+                        name: 'gr.getValue("sys_id") == ',
+                        shouldbe: true,
+                        value: gr.getValue('sys_id') == sys_id
+                    });
+                }
+            }
+        }
+        // TODO: Test x_g_inte_site_17.Site17Util.getBusinessUnit
+        // TODO: Test x_g_inte_site_17.Site17Util.getCompany
+        // TODO: Test x_g_inte_site_17.Site17Util.getLocation
+        // TODO: Test x_g_inte_site_17.Site17Util.getCaller
         return true;
     })(outputs, steps, stepResult, assertEqual);
 })(site17Util_RelatedRecordsTest || (site17Util_RelatedRecordsTest = {}));

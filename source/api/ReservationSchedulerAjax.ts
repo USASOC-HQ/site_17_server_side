@@ -9,7 +9,7 @@
          * availability.
          * The 'durationMinutes' attribute indicates the number of contiguous minutes that are open for reservation. This attrbute may be missing
          * if no 'sys_parm_to' parameter was provided all future times are open for reservation.
-         * 
+         *
          * Parameters are:
          * sys_parm_reservation_type = The sys_id of the reservation type;
          * sys_parm_allow_inactive = Optional boolean indicating whether to allow inactive reservation types;
@@ -17,7 +17,7 @@
          * sys_parm_to = The optional end date and time to search within;
          * sys_parm_duration = The optional minimum reservation duration in minutes;
          * sys_parm_include = The optional list of comma-separated result inclusions.
-         * 
+         *
          * Values for result inclusions are:
          * all = Includes all additional properties;
          * group = Includes assignment_group and approval_group properties;
@@ -39,7 +39,7 @@
          * Child elements named 'availability' contain the individual date/time ranges open for reservation.
          * Each child element has a 'startDateTime' attribute that contains the start date and time, and a 'durationMinutes' attribute that
          * indicates the number of contiguous minutes that are open for reservation.
-         * 
+         *
          * Parameters are:
          * sys_parm_reservation_type =The sys_id of the reservation type;
          * sys_parm_allow_inactive = Optional boolean indicating whether to allow inactive reservation types;
@@ -47,7 +47,7 @@
          * sys_parm_to = The end date and time to search within;
          * sys_parm_duration = The optional minimum reservation duration in minutes;
          * sys_parm_include = The optional list of comma-separated result inclusions.
-         * 
+         *
          * Values for result inclusions are:
          * all = Includes all additional properties;
          * group = Includes assignment_group and approval_group properties;
@@ -84,7 +84,7 @@
          * availability.
          * The 'durationMinutes' attribute indicates the number of contiguous minutes that are open for reservation. This attrbute may be missing
          * if no 'sys_parm_to' parameter was provided all future times are open for reservation.
-         * 
+         *
          * Parameters are:
          * sys_parm_reservation_type = The sys_id of the reservation type;
          * sys_parm_allow_inactive = Optional boolean indicating whether to allow inactive reservation types;
@@ -92,7 +92,7 @@
          * sys_parm_to = The optional end date and time to search within;
          * sys_parm_duration = The optional minimum reservation duration in minutes;
          * sys_parm_include = The optional list of comma-separated result inclusions.
-         * 
+         *
          * Values for result inclusions are:
          * all = Includes all additional properties;
          * group = Includes assignment_group and approval_group properties;
@@ -117,7 +117,7 @@
          * Child elements named 'availability' contain the individual date/time ranges open for reservation.
          * Each child element has a 'startDateTime' attribute that contains the start date and time, and a 'durationMinutes' attribute that
          * indicates the number of contiguous minutes that are open for reservation.
-         * 
+         *
          * Parameters are:
          * sys_parm_reservation_type =The sys_id of the reservation type;
          * sys_parm_allow_inactive = Optional boolean indicating whether to allow inactive reservation types;
@@ -125,7 +125,7 @@
          * sys_parm_to = The end date and time to search within;
          * sys_parm_duration = The optional minimum reservation duration in minutes;
          * sys_parm_include = The optional list of comma-separated result inclusions.
-         * 
+         *
          * Values for result inclusions are:
          * all = Includes all additional properties;
          * group = Includes assignment_group and approval_group properties;
@@ -156,21 +156,21 @@
          * @type {string}
          */
         const XMLNAME_availabilities = "availabilities";
-        
+
          /**
           * The name of the attribute on the {@link XMLNAME_availabilities} response element from {@link getAvailabilitiesInRange} indicating the number of {@link XMLNAME_availability} elements contained within.
           * @constant
           * @type {string}
           */
         const XMLNAME_length = "length";
-         
+
          /**
           * The name of the attribute on the {@link XMLNAME_availability} response element from {@link getNextAvailableTimeSlot} containing a boolean value indicating whether an availability was found in the specified date/time range.
           * @constant
           * @type {string}
           */
         const XMLNAME_success = "success";
-         
+
          /**
           * The name of a response element representing an availability date/time range.
           * This will either be a top-level response element from {@link getNextAvailableTimeSlot} or a child element of the {@link XMLNAME_availabilities} response element from {@link getAvailabilitiesInRange}.
@@ -178,28 +178,28 @@
           * @type {string}
           */
         const XMLNAME_availability = "availability";
-         
+
          /**
           * The name of the attribute on an {@link XMLNAME_availability} element indicating the start date and time of the current availability range.
           * @constant
           * @type {string}
           */
         const XMLNAME_startDateTime = "startDateTime";
-         
+
          /**
           * The name of the attribute on an {@link XMLNAME_availability} element indicating the duration of the current availability range.
           * @constant
           * @type {string}
           */
         const XMLNAME_durationMinutes = "durationMinutes";
- 
+
         /**
          * Value of the {@link PARAM_NAME.include} Glide Ajax parameter indicating that all properties represented by {@link INCLUDE_NAME} are to be included in the response.
          * @constant
          * @type {string}
          */
         const INCLUDE_NAME_all = "all";
-        
+
         /**
          * Element value in the {@link PARAM_NAME.include} Glide Ajax parameter indicating that properties represented by {@link INCLUDE_NAME.approval_group} and {@link INCLUDE_NAME.assignment_group}
          * are to be included in the response.
@@ -207,7 +207,7 @@
          * @type {string}
          */
         const INCLUDE_NAME_groups = "groups";
-        
+
         /**
          * Element value in the {@link PARAM_NAME.include} Glide Ajax parameter indicating that {@link INCLUDE_NAME.minimum_duration}, {@link INCLUDE_NAME.maximum_duration},
          * {@link INCLUDE_NAME.duration_increment} and {@link INCLUDE_NAME.start_time_interval} are to be included in the response.
@@ -228,39 +228,39 @@
              * The value for this response will be contained an attribute of the same name in the {@link XMLNAME_scheduler_type} element of the Glide Ajax response if the approval group was not nil.
              */
             approval_group = "approval_group",
-            
+
             /**
              * Includes the {@link GlideRecord#sys_id} of the {@link IReservationScheduler#assignment_group} in the response.
              * The value for this response will be contained an attribute of the same name in the {@link XMLNAME_scheduler_type} element of the Glide Ajax response.
              */
             assignment_group = "assignment_group",
-            
+
             /**
              * Includes the duration string value ({@link GlideDuration#getDurationValue()}) of {@link IReservationScheduler#duration_increment} in the response.
              * The value for this response will be contained an attribute of the same name in the {@link XMLNAME_scheduler_type} element of the Glide Ajax response.
              */
             duration_increment = "duration_increment",
-            
+
             /**
              * Includes the duration string value ({@link GlideDuration#getDurationValue()}) of {@link IReservationScheduler#minimum_duration} in the response.
              * The value for this response will be contained an attribute of the same name in the {@link XMLNAME_scheduler_type} element of the Glide Ajax response.
              */
             minimum_duration = "minimum_duration",
-            
+
             /**
              * Includes the duration string value ({@link GlideDuration#getDurationValue()}) of {@link IReservationScheduler#maximum_duration} in the response.
-             * 
+             *
              * The value for this response will be contained an attribute of the same name in the {@link XMLNAME_scheduler_type} element of the Glide Ajax response.
              */
             maximum_duration = "maximum_duration",
-            
+
             /**
              * Includes the duration string value ({@link GlideDuration#getDurationValue()}) of {@link IReservationScheduler#start_time_interval} in the response.
              * The value for this response will be contained an attribute of the same name in the {@link XMLNAME_scheduler_type} element of the Glide Ajax response.
              */
             start_time_interval = "start_time_interval"
         }
-    
+
         /**
          * Parameter names for GlideAjax calls.
          * @readonly
@@ -269,19 +269,19 @@
         enum PARAM_NAME {
             /** Required parameter name for the SysID of a {@link reservation_typeGlideRecord}. */
             type = 'sys_parm_reservation_type',
-            
+
             /** Optional parameter name for a boolean value indicating whether the referenced {@link reservation_typeGlideRecord} can be inactive. */
             allow_inactive = 'sys_parm_allow_inactive',
-            
+
             /** Required parameter name for the starting date/time (inclusive). */
             from = 'sys_parm_from',
-            
+
             /** Required parameter name for the ending date/time (exclusive). */
             to = 'sys_parm_to',
-            
+
             /** Optional parameter name for the reservation duration. */
             duration = 'sys_parm_duration',
-            
+
             /** Optional parameter name for a comma-separated list of additional properties to include in the response (see {@link INCLUDE_NAME}). */
             include = 'sys_parm_include'
         }
@@ -370,7 +370,7 @@
             var value: $$rhino.Nilable<$$rhino.String> = this.getParameter(PARAM_NAME.duration);
             var duration: GlideDuration | undefined;
             if (!gs.nil(value)) duration = new GlideDuration(parseInt('' + value) * 60000);
-            
+
             var availabilities: Iterator<ITimeSpan>;
             try {
                 availabilities = scheduler.getAvailabilitiesInRange(fromDateTime, toDateTime, duration);
@@ -391,7 +391,7 @@
             availabilitiesElement.setAttribute(XMLNAME_length, '' + count);
             return addIncludeParams.call(this, scheduler);
         }
-        
+
         function getNextAvailableTimeSlot(this: IAbstractAjaxProcessor, scheduler: ReservationScheduler): string[] {
             var fromDateTime: GlideDateTime = new GlideDateTime(<string>this.getParameter(PARAM_NAME.from));
             var toDateTime: GlideDateTime = new GlideDateTime(<string>this.getParameter(PARAM_NAME.to));
@@ -428,7 +428,7 @@
          * availability.
          * The 'durationMinutes' attribute indicates the number of contiguous minutes that are open for reservation. This attrbute may be missing
          * if no 'sys_parm_to' parameter was provided all future times are open for reservation.
-         * 
+         *
          * Parameters are:
          * sys_parm_reservation_type = The sys_id of the reservation type;
          * sys_parm_allow_inactive = Optional boolean indicating whether to allow inactive reservation types;
@@ -436,7 +436,7 @@
          * sys_parm_to = The required end date and time to search within;
          * sys_parm_duration = The optional minimum reservation duration in minutes;
          * sys_parm_include = The optional list of comma-separated result inclusions.
-         * 
+         *
          * Values for result inclusions are:
          * all = Includes all additional properties;
          * group = Includes assignment_group and approval_group properties;
@@ -465,7 +465,7 @@
          * Child elements named 'availability' contain the individual date/time ranges open for reservation.
          * Each child element has a 'startDateTime' attribute that contains the start date and time, and a 'durationMinutes' attribute that
          * indicates the number of contiguous minutes that are open for reservation.
-         * 
+         *
          * Parameters are:
          * sys_parm_reservation_type =The sys_id of the reservation type;
          * sys_parm_allow_inactive = Optional boolean indicating whether to allow inactive reservation types;
@@ -473,7 +473,7 @@
          * sys_parm_to = The required end date and time to search within;
          * sys_parm_duration = The optional minimum reservation duration in minutes;
          * sys_parm_include = The optional list of comma-separated result inclusions.
-         * 
+         *
          * Values for result inclusions are:
          * all = Includes all additional properties;
          * group = Includes assignment_group and approval_group properties;
@@ -495,7 +495,7 @@
         constructor.prototype = Object.extendsObject<IAbstractAjaxProcessor, IReservationSchedulerAjaxPrototype>(global.AbstractAjaxProcessor, {
             initialize(this: IAbstractAjaxProcessor & IReservationSchedulerAjaxPrototype, request?: GlideServletRequest, responseXML?: XMLDocument2, gc?: GlideController) {
                 global.AbstractAjaxProcessor.prototype.initialize.call(this, request, responseXML, gc);
-                
+
                 var value: $$rhino.Nilable<$$rhino.String> = this.getParameter(PARAM_NAME.allow_inactive);
                 var allowInactive: boolean | undefined;
                 if (!gs.nil(value)) {
@@ -527,7 +527,7 @@
                     catch(e) {
                         this.setError(e);
                     }
-                } 
+                }
             },
 
             /**
@@ -538,7 +538,7 @@
              * availability.
              * The 'durationMinutes' attribute indicates the number of contiguous minutes that are open for reservation. This attrbute may be missing
              * if no 'sys_parm_to' parameter was provided all future times are open for reservation.
-             * 
+             *
              * Parameters are:
              * sys_parm_reservation_type = The sys_id of the reservation type;
              * sys_parm_allow_inactive = Optional boolean indicating whether to allow inactive reservation types;
@@ -546,7 +546,7 @@
              * sys_parm_to = The optional end date and time to search within;
              * sys_parm_duration = The optional minimum reservation duration in minutes;
              * sys_parm_include = The optional list of comma-separated result inclusions.
-             * 
+             *
              * Values for result inclusions are:
              * all = Includes all additional properties;
              * group = Includes assignment_group and approval_group properties;
@@ -562,7 +562,7 @@
                 if (typeof this._scheduler !== 'undefined')
                     getNextAvailableTimeSlot.call(this, this._scheduler);
             },
-        
+
             /**
              * Gets the reservation availabilities within a given date and time range.
              * @description
@@ -570,7 +570,7 @@
              * Child elements named 'availability' contain the individual date/time ranges open for reservation.
              * Each child element has a 'startDateTime' attribute that contains the start date and time, and a 'durationMinutes' attribute that
              * indicates the number of contiguous minutes that are open for reservation.
-             * 
+             *
              * Parameters are:
              * sys_parm_reservation_type =The sys_id of the reservation type;
              * sys_parm_allow_inactive = Optional boolean indicating whether to allow inactive reservation types;
@@ -578,7 +578,7 @@
              * sys_parm_to = The end date and time to search within;
              * sys_parm_duration = The optional minimum reservation duration in minutes;
              * sys_parm_include = The optional list of comma-separated result inclusions.
-             * 
+             *
              * Values for result inclusions are:
              * all = Includes all additional properties;
              * group = Includes assignment_group and approval_group properties;

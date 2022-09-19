@@ -2,7 +2,7 @@
 
 namespace x_g_inte_site_17 {
     export interface ILocationApproval extends $$snClass.ICustomClassBase<ILocationApproval, "LocationApproval"> {
-    
+
         /**
          * Gets the target user of the target record (ie. caller, requested_for).
          *
@@ -16,7 +16,7 @@ namespace x_g_inte_site_17 {
          * @returns {boolean} true if {@link ILocationApproval#getCaller} returns user designated as VIP; otherwise, false.
          */
         isVip(): boolean;
-        
+
         /**
          * Looks up the default approval group.
          *
@@ -48,7 +48,7 @@ namespace x_g_inte_site_17 {
          * @returns {ILocationApproval} A new {@link LocationApproval} instance.
          */
         new(source: GlideRecord | GlideElementReference): LocationApproval;
-        
+
         /**
          * Creates a new {@link LocationApproval} instance.
          * 
@@ -58,7 +58,7 @@ namespace x_g_inte_site_17 {
          * @returns {ILocationApproval} A new {@link LocationApproval} instance.
          */
         (source: GlideRecord | GlideElementReference): LocationApproval;
-        
+
         /**
          * Looks up the default approval group.
          *

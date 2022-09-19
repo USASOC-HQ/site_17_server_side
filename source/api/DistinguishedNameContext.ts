@@ -10,7 +10,7 @@ namespace x_g_inte_site_17 {
          * @private
          */
         _isGroup: boolean;
-        
+
         /**
          * The source {@link GlideRecord}.
          *
@@ -19,7 +19,7 @@ namespace x_g_inte_site_17 {
          * @private
          */
         _sourceRecord?: GlideRecord;
-        
+
         /**
          * The target {@link GlideRecord} or {@link GlideElementReference} for a sys_user or sys_user_group.
          *
@@ -28,7 +28,7 @@ namespace x_g_inte_site_17 {
          * @private
          */
         _targetobject?: GlideRecord | GlideElementReference;
-            
+
         /**
          * Gets the GlideRecord that is the source of this context.
          *
@@ -82,10 +82,9 @@ namespace x_g_inte_site_17 {
          * @returns {IDistinguishedNameContextInfo} A new {@link DistinguishedNameContext} instance.
          */
         new(source: string | GlideRecord | GlideElementReference): IDistinguishedNameContextInfo;
-        
+
         /**
          * Creates a new {@link DistinguishedNameContext} instance.
-         * 
          * @constructor
          * @param {(string | GlideRecord | GlideElementReference)} source - The source of the Distinguished Name context
          * @memberof DistinguishedNameContextConstructor
@@ -143,11 +142,11 @@ namespace x_g_inte_site_17 {
             getTargetObject: function(): GlideRecord | GlideElementReference | undefined { return this._targetobject; },
 
             isGroup: function(): boolean { return this._isGroup; },
-            
+
             isSite17User: function(): boolean {
                 return !this._isGroup && Site17Util.isUserDN('' + (this._isGroup ? <sys_userFields><any>this._sourceRecord : <sys_userFields><any>this._targetobject).source);
             },
-            
+
             isSite17Group: function(): boolean {
                 return this._isGroup && Site17Util.isGroupDN('' + (this._isGroup ? <sys_userFields><any>this._sourceRecord : <sys_userFields><any>this._targetobject).source);
             },

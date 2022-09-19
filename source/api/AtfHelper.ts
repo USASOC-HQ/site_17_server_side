@@ -1,4 +1,26 @@
 namespace x_g_inte_site_17 {
+    export interface IPseudoCodeBuilder extends $$snClass.ICustomClassBase<IPseudoCodeBuilder, "AtfHelper.PseudoCodeBuilder"> {
+        getComment(): string | undefined;
+        setComment(comment?: string | null): PseudoCodeBuilder;
+        statement(): string;
+        previous(): PseudoCodeBuilder | undefined;
+        appendStatement(statement: string, ...additionalStatements: string[]): PseudoCodeBuilder;
+        toString(): string;
+    }
+
+    export interface IPseudoCodeBuilderPrototype extends $$snClass.ICustomClassPrototype1<IPseudoCodeBuilder, IPseudoCodeBuilderPrototype, "AtfHelper.PseudoCodeBuilder", string>, IPseudoCodeBuilder {
+        _statement: string;
+        _previous?: PseudoCodeBuilder;
+        _comment?: string;
+    }
+
+    export declare type PseudoCodeBuilder = Readonly<IPseudoCodeBuilder>;
+
+    export interface PseudoCodeBuilderConstructor extends $$snClass.CustomClassConstructor1<IPseudoCodeBuilder, IPseudoCodeBuilderPrototype, PseudoCodeBuilder, string> {
+        new(statement: string, ...additionalStatements: string[]): PseudoCodeBuilder;
+        (statement: string, ...additionalStatements: string[]): PseudoCodeBuilder;
+    }
+
     /**
      * Base interface for the AtfHelper API
      * @export
@@ -90,11 +112,74 @@ namespace x_g_inte_site_17 {
         isNil(obj: any | undefined): obj is undefined | null | "";
 
         areAnyNil(...obj: (any | undefined)[]): boolean;
+        
+        createPseudoCodeBuilder(statement: string, ...additionalStatements: string[]): PseudoCodeBuilder;
     }
 
     export const AtfHelper: AtfHelperConstructor = (function (): AtfHelperConstructor {
         var constructor: AtfHelperConstructor = Class.create();
 
+        const PseudoCodeBuilder: PseudoCodeBuilderConstructor = (function (): PseudoCodeBuilderConstructor {
+            var builderConstructor: PseudoCodeBuilderConstructor = Class.create();
+    
+            builderConstructor.prototype = <IPseudoCodeBuilderPrototype>{
+                initialize: function(statement: string): void {
+                    this._statement = statement;
+                },
+
+                getComment: function(): string | undefined { return this._comment; },
+
+                setComment: function(comment?: string | null): PseudoCodeBuilder {
+                    if (typeof comment === 'string' && (comment = comment.trim()).length > 0)
+                        this._comment = comment;
+                    else
+                        this._comment = undefined;
+                    return this;
+                },
+    
+                statement: function(this: IPseudoCodeBuilderPrototype): string { return this._statement; },
+
+                previous: function(this: IPseudoCodeBuilderPrototype): PseudoCodeBuilder | undefined { return this._previous; },
+
+                appendStatement: function(this: IPseudoCodeBuilderPrototype, statement: string, ...additionalStatements: string[]): PseudoCodeBuilder {
+                    var next = new PseudoCodeBuilder(statement);
+                    (<IPseudoCodeBuilderPrototype>next)._previous = this;
+                    if (typeof additionalStatements !== 'undefined' && additionalStatements.length > 0) {
+                        for (var s of additionalStatements) {
+                            var previous = next;
+                            next = new PseudoCodeBuilder(s);
+                            (<IPseudoCodeBuilderPrototype>next)._previous = previous;
+                        }
+                    }
+                    return next;
+                },
+
+                toString: function(this: IPseudoCodeBuilderPrototype): string {
+                    var result: string;
+                    var previous = this._previous;
+                    if (typeof previous === 'undefined')
+                        result = this._statement;
+                    else {
+                        var statements: string[] = [this._statement];
+                        do {
+                            var statement = (<IPseudoCodeBuilderPrototype>previous)._statement.trim();
+                            var c = (<IPseudoCodeBuilderPrototype>previous)._comment;
+                            if (typeof c === 'string')
+                                statements.unshift(statement.endsWith(';') ? statement + ' // ' + c : statement + "; // " + c);
+                            else
+                                statements.unshift(statement.endsWith(';') ? statement : statement + ";");
+                        } while(typeof (previous = (<IPseudoCodeBuilderPrototype>previous)._previous) !== 'undefined');
+                        result = statements.join("\n");
+                    }
+                    return (typeof this._comment === 'string') ? result + ' // ' + this._comment : result;
+                },
+
+                type: "AtfHelper.PseudoCodeBuilder"
+            };
+    
+            return builderConstructor;
+        })();
+    
         function isNil(obj: any | undefined): obj is undefined | null | "" {
             switch (typeof obj) {
                 case 'undefined':
@@ -159,7 +244,7 @@ namespace x_g_inte_site_17 {
             dateTime.setDisplayValue(dateTime.getDate().getDisplayValue() + " 00:00:00");
             dateTime.subtract(1);
             return dateTime.getDisplayValue();
-        }
+        };
 
         constructor.relativeDayAt = function(daysFromToday: number, hours: number, minutes: number, seconds?: number): string {
             var dateTime: GlideDateTime = new GlideDateTime();
@@ -192,7 +277,16 @@ namespace x_g_inte_site_17 {
             if (minutes < 10)
                 return dateTime.getDate().getDisplayValue() + ' ' + hours + ':0' + minutes + ':' + seconds;
             return dateTime.getDate().getDisplayValue() + ' ' + hours + ':' + minutes + ':' + seconds;
-        }
+        };
+
+        constructor.createPseudoCodeBuilder = function(statement: string, ...additionalStatements: any[]): IPseudoCodeBuilder {
+            var result = new PseudoCodeBuilder(statement);
+            if (typeof additionalStatements !== 'undefined' && additionalStatements.length > 0) {
+                for (var s of additionalStatements)
+                    result = result.appendStatement(s);
+            }
+            return result;
+        };
 
         constructor.prototype = <IAtfHelperPrototype>{
             initialize: function(this: IAtfHelperPrototype, steps: sn_atf.ITestStepsFunc, stepResult: sn_atf.ITestStepResult): void {

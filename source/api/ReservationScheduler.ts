@@ -37,14 +37,14 @@
          * @memberof IReservationScheduler
          */
         timeZone: string;
-    
+
         /**
          * Sys ID of Approval group or undefined to automatically approve reservations.
          * @type {(string|undefined)}
          * @memberof IReservationScheduler
          */
         approval_group?: string;
-    
+
         /**
          * Sys ID of Default Assignment group
          * @type {string}
@@ -52,7 +52,7 @@
          * @description Refers to sys_user_group (Group)
          */
         assignment_group: string;
-    
+
         /**
          * Minimum Duration
          * @type {GlideDuration}
@@ -76,7 +76,7 @@
          * @description This is the length by which reservation durations can be incremented. The minimum value is 1 minute, and values are rounded up to the nearest minute.
          */
         duration_increment: GlideDuration;
-    
+
         /**
          * Fixed time-of-day interval, relative to midnight, for reservation start times.
          * @type {GlideDuration}
@@ -84,7 +84,7 @@
          * @description This is the interval at which reservations must be scheduled. The minimum value is 1 minute, and values are rounded up to the nearest minute.
          */
         start_time_interval: GlideDuration;
-    
+
         /**
          * Normalizes a duration value according to the {@link #duration_increment}, {@link #minimum_duration} and {@link #maximum_duration} properties.
          * @param {GlideDuration} value - The duration value to normalize.
@@ -167,7 +167,7 @@
 
         removeReservation(reservation: string | cmn_schedule_spanElement | cmn_schedule_spanGlideRecord): boolean;
     }
-    
+
     export interface IReservationSchedulerPrototype extends $$snClass.ICustomClassPrototype3<IReservationScheduler, IReservationSchedulerPrototype, "ReservationScheduler", reservation_typeGlideRecord | string, boolean, string>, IReservationScheduler {
         _scheduleId: string;
     }
@@ -179,7 +179,7 @@
         (type: reservation_typeGlideRecord | string, allowInactive?: boolean, timeZone?: string): ReservationScheduler;
         getTableName(): string;
     }
-    
+
     export const ReservationScheduler: ReservationSchedulerConstructor = (function (): ReservationSchedulerConstructor {
         var constructor: ReservationSchedulerConstructor = Class.create();
 
@@ -191,30 +191,30 @@
         // #region AvailabilityIterator
 
         interface IAvailabilityIterator extends $$snClass.ICustomClassBase<IAvailabilityIterator, "AvailabilityIterator">, Iterator<ITimeSpan> { }
-    
+
         interface IAvailabilityIteratorPrototype extends $$snClass.ICustomClassPrototype3<IAvailabilityIterator, IAvailabilityIteratorPrototype, "AvailabilityIterator", GlideSchedule, GlideDateTime, GlideDateTime>, IAvailabilityIterator {
             _schedule: GlideSchedule;
             _start: GlideDateTime;
             _end: GlideDateTime;
         }
-    
+
         type AvailabilityIterator = Readonly<IAvailabilityIterator>;
-    
+
         interface AvailabilityIteratorConstructor extends $$snClass.CustomClassConstructor3<IAvailabilityIterator, IAvailabilityIteratorPrototype, AvailabilityIterator, GlideSchedule, GlideDateTime, GlideDateTime> {
             new(schedule: GlideSchedule, start: GlideDateTime, end: GlideDateTime): AvailabilityIterator;
             (schedule: GlideSchedule, start: GlideDateTime, end: GlideDateTime): AvailabilityIterator;
         }
-    
+
         const AvailabilityIterator: AvailabilityIteratorConstructor = (function (): AvailabilityIteratorConstructor {
             var iteratorConstructor: AvailabilityIteratorConstructor = Class.create();
-    
+
             iteratorConstructor.prototype = <IAvailabilityIteratorPrototype>{
                 initialize: function(schedule: GlideSchedule, start: GlideDateTime, end: GlideDateTime): void {
                     this._schedule = schedule
                     this._start = new GlideDateTime(start);
                     this._end = end;
                 },
-                
+
                 next: function(): IteratorResult<ITimeSpan> {
                     if (!this._start.before(this._end)) return <IteratorResult<ITimeSpan>>{ done: true };
                     var duration = GlideDateTime.subtract(this._start, this._end);
@@ -246,12 +246,12 @@
 
                 type: "AvailabilityIterator"
             };
-    
+
             return iteratorConstructor;
         })();
 
         // #endregion
-        
+
         // #region Private functions
 
         function isNil(obj: any | undefined): obj is undefined | null | "" {
@@ -277,7 +277,7 @@
         function getStartOfDay(value: GlideDateTime): GlideDateTime {
             return new GlideDateTime(gs.dateGenerate(value.getDisplayValue().substring(0, 10), '00:00:00'));
         }
-        
+
         function isNormalizedGlideDateTime(value: GlideDateTime, interval: GlideDuration): boolean {
             var msOfDay = value.getNumericValue() - getStartOfDay(value).getNumericValue();
             if (msOfDay == 0) return true;
@@ -345,7 +345,7 @@
             normalizeGlideDateTime(dateTime, interval);
             return dateTime;
         }
-        
+
         function isTimeSpanAvailable(this: IReservationSchedulerPrototype, start: GlideDateTime, duration: GlideDuration): boolean {
             var endDateTime = new GlideDateTime(start);
             endDateTime.add(duration);
@@ -370,7 +370,7 @@
             }
             return true;
         }
-        
+
         /**
          * @deprecated Use {@link AvailabilityIterator}
          */
@@ -386,7 +386,7 @@
                 currentStart: fromDateTime,
                 currentEnd: new GlideDateTime(fromDateTime)
             };
-            
+
             return new global.Stream<ITimeSpan>(function(): ITimeSpan | global.STREAM_END {
                 if(!(context.currentStart = new GlideDateTime(context.currentEnd)).before(toDateTime)) return global.Stream.END;
                 if (context.currentEnd.before(toDateTime))
@@ -430,7 +430,7 @@
         // #endregion
 
         constructor.getTableName = function() { return TABLE_NAME; }
-        
+
         constructor.prototype = <IReservationSchedulerPrototype>{
             initialize: function(this: IReservationSchedulerPrototype, type: reservation_typeGlideRecord | string, allowInactive?: boolean, timeZone?: string): void {
                 if (isNil(type)) throw new Error("Reservation Type was not provided.");
@@ -501,7 +501,7 @@
                 if (!value.isValid()) throw new Error("Invalid duration: " + value.getErrorMsg());
                 return getNormalizedGlideDuration(value, this.duration_increment, this.minimum_duration, this.maximum_duration, round);
             },
-        
+
             /**
              * Rounds a date/time value up to the next increment specified by {@link #start_time_interval} property.
              * @param {GlideDateTime} value - The date/time value to normalize.
@@ -512,7 +512,7 @@
                 if (!value.isValid()) throw new Error("Invalid date/time: " + value.getErrorMsg());
                 return normalizeGlideDateTime(value, this.start_time_interval);
             },
-        
+
             /**
              * Creates a new normalizated date/time value from an existing date and time.
              * @param {GlideDateTime} value - The source date/time value.
@@ -523,7 +523,7 @@
                 if (!value.isValid()) throw new Error("Invalid date/time: " + value.getErrorMsg());
                 return getNormalizedGlideDateTime(value, this.start_time_interval);
             },
-        
+
             /**
              * Gets the next reservation availability.
              * @param {GlideDateTime} fromDateTime

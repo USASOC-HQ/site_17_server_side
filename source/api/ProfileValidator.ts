@@ -124,7 +124,7 @@ namespace x_g_inte_site_17 {
          * @memberof IUserProfileComplianceInfo
          */
         notChecked: number;
-        
+
         /**
          * The number of evaluated compliance checks that passed.
          *
@@ -132,7 +132,7 @@ namespace x_g_inte_site_17 {
          * @memberof IUserProfileComplianceInfo
          */
         passed: number;
-        
+
         /**
          * The number of evaluated compliance checks that failed.
          *
@@ -208,7 +208,7 @@ namespace x_g_inte_site_17 {
          * @memberof IUserLookupResult
          */
         sys_id?: string;
-        
+
         /**
          * The user_id of the sys_user that was found or the user_id that was used for the user lookup.
          *
@@ -614,7 +614,7 @@ namespace x_g_inte_site_17 {
                 else
                     return JSON.stringify(response);
             },
-            
+
             getUserNotifications: function(this: IProfileValidatorPrototype & IAbstractAjaxProcessor): string | undefined {
                 var response = constructor.getUserNotifications('' + this.getParameter(PARAMNAME_user_id));
                 if (constructor.isUserLookupFault(response))
@@ -648,7 +648,6 @@ namespace x_g_inte_site_17 {
             type: "ProfileValidator"
         });
 
-        
         constructor.getProfileComplianceCheckFields = getProfileComplianceCheckFields;
 
         constructor.getProfilePhoneFields = getProfilePhoneFields;
