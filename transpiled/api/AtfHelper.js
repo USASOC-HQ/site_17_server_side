@@ -3,6 +3,62 @@ var x_g_inte_site_17;
 (function (x_g_inte_site_17) {
     x_g_inte_site_17.AtfHelper = (function () {
         var constructor = Class.create();
+        var PseudoCodeBuilder = (function () {
+            var builderConstructor = Class.create();
+            builderConstructor.prototype = {
+                initialize: function (statement) {
+                    this._statement = statement;
+                },
+                getComment: function () { return this._comment; },
+                setComment: function (comment) {
+                    if (typeof comment === 'string' && (comment = comment.trim()).length > 0)
+                        this._comment = comment;
+                    else
+                        this._comment = undefined;
+                    return this;
+                },
+                statement: function () { return this._statement; },
+                previous: function () { return this._previous; },
+                appendStatement: function (statement) {
+                    var additionalStatements = [];
+                    for (var _i = 1; _i < arguments.length; _i++) {
+                        additionalStatements[_i - 1] = arguments[_i];
+                    }
+                    var next = new PseudoCodeBuilder(statement);
+                    next._previous = this;
+                    if (typeof additionalStatements !== 'undefined' && additionalStatements.length > 0) {
+                        for (var _a = 0, additionalStatements_1 = additionalStatements; _a < additionalStatements_1.length; _a++) {
+                            var s = additionalStatements_1[_a];
+                            var previous = next;
+                            next = new PseudoCodeBuilder(s);
+                            next._previous = previous;
+                        }
+                    }
+                    return next;
+                },
+                toString: function () {
+                    var result;
+                    var previous = this._previous;
+                    if (typeof previous === 'undefined')
+                        result = this._statement;
+                    else {
+                        var statements = [this._statement];
+                        do {
+                            var statement = previous._statement.trim();
+                            var c = previous._comment;
+                            if (typeof c === 'string')
+                                statements.unshift(statement.endsWith(';') ? statement + ' // ' + c : statement + "; // " + c);
+                            else
+                                statements.unshift(statement.endsWith(';') ? statement : statement + ";");
+                        } while (typeof (previous = previous._previous) !== 'undefined');
+                        result = statements.join("\n");
+                    }
+                    return (typeof this._comment === 'string') ? result + ' // ' + this._comment : result;
+                },
+                type: "AtfHelper.PseudoCodeBuilder"
+            };
+            return builderConstructor;
+        })();
         function isNil(obj) {
             switch (typeof obj) {
                 case 'undefined':
@@ -102,6 +158,20 @@ var x_g_inte_site_17;
             if (minutes < 10)
                 return dateTime.getDate().getDisplayValue() + ' ' + hours + ':0' + minutes + ':' + seconds;
             return dateTime.getDate().getDisplayValue() + ' ' + hours + ':' + minutes + ':' + seconds;
+        };
+        constructor.createPseudoCodeBuilder = function (statement) {
+            var additionalStatements = [];
+            for (var _i = 1; _i < arguments.length; _i++) {
+                additionalStatements[_i - 1] = arguments[_i];
+            }
+            var result = new PseudoCodeBuilder(statement);
+            if (typeof additionalStatements !== 'undefined' && additionalStatements.length > 0) {
+                for (var _a = 0, additionalStatements_2 = additionalStatements; _a < additionalStatements_2.length; _a++) {
+                    var s = additionalStatements_2[_a];
+                    result = result.appendStatement(s);
+                }
+            }
+            return result;
         };
         constructor.prototype = {
             initialize: function (steps, stepResult) {
