@@ -3463,6 +3463,16 @@ namespace site17Util_IteratorToArrayTest {
 }
 
 namespace site17Util_RecordTypesTest {
+    
+    type TestRecordTableName = 'sys_user_group' | 'core_company' | 'cmn_location' | 'cmn_building' | 'business_unit' | 'cmn_department' | 'sys_user';
+
+    interface ITestData {
+        sys_id: string;
+        gr: GlideRecord;
+        tableName: TestRecordTableName;
+        step_id: string;
+    }
+
     declare var outputs: sn_atf.ITestStepOutputs;
     declare function steps(sys_id: string): sn_atf.ITestStepOutputs;
     declare var stepResult: sn_atf.ITestStepResult;
@@ -3470,6 +3480,206 @@ namespace site17Util_RecordTypesTest {
 
     (function(outputs: sn_atf.ITestStepOutputs, steps: sn_atf.ITestStepsFunc, stepResult: sn_atf.ITestStepResult, assertEqual: sn_atf.IAssertEqualFunc): boolean {
         var atfHelper: x_g_inte_site_17.AtfHelper = new x_g_inte_site_17.AtfHelper(steps, stepResult);
+        
+        var testData = <ITestData[]> [
+            { tableName: 'sys_user_group', step_id: '1d3020991b4a1510ec0320efe54bcbe5' },   // Step 11
+            { tableName: 'core_company', step_id: '45616c991b4a1510ec0320efe54bcb55' },     // Step 12
+            { tableName: 'cmn_location', step_id: '69e168d91b4a1510ec0320efe54bcb2a' },     // Step 13, Has company
+            { tableName: 'cmn_building', step_id: 'ff82a81d1b4a1510ec0320efe54bcbaf' },     // Step 14, has Location
+            { tableName: 'business_unit', step_id: '9103e05d1b4a1510ec0320efe54bcb83' },    // Step 15, Has company
+            { tableName: 'business_unit', step_id: '90e3a85d1b4a1510ec0320efe54bcbdc' },    // Step 16, No company
+            { tableName: 'sys_user', step_id: '4f34a85d1b4a1510ec0320efe54bcbfc' },         // Step 17, Has Building, belongs to group
+            { tableName: 'cmn_department', step_id: '1c16e8dd1b4a1510ec0320efe54bcba5' },   // Step 18
+            { tableName: 'sys_user', step_id: '9f56e8dd1b4a1510ec0320efe54bcb1c' }          // Step 19, VIP, Has Department
+        ];
+        for (var rawTestData of testData) {
+            rawTestData.gr = new GlideRecord(rawTestData.tableName);
+            stepResult.setOutputMessage('Executing: ("" + steps(' + JSON.stringify(rawTestData.step_id) + ').record_id).trim()');
+            try {
+                rawTestData.sys_id = ('' + steps(rawTestData.step_id).record_id).trim();
+            } catch (e) {
+                atfHelper.setFailed('Unexpected exception while executing ("" + steps(' + JSON.stringify(rawTestData.step_id) + ').record_id).trim()', e);
+                return false;
+            }
+            assertEqual({
+                name: JSON.stringify(rawTestData.sys_id) + '.length == 32 (steps(' + JSON.stringify(rawTestData.step_id) + ').record_id))',
+                shouldbe: 32,
+                value: rawTestData.sys_id.length
+            });
+            stepResult.setOutputMessage('Executing: gr = new GlideRecord(' + JSON.stringify(rawTestData.tableName) + ');');
+            var success: boolean;
+            var msg: string;
+            try {
+                msg = ' from ' + rawTestData.gr.getTableName() + ' with sys_id ' + rawTestData.sys_id + ' (step(' + rawTestData.step_id + ').record_id)';
+                rawTestData.gr = new GlideRecord(rawTestData.tableName);
+                stepResult.setOutputMessage('Executing: gr.addQuery("sys_id", ' + JSON.stringify(rawTestData.step_id) + ');');
+                rawTestData.gr.addQuery('sys_id', rawTestData.sys_id);
+                stepResult.setOutputMessage('Executing: gr.query();');
+                rawTestData.gr.query();
+                stepResult.setOutputMessage('Executing: gr.next();');
+                success = rawTestData.gr.next();
+            } catch (e) {
+                atfHelper.setFailed('Unexpected exception while querying GlideRecord', e);
+                return false;
+            }
+            stepResult.setOutputMessage('Executed: gr = new GlideRecord(' + JSON.stringify(rawTestData.tableName) + ');');
+            assertEqual({
+                name: 'gr.next()',
+                shouldbe: true,
+                value: success
+            });
+        }
+
+        function testTargetItem(target: GlideRecord | GlideElementReference, tableName: TestRecordTableName, comment: string): boolean {
+            var basePseudoCode = '(' + tableName + ((target instanceof GlideRecord) ? 'GlideRecord' : 'GlideElement') + ') // ' + comment;
+            var pseudoCode = 'Site17Util.isGroup' + basePseudoCode;
+            var actual: boolean;
+            try { actual = x_g_inte_site_17.Site17Util.isGroup(target); }
+            catch (e) {
+                atfHelper.setFailed('Unexpected error executing ' + pseudoCode, e);
+                return false;
+            }
+            assertEqual({
+                name: pseudoCode,
+                shouldbe: tableName === 'sys_user_group',
+                value: actual
+            });
+            
+            pseudoCode = 'Site17Util.isCompany' + basePseudoCode;
+            try { actual = x_g_inte_site_17.Site17Util.isCompany(target); }
+            catch (e) {
+                atfHelper.setFailed('Unexpected error executing ' + pseudoCode, e);
+                return false;
+            }
+            assertEqual({
+                name: pseudoCode,
+                shouldbe: tableName === 'core_company',
+                value: actual
+            });
+
+            pseudoCode = 'Site17Util.isLocation' + basePseudoCode;
+            try { actual = x_g_inte_site_17.Site17Util.isLocation(target); }
+            catch (e) {
+                atfHelper.setFailed('Unexpected error executing ' + pseudoCode, e);
+                return false;
+            }
+            assertEqual({
+                name: pseudoCode,
+                shouldbe: tableName === 'cmn_location',
+                value: actual
+            });
+
+            pseudoCode = 'Site17Util.isBuilding' + basePseudoCode;
+            try { actual = x_g_inte_site_17.Site17Util.isBuilding(target); }
+            catch (e) {
+                atfHelper.setFailed('Unexpected error executing ' + pseudoCode, e);
+                return false;
+            }
+            assertEqual({
+                name: pseudoCode,
+                shouldbe: tableName === 'cmn_building',
+                value: actual
+            });
+
+            pseudoCode = 'Site17Util.isBusinessUnit' + basePseudoCode;
+            try { actual = x_g_inte_site_17.Site17Util.isBusinessUnit(target); }
+            catch (e) {
+                atfHelper.setFailed('Unexpected error executing ' + pseudoCode, e);
+                return false;
+            }
+            assertEqual({
+                name: pseudoCode,
+                shouldbe: tableName === 'business_unit',
+                value: actual
+            });
+
+            pseudoCode = 'Site17Util.isDepartment' + basePseudoCode;
+            try { actual = x_g_inte_site_17.Site17Util.isDepartment(target); }
+            catch (e) {
+                atfHelper.setFailed('Unexpected error executing ' + pseudoCode, e);
+                return false;
+            }
+            assertEqual({
+                name: pseudoCode,
+                shouldbe: tableName === 'cmn_department',
+                value: actual
+            });
+
+            pseudoCode = 'Site17Util.isUser' + basePseudoCode;
+            try { actual = x_g_inte_site_17.Site17Util.isUser(target); }
+            catch (e) {
+                atfHelper.setFailed('Unexpected error executing ' + pseudoCode, e);
+                return false;
+            }
+            assertEqual({
+                name: pseudoCode,
+                shouldbe: tableName === 'sys_user',
+                value: actual
+            });
+            return true;
+        }
+        
+        for (var data of testData) {
+            if (!testTargetItem(data.gr, data.tableName, 'step_id: ' + data.step_id))
+            switch (data.tableName) {
+                case 'business_unit':
+                    if (!(gs.nil((<business_unitFields><any>data.gr).company) || testTargetItem(<GlideElementReference>(<business_unitFields><any>data.gr).company, 'core_company', 'business_unit.company; step_id: ' + data.step_id)))
+                        return false;
+                    if (!(gs.nil((<business_unitFields><any>data.gr).parent) || testTargetItem(<GlideElementReference>(<business_unitFields><any>data.gr).parent, 'business_unit', 'business_unit.parent; step_id: ' + data.step_id)))
+                        return false;
+                    if (!(gs.nil((<business_unitFields><any>data.gr).bu_head) || testTargetItem(<GlideElementReference>(<business_unitFields><any>data.gr).bu_head, 'sys_user', 'cmn_location.bu_head; step_id: ' + data.step_id)))
+                        return false;
+                    break;
+                case 'cmn_building':
+                    if (!(gs.nil((<cmn_buildingFields><any>data.gr).location) || testTargetItem(<GlideElementReference>(<cmn_buildingFields><any>data.gr).location, 'cmn_location', 'cmn_building.location; step_id: ' + data.step_id)))
+                        return false;
+                    if (!(gs.nil((<cmn_buildingFields><any>data.gr).contact) || testTargetItem(<GlideElementReference>(<cmn_buildingFields><any>data.gr).contact, 'sys_user', 'cmn_building.contact; step_id: ' + data.step_id)))
+                        return false;
+                    break;
+                case 'cmn_department':
+                    if (!(gs.nil((<cmn_departmentFields><any>data.gr).business_unit) || testTargetItem(<GlideElementReference>(<cmn_departmentFields><any>data.gr).business_unit, 'business_unit', 'cmn_department.business_unit; step_id: ' + data.step_id)))
+                        return false;
+                    if (!(gs.nil((<cmn_departmentFields><any>data.gr).company) || testTargetItem(<GlideElementReference>(<cmn_departmentFields><any>data.gr).company, 'core_company', 'cmn_department.company; step_id: ' + data.step_id)))
+                        return false;
+                    if (!(gs.nil((<cmn_departmentFields><any>data.gr).dept_head) || testTargetItem(<GlideElementReference>(<cmn_departmentFields><any>data.gr).company, 'sys_user', 'cmn_department.dept_head; step_id: ' + data.step_id)))
+                        return false;
+                    if (!(gs.nil((<cmn_departmentFields><any>data.gr).parent) || testTargetItem(<GlideElementReference>(<cmn_departmentFields><any>data.gr).parent, 'cmn_department', 'cmn_department.parent; step_id: ' + data.step_id)))
+                        return false;
+                    break;
+                case 'cmn_location':
+                    if (!(gs.nil((<cmn_locationFields><any>data.gr).company) || testTargetItem(<GlideElementReference>(<cmn_locationFields><any>data.gr).company, 'core_company', 'cmn_location.company; step_id: ' + data.step_id)))
+                        return false;
+                    if (!(gs.nil((<cmn_locationFields><any>data.gr).contact) || testTargetItem(<GlideElementReference>(<cmn_locationFields><any>data.gr).contact, 'sys_user', 'cmn_location.contact; step_id: ' + data.step_id)))
+                        return false;
+                    if (!(gs.nil((<cmn_locationFields><any>data.gr).parent) || testTargetItem(<GlideElementReference>(<cmn_locationFields><any>data.gr).parent, 'cmn_location', 'cmn_location.parent; step_id: ' + data.step_id)))
+                        return false;
+                    break;
+                case 'core_company':
+                    if (!(gs.nil((<core_companyFields><any>data.gr).contact) || testTargetItem(<GlideElementReference>(<core_companyFields><any>data.gr).contact, 'sys_user', 'core_company.contact; step_id: ' + data.step_id)))
+                        return false;
+                    if (!(gs.nil((<core_companyFields><any>data.gr).parent) || testTargetItem(<GlideElementReference>(<core_companyFields><any>data.gr).parent, 'core_company', 'core_company.parent; step_id: ' + data.step_id)))
+                        return false;
+                    break;
+                case 'sys_user':
+                    if (!(gs.nil((<sys_userFields><any>data.gr).building) || testTargetItem(<GlideElementReference>(<sys_userFields><any>data.gr).building, 'cmn_building', 'sys_user.building; step_id: ' + data.step_id)))
+                        return false;
+                    if (!(gs.nil((<sys_userFields><any>data.gr).company) || testTargetItem(<GlideElementReference>(<sys_userFields><any>data.gr).company, 'core_company', 'sys_user.company; step_id: ' + data.step_id)))
+                        return false;
+                    if (!(gs.nil((<sys_userFields><any>data.gr).department) || testTargetItem(<GlideElementReference>(<sys_userFields><any>data.gr).department, 'cmn_department', 'sys_user.department; step_id: ' + data.step_id)))
+                        return false;
+                    if (!(gs.nil((<sys_userFields><any>data.gr).location) || testTargetItem(<GlideElementReference>(<sys_userFields><any>data.gr).location, 'cmn_location', 'sys_user.location; step_id: ' + data.step_id)))
+                        return false;
+                    if (!(gs.nil((<sys_userFields><any>data.gr).manager) || testTargetItem(<GlideElementReference>(<sys_userFields><any>data.gr).manager, 'sys_user', 'sys_user.manager; step_id: ' + data.step_id)))
+                        return false;
+                    break;
+                case 'sys_user_group':
+                    if (!(gs.nil((<sys_user_groupFields><any>data.gr).manager) || testTargetItem(<GlideElementReference>(<sys_user_groupFields><any>data.gr).manager, 'sys_user', 'sys_user_group.manager; step_id: ' + data.step_id)))
+                        return false;
+                    if (!(gs.nil((<sys_user_groupFields><any>data.gr).parent) || testTargetItem(<GlideElementReference>(<sys_user_groupFields><any>data.gr).parent, 'sys_user_group', 'sys_user_group.parent; step_id: ' + data.step_id)))
+                        return false;
+                    break;
+            }
+        }
         return true;
     })(outputs, steps, stepResult, assertEqual);
 }
@@ -3482,6 +3692,7 @@ namespace site17Util_isVipTest {
 
     (function(outputs: sn_atf.ITestStepOutputs, steps: sn_atf.ITestStepsFunc, stepResult: sn_atf.ITestStepResult, assertEqual: sn_atf.IAssertEqualFunc): boolean {
         var atfHelper: x_g_inte_site_17.AtfHelper = new x_g_inte_site_17.AtfHelper(steps, stepResult);
+        // TODO: Test x_g_inte_site_17.Site17Util.isVip
         return true;
     })(outputs, steps, stepResult, assertEqual);
 }
@@ -3492,8 +3703,173 @@ namespace site17Util_RelatedRecordsTest {
     declare var stepResult: sn_atf.ITestStepResult;
     declare function assertEqual(assertion: sn_atf.ITestAssertion): void;
 
+    type TestRecordTableName = 'sys_user_group' | 'core_company' | 'cmn_location' | 'cmn_building' | 'business_unit' | 'cmn_department' | 'sys_user';
+    
+    interface ITestData {
+        sys_id: string;
+        gr: GlideRecord;
+        tableName: TestRecordTableName;
+        step_id: string;
+        companyStepId?: string;
+        businessUnitStepId?: string;
+        locationStepId?: string;
+        callerStepId?: string;
+    }
+
     (function(outputs: sn_atf.ITestStepOutputs, steps: sn_atf.ITestStepsFunc, stepResult: sn_atf.ITestStepResult, assertEqual: sn_atf.IAssertEqualFunc): boolean {
         var atfHelper: x_g_inte_site_17.AtfHelper = new x_g_inte_site_17.AtfHelper(steps, stepResult);
+        var testData = <ITestData[]> [
+            { tableName: 'sys_user_group', step_id: '1d3020991b4a1510ec0320efe54bcbe5' }, // Step 11
+            { tableName: 'core_company', step_id: '45616c991b4a1510ec0320efe54bcb55' }, // Step 12
+            { tableName: 'cmn_location', step_id: '69e168d91b4a1510ec0320efe54bcb2a', companyStepId: '45616c991b4a1510ec0320efe54bcb55' }, // Step 13, Has company
+            { tableName: 'cmn_building', step_id: 'ff82a81d1b4a1510ec0320efe54bcbaf', locationStepId: '69e168d91b4a1510ec0320efe54bcb2a', companyStepId: '45616c991b4a1510ec0320efe54bcb55' }, // Step 14, has Location
+            { tableName: 'business_unit', step_id: '9103e05d1b4a1510ec0320efe54bcb83', companyStepId: '45616c991b4a1510ec0320efe54bcb55' }, // Step 15, Has company
+            { tableName: 'business_unit', step_id: '90e3a85d1b4a1510ec0320efe54bcbdc' }, // Step 16, No company
+            { tableName: 'sys_user', step_id: '4f34a85d1b4a1510ec0320efe54bcbfc', locationStepId: '69e168d91b4a1510ec0320efe54bcb2a', companyStepId: '45616c991b4a1510ec0320efe54bcb55' }, // Step 17, Has Building, belongs to group
+            { tableName: 'cmn_department', step_id: '1c16e8dd1b4a1510ec0320efe54bcba5' }, // Step 18
+            { tableName: 'sys_user', step_id: '9f56e8dd1b4a1510ec0320efe54bcb1c' } // Step 19, VIP, Has Department
+        ];
+        var map: { [key: string]: GlideRecord } = { };
+        for (var rawTestData of testData) {
+            rawTestData.gr = new GlideRecord(rawTestData.tableName);
+            stepResult.setOutputMessage('Executing: ("" + steps(' + JSON.stringify(rawTestData.step_id) + ').record_id).trim()');
+            try {
+                rawTestData.sys_id = ('' + steps(rawTestData.step_id).record_id).trim();
+                if (rawTestData.sys_id.length != 16) {
+                    stepResult.setOutputMessage('Could not find sys_id from step(' + rawTestData.step_id + ').record_id');
+                    return false;
+                }
+            } catch (e) {
+                atfHelper.setFailed('Unexpected exception while executing ("" + steps(' + JSON.stringify(rawTestData.step_id) + ').record_id).trim()', e);
+                return false;
+            }
+            stepResult.setOutputMessage('Executing: gnew GlideRecord(' + JSON.stringify(rawTestData.tableName) + ');');
+            try {
+                rawTestData.gr = new GlideRecord(rawTestData.tableName);
+                stepResult.setOutputMessage('Executing: gr.addQuery("sys_id", ' + JSON.stringify(rawTestData.step_id) + ');');
+                rawTestData.gr.addQuery('sys_id', rawTestData.sys_id);
+                stepResult.setOutputMessage('Executing: gr.query();');
+                rawTestData.gr.query();
+                stepResult.setOutputMessage('Executing: gr.next();');
+                var msg = ' from ' + rawTestData.gr.getTableName() + ' with sys_id ' + rawTestData.sys_id + ' (step(' + rawTestData.step_id + ').record_id)';
+                if (!rawTestData.gr.next()) {
+                    stepResult.setOutputMessage('Failed to find record' + msg);
+                    return false;
+                }
+            } catch (e) {
+                atfHelper.setFailed('Unexpected exception while querying GlideRecord', e);
+                return false;
+            }
+            map[rawTestData.step_id] = rawTestData.gr;
+            for (var data of testData) {
+                var basePseudoCode = '(' + data.tableName + 'GlideRecord) // step_id: ' + data.step_id;
+                var pseudoCode = 'gr = Site17Util.getBusinessUnit' + basePseudoCode;
+                var gr: GlideRecord | undefined;
+                stepResult.setOutputMessage("Executing: " + pseudoCode);
+                try { gr = x_g_inte_site_17.Site17Util.getBusinessUnit(data.gr); }
+                catch (e) {
+                    atfHelper.setFailed('Unexpected error executing ' + pseudoCode, e);
+                    return false;
+                }
+                stepResult.setOutputMessage("Executed: " + pseudoCode);
+                var sys_id: string;
+                if (typeof data.businessUnitStepId === 'undefined')
+                    assertEqual({
+                        name: 'typeof gr',
+                        shouldbe: 'undefined',
+                        value: typeof gr
+                    });
+                else {
+                    assertEqual({
+                        name: 'gr instanceof GlideRecord',
+                        shouldbe: true,
+                        value: gr instanceof GlideRecord
+                    });
+                    assertEqual({
+                        name: 'gr.getTableName() == "business_unit"',
+                        shouldbe: true,
+                        value: (<GlideRecord>gr).getTableName() == "business_unit"
+                    });
+                    sys_id = map[data.businessUnitStepId].getValue('sys_id');
+                    assertEqual({
+                        name: 'gr.getValue("sys_id") == ',
+                        shouldbe: true,
+                        value: (<GlideRecord>gr).getValue('sys_id') == sys_id
+                    });
+                }
+                
+                pseudoCode = 'gr = Site17Util.getCompany' + basePseudoCode;
+                stepResult.setOutputMessage("Executing: " + pseudoCode);
+                try { gr = x_g_inte_site_17.Site17Util.getCompany(data.gr); }
+                catch (e) {
+                    atfHelper.setFailed('Unexpected error executing ' + pseudoCode, e);
+                    return false;
+                }
+                stepResult.setOutputMessage("Executed: " + pseudoCode);
+                if (typeof data.companyStepId === 'undefined')
+                    assertEqual({
+                        name: 'typeof gr',
+                        shouldbe: 'undefined',
+                        value: typeof gr
+                    });
+                else {
+                    assertEqual({
+                        name: 'gr instanceof GlideRecord',
+                        shouldbe: true,
+                        value: gr instanceof GlideRecord
+                    });
+                    assertEqual({
+                        name: 'gr.getTableName() == "core_company"',
+                        shouldbe: true,
+                        value: (<GlideRecord>gr).getTableName() == "core_company"
+                    });
+                    sys_id = map[data.companyStepId].getValue('sys_id');
+                    assertEqual({
+                        name: 'gr.getValue("sys_id") == ',
+                        shouldbe: true,
+                        value: (<GlideRecord>gr).getValue('sys_id') == sys_id
+                    });
+                }
+                
+                pseudoCode = 'gr = Site17Util.getLocation' + basePseudoCode;
+                stepResult.setOutputMessage("Executing: " + pseudoCode);
+                try { gr = x_g_inte_site_17.Site17Util.getLocation(data.gr); }
+                catch (e) {
+                    atfHelper.setFailed('Unexpected error executing ' + pseudoCode, e);
+                    return false;
+                }
+                stepResult.setOutputMessage("Executed: " + pseudoCode);
+                if (typeof data.locationStepId === 'undefined')
+                    assertEqual({
+                        name: 'typeof gr',
+                        shouldbe: 'undefined',
+                        value: typeof gr
+                    });
+                else {
+                    assertEqual({
+                        name: 'gr instanceof GlideRecord',
+                        shouldbe: true,
+                        value: gr instanceof GlideRecord
+                    });
+                    assertEqual({
+                        name: 'gr.getTableName() == "cmn_location"',
+                        shouldbe: true,
+                        value: (<GlideRecord>gr).getTableName() == "cmn_location"
+                    });
+                    sys_id = map[data.locationStepId].getValue('sys_id');
+                    assertEqual({
+                        name: 'gr.getValue("sys_id") == ',
+                        shouldbe: true,
+                        value: (<GlideRecord>gr).getValue('sys_id') == sys_id
+                    });
+                }
+            }
+        }
+
+        // TODO: Test x_g_inte_site_17.Site17Util.getBusinessUnit
+        // TODO: Test x_g_inte_site_17.Site17Util.getCompany
+        // TODO: Test x_g_inte_site_17.Site17Util.getLocation
+        // TODO: Test x_g_inte_site_17.Site17Util.getCaller
         return true;
     })(outputs, steps, stepResult, assertEqual);
 }
