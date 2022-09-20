@@ -925,7 +925,7 @@ namespace x_g_inte_site_17 {
             var gr: GlideRecord | GlideElementReference | undefined;
             var s: string;
             if (source instanceof GlideRecord || source instanceof GlideElement) {
-                if (('' + source.getTableName()) == 'sys_user')
+                if (('' + ((source instanceof GlideRecord) ? source.getTableName() : (<GlideElementReference>source).getReferenceTable())) == 'sys_user')
                     return ((s = '' + (<{ [key: string]: any}>source).source).length == 0 || testDistinguishedName(s)) && isUserDN(s);
                 gr = getCaller(<GlideElementReference>source);
                 if (gs.nil(gr)) return false;
@@ -956,7 +956,7 @@ namespace x_g_inte_site_17 {
             var gr: GlideRecord | GlideElementReference | undefined;
             var s: string;
             if (source instanceof GlideRecord || source instanceof GlideElement) {
-                if (('' + source.getTableName()) == 'sys_user_group')
+                if (('' + ((source instanceof GlideRecord) ? source.getTableName() : (<GlideElementReference>source).getReferenceTable())) == 'sys_user_group')
                     return ((s = '' + (<{ [key: string]: any}>source).source).length == 0 || testDistinguishedName(s)) && isGroupDN(s);
                 gr = getCaller(<GlideElementReference>source);
                 if (gs.nil(gr)) return false;
@@ -1538,17 +1538,17 @@ namespace x_g_inte_site_17 {
         const TABLE_NAME_sc_task = 'sc_task';
 
         function isUser(target: GlideRecord | GlideElementReference): target is sys_userElement | sys_userGlideRecord {
-            return target.getTableName() == TABLE_NAME_sys_user;
+            return ((target instanceof GlideRecord) ? target.getTableName() : target.getReferenceTable()) == TABLE_NAME_sys_user;
         }
 
         function isGroup(target: GlideRecord | GlideElementReference): target is sys_user_groupElement | sys_user_groupGlideRecord {
-            return target.getTableName() == TABLE_NAME_sys_user_group;
+            return ((target instanceof GlideRecord) ? target.getTableName() : target.getReferenceTable()) == TABLE_NAME_sys_user_group;
         }
 
         function getCaller(target: GlideRecord | GlideElementReference): sys_userElement | undefined {
             var caller: sys_userElement;
 
-            switch ('' + target.getTableName()) {
+            switch ('' + ((target instanceof GlideRecord) ? target.getTableName() : target.getReferenceTable())) {
                 case TABLE_NAME_incident:
                     caller = <sys_userElement>(<incidentFields><any>target).caller_id;
                     break;
@@ -1586,23 +1586,23 @@ namespace x_g_inte_site_17 {
         }
 
         function isBusinessUnit(target: GlideRecord | GlideElementReference): target is business_unitElement | business_unitGlideRecord {
-            return target.getTableName() == TABLE_NAME_business_unit;
+            return ((target instanceof GlideRecord) ? target.getTableName() : target.getReferenceTable()) == TABLE_NAME_business_unit;
         }
 
         function isDepartment(target: GlideRecord | GlideElementReference): target is cmn_departmentElement | cmn_departmentGlideRecord {
-            return target.getTableName() == TABLE_NAME_cmn_department;
+            return ((target instanceof GlideRecord) ? target.getTableName() : target.getReferenceTable()) == TABLE_NAME_cmn_department;
         }
 
         function isCompany(target: GlideRecord | GlideElementReference): target is core_companyElement | core_companyGlideRecord {
-            return target.getTableName() == TABLE_NAME_core_company;
+            return ((target instanceof GlideRecord) ? target.getTableName() : target.getReferenceTable()) == TABLE_NAME_core_company;
         }
 
         function isLocation(target: GlideRecord | GlideElementReference): target is cmn_locationElement | cmn_locationGlideRecord {
-            return target.getTableName() == TABLE_NAME_cmn_location;
+            return ((target instanceof GlideRecord) ? target.getTableName() : target.getReferenceTable()) == TABLE_NAME_cmn_location;
         }
 
         function isBuilding(target: GlideRecord | GlideElementReference): target is cmn_buildingGlideRecord | cmn_buildingElement {
-            return target.getTableName() == TABLE_NAME_cmn_building;
+            return ((target instanceof GlideRecord) ? target.getTableName() : target.getReferenceTable()) == TABLE_NAME_cmn_building;
         }
 
         function getBusinessUnitCompany(target: business_unitGlideRecord | business_unitElement): core_companyElement {
@@ -1638,7 +1638,7 @@ namespace x_g_inte_site_17 {
         }
 
         function getBusinessUnit(target: GlideRecord | GlideElementReference): business_unitElement | undefined {
-            switch ('' + target.getTableName()) {
+            switch ('' + ((target instanceof GlideRecord) ? target.getTableName() : target.getReferenceTable())) {
                 case TABLE_NAME_sys_user:
                     if ((target = <cmn_departmentElement>(<sys_userFields><any>target).department).nil()) return;
                     break;
@@ -1654,7 +1654,7 @@ namespace x_g_inte_site_17 {
 
         function getCompany(target: GlideRecord | GlideElementReference): core_companyElement | undefined {
             var company: core_companyElement;
-            switch ('' + target.getTableName()) {
+            switch ('' + ((target instanceof GlideRecord) ? target.getTableName() : target.getReferenceTable())) {
                 case TABLE_NAME_sys_user:
                     if (!(<core_companyElement>(<sys_userElement>target).company).nil()) return <core_companyElement>(<sys_userElement>target).company;
                     var department: cmn_departmentElement = <cmn_departmentElement>(<sys_userElement>target).department;
@@ -1673,7 +1673,7 @@ namespace x_g_inte_site_17 {
         }
 
         function getLocation(target: GlideRecord | GlideElementReference): cmn_locationElement | undefined {
-            switch ('' + target.getTableName()) {
+            switch ('' + ((target instanceof GlideRecord) ? target.getTableName() : target.getReferenceTable())) {
                 case TABLE_NAME_sys_user:
                     if (!(<core_companyElement>(<sys_userElement>target).location).nil()) return <cmn_locationElement>(<sys_userElement>target).location;
                     target = <cmn_buildingElement>(<sys_userElement>target).building;

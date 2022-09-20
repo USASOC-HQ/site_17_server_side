@@ -3570,6 +3570,7 @@ var site17Util_RecordTypesTest;
         var refStepInfo;
         var basePsb;
         var psb;
+        var gr;
         for (var validate_id in stepResultRecordInfo) {
             atfStepInfo = stepResultRecordInfo[validate_id];
             switch (atfStepInfo.table) {
@@ -3621,56 +3622,94 @@ var site17Util_RecordTypesTest;
             }
             stepResult.setOutputMessage('Executed: ' + basePsb.toString());
             assertEqual({
-                name: 'gs.nil(stepData)',
-                shouldbe: false,
-                value: gs.nil(stepData)
-            });
-            var record_id;
-            var psb = basePsb.appendStatement('record_id = stepData.record_id');
-            try {
-                record_id = stepData.record_id;
-            }
-            catch (e) {
-                atfHelper.setFailed('Unexpected exception while executing ' + psb.toString(), e);
-                return false;
-            }
-            stepResult.setOutputMessage('Executed: ' + psb.toString());
-            assertEqual({
-                name: 'typeof record_id',
+                name: 'typeof stepData',
                 shouldbe: 'object',
-                value: x_g_inte_site_17.AtfHelper.typeOfEx(record_id)
+                value: x_g_inte_site_17.AtfHelper.typeOfEx(stepData)
             });
             var isTrue;
-            try {
-                isTrue = record_id.nil();
-            }
-            catch (e) {
-                atfHelper.setFailed('Unexpected exception while executing ' + psb.appendStatement('record_id.nil()').toString(), e);
-                return false;
-            }
-            assertEqual({
-                name: 'record_id.nil()',
-                shouldbe: false,
-                value: isTrue
-            });
             var sys_id;
-            try {
-                sys_id = ('' + record_id).trim();
+            var record_id;
+            if (atfStepInfo.table === "sys_user") {
+                psb = basePsb.appendStatement('record_id = stepData.user');
+                try {
+                    record_id = stepData.user;
+                }
+                catch (e) {
+                    atfHelper.setFailed('Unexpected exception while executing ' + psb.toString(), e);
+                    return false;
+                }
+                stepResult.setOutputMessage('Executed: ' + psb.toString());
+                assertEqual({
+                    name: 'typeof record_id',
+                    shouldbe: 'object',
+                    value: x_g_inte_site_17.AtfHelper.typeOfEx(record_id)
+                });
+                try {
+                    isTrue = record_id.nil();
+                }
+                catch (e) {
+                    atfHelper.setFailed('Unexpected exception while executing ' + psb.appendStatement('record_id.nil()').toString(), e);
+                    return false;
+                }
+                assertEqual({
+                    name: 'record_id.nil()',
+                    shouldbe: false,
+                    value: isTrue
+                });
+                try {
+                    sys_id = ('' + record_id).trim();
+                }
+                catch (e) {
+                    atfHelper.setFailed('Unexpected exception while executing ' + psb.appendStatement('sys_id = ("" + record_id).trim()').toString(), e);
+                    return false;
+                }
+                basePsb = x_g_inte_site_17.AtfHelper.createPseudoCodeBuilder('sys_id = ("" + steps(' + JSON.stringify(validate_id) + ').user).trim()');
             }
-            catch (e) {
-                atfHelper.setFailed('Unexpected exception while executing ' + psb.appendStatement('sys_id = ("" + record_id).trim()').toString(), e);
-                return false;
+            else {
+                psb = basePsb.appendStatement('record_id = stepData.record_id');
+                try {
+                    record_id = stepData.record_id;
+                }
+                catch (e) {
+                    atfHelper.setFailed('Unexpected exception while executing ' + psb.toString(), e);
+                    return false;
+                }
+                stepResult.setOutputMessage('Executed: ' + psb.toString());
+                assertEqual({
+                    name: 'typeof record_id',
+                    shouldbe: 'object',
+                    value: x_g_inte_site_17.AtfHelper.typeOfEx(record_id)
+                });
+                try {
+                    isTrue = record_id.nil();
+                }
+                catch (e) {
+                    atfHelper.setFailed('Unexpected exception while executing ' + psb.appendStatement('record_id.nil()').toString(), e);
+                    return false;
+                }
+                assertEqual({
+                    name: 'record_id.nil()',
+                    shouldbe: false,
+                    value: isTrue
+                });
+                try {
+                    sys_id = ('' + record_id).trim();
+                }
+                catch (e) {
+                    atfHelper.setFailed('Unexpected exception while executing ' + psb.appendStatement('sys_id = ("" + record_id).trim()').toString(), e);
+                    return false;
+                }
+                basePsb = x_g_inte_site_17.AtfHelper.createPseudoCodeBuilder('sys_id = ("" + steps(' + JSON.stringify(validate_id) + ').record_id).trim()');
             }
-            basePsb = x_g_inte_site_17.AtfHelper.createPseudoCodeBuilder('sys_id = ("" + steps(' + JSON.stringify(validate_id) + ').record_id).trim()');
             stepResult.setOutputMessage('Executed: ' + basePsb.toString());
             assertEqual({
                 name: 'sys_id.length',
-                shouldbe: 31,
+                shouldbe: 32,
                 value: sys_id.length
             });
             psb = basePsb.appendStatement('gr = new GlideRecord(' + JSON.stringify(atfStepInfo.table) + ')');
             try {
-                var gr = new GlideRecord(atfStepInfo.table);
+                gr = new GlideRecord(atfStepInfo.table);
                 psb = psb.appendStatement('gr.addQuery("sys_id", ' + JSON.stringify(sys_id) + ')');
                 gr.addQuery('sys_id', sys_id);
                 psb = psb.appendStatement('gr.query()');
@@ -3689,7 +3728,7 @@ var site17Util_RecordTypesTest;
                 shouldbe: true,
                 value: isTrue
             });
-            basePsb = basePsb.appendStatement('gr.query(); gr.next()');
+            stepResult.setOutputMessage('Executed: ' + basePsb.appendStatement('gr.query(); gr.next()').toString());
             glideRecords[validate_id] = gr;
         }
         function validateGlideReference(varName, table, target) {
@@ -3769,7 +3808,7 @@ var site17Util_RecordTypesTest;
                 return false;
             }
             assertEqual({
-                name: 'Site17Util.isCompany(' + varName + ')',
+                name: 'Site17Util.isCompany(' + varName + ') // ' + JSON.stringify(target.getTableName()),
                 shouldbe: table === "core_company",
                 value: actual
             });
@@ -3825,7 +3864,7 @@ var site17Util_RecordTypesTest;
         for (var step_id in stepResultRecordInfo) {
             atfStepInfo = stepResultRecordInfo[step_id];
             stepResult.setOutputMessage('Executed: var gr = new GlideRecord(' + JSON.stringify(atfStepInfo.table) + ').get(steps(' + JSON.stringify(step_id) + ').record_id)');
-            var gr = glideRecords[step_id];
+            gr = glideRecords[step_id];
             if (!validateGlideReference('gr', atfStepInfo.table, gr))
                 return false;
             switch (atfStepInfo.table) {
@@ -3862,141 +3901,3 @@ var site17Util_RecordTypesTest;
         return true;
     })(outputs, steps, stepResult, assertEqual);
 })(site17Util_RecordTypesTest || (site17Util_RecordTypesTest = {}));
-var site17Util_isVipTest;
-(function (site17Util_isVipTest) {
-    (function (outputs, steps, stepResult, assertEqual) {
-        var atfHelper = new x_g_inte_site_17.AtfHelper(steps, stepResult);
-        // TODO: Test x_g_inte_site_17.Site17Util.isVip
-        return true;
-    })(outputs, steps, stepResult, assertEqual);
-})(site17Util_isVipTest || (site17Util_isVipTest = {}));
-var site17Util_RelatedRecordsTest;
-(function (site17Util_RelatedRecordsTest) {
-    (function (outputs, steps, stepResult, assertEqual) {
-        var atfHelper = new x_g_inte_site_17.AtfHelper(steps, stepResult);
-        var stepResultRecordInfo = {
-            '1d3020991b4a1510ec0320efe54bcbe5': {
-                table: 'sys_user_group',
-                order: 11,
-                notes: 'Create Test Group Record',
-                active: true,
-                name: 'Donut Eaters'
-            },
-            '45616c991b4a1510ec0320efe54bcb55': {
-                table: 'core_company',
-                order: 12,
-                notes: 'Insert company',
-                name: 'Time to make the donuts'
-            },
-            '69e168d91b4a1510ec0320efe54bcb2a': {
-                table: 'cmn_location',
-                order: 13,
-                notes: 'Insert Location',
-                name: 'Donutville',
-                company: '45616c991b4a1510ec0320efe54bcb55'
-            },
-            'ff82a81d1b4a1510ec0320efe54bcbaf': {
-                table: 'cmn_building',
-                order: 14,
-                notes: 'Insert Building',
-                name: 'The donut shop',
-                location: '69e168d91b4a1510ec0320efe54bcb2a'
-            },
-            '9103e05d1b4a1510ec0320efe54bcb83': {
-                table: 'business_unit',
-                order: 15,
-                notes: 'Insert parent Business Unit',
-                name: 'Corporate Donuts',
-                company: '45616c991b4a1510ec0320efe54bcb55'
-            },
-            '90e3a85d1b4a1510ec0320efe54bcbdc': {
-                table: 'business_unit',
-                order: 16,
-                notes: 'Insert subordinate Business Unit',
-                name: 'Donut Stores',
-                parent: '9103e05d1b4a1510ec0320efe54bcb83'
-            },
-            '4f34a85d1b4a1510ec0320efe54bcbfc': {
-                table: 'sys_user',
-                order: 17,
-                notes: 'Create non-VIP user',
-                first_name: 'Joey',
-                last_name: 'Bag O\' Donuts',
-                active: true,
-                vip: false,
-                cmn_building: 'ff82a81d1b4a1510ec0320efe54bcbaf'
-            },
-            '1c16e8dd1b4a1510ec0320efe54bcba5': {
-                table: 'cmn_department',
-                name: 'Donut Makers',
-                order: 18,
-                notes: 'Create department'
-            },
-            '9f56e8dd1b4a1510ec0320efe54bcb1c': {
-                table: 'sys_user',
-                order: 18,
-                notes: 'Create VIP user',
-                first_name: 'Ian',
-                last_name: 'Extra',
-                active: true,
-                vip: true,
-                cmn_department: '1c16e8dd1b4a1510ec0320efe54bcba5'
-            }
-        };
-        function assertRelatedStep(step_id, name, table, related_id) {
-            if (typeof related_id === 'undefined')
-                return;
-            refStepInfo = stepResultRecordInfo[related_id];
-            assertEqual({
-                name: 'typeof stepResultRecordInfo[stepResultRecordInfo[' + step_id + '].' + name + ']',
-                shouldbe: 'object',
-                value: x_g_inte_site_17.AtfHelper.typeOfEx(refStepInfo)
-            });
-            assertEqual({
-                name: 'stepResultRecordInfo[stepResultRecordInfo[' + step_id + '].' + name + '].table',
-                shouldbe: table,
-                value: refStepInfo.table
-            });
-        }
-        var glideRecords = {};
-        var atfStepInfo;
-        var refStepInfo;
-        var basePsb;
-        var psb;
-        for (var validate_id in stepResultRecordInfo) {
-            atfStepInfo = stepResultRecordInfo[validate_id];
-            basePsb = x_g_inte_site_17.AtfHelper.createPseudoCodeBuilder('gr = new GlideRecord(' + JSON.stringify(atfStepInfo.table) + ')').setComment('step_id: ' + validate_id);
-            psb = basePsb;
-            var isTrue;
-            try {
-                var sys_id = ('' + steps(validate_id).record_id).trim();
-                var gr = new GlideRecord(atfStepInfo.table);
-                psb = psb.appendStatement('gr.addQuery("sys_id", ' + JSON.stringify(sys_id) + ')');
-                gr.addQuery('sys_id', sys_id);
-                basePsb = psb;
-                psb = psb.appendStatement('gr.query()');
-                gr.query();
-                psb = psb.appendStatement('gr.next()');
-                isTrue = gr.next();
-            }
-            catch (e) {
-                atfHelper.setFailed('Unexpected exception while executing ' + psb.toString(), e);
-                return false;
-            }
-            stepResult.setOutputMessage('Executed: ' + basePsb.toString());
-            assertEqual({
-                name: 'gr.next()',
-                shouldbe: true,
-                value: isTrue
-            });
-            glideRecords[validate_id] = gr;
-        }
-        for (var step_id in stepResultRecordInfo) {
-            // TODO: Test x_g_inte_site_17.Site17Util.getBusinessUnit
-            // TODO: Test x_g_inte_site_17.Site17Util.getCompany
-            // TODO: Test x_g_inte_site_17.Site17Util.getLocation
-            // TODO: Test x_g_inte_site_17.Site17Util.getCaller
-        }
-        return true;
-    })(outputs, steps, stepResult, assertEqual);
-})(site17Util_RelatedRecordsTest || (site17Util_RelatedRecordsTest = {}));

@@ -6,8 +6,8 @@ namespace constructorTest {
     declare function steps(sys_id: string): sn_atf.ITestStepOutputs;
     declare var stepResult: sn_atf.ITestStepResult;
     declare function assertEqual(assertion: sn_atf.ITestAssertion): void;
-    //  'SInt: 15M; Dur: inc=1M, min=1M, max=1H',
-            // 'SInt: 30M; Dur: inc=30M, min=30M, max=30M',
+    // 'SInt: 15M; Dur: inc=1M, min=1M, max=1H',
+    // 'SInt: 30M; Dur: inc=30M, min=30M, max=30M',
     export declare type ReservationTypeShortDescription = 'SInc: 1M; DInc: 15M; Min: 15M; Max: 1H' |
                                                           'SInc: 30M; DInc: 15M; Min: 15M; Max: 45M' |
                                                           'SInc: 1H; DInc: 1H; Min: 1H; Max: 1H; Appr: true' |
@@ -981,7 +981,7 @@ namespace getAvailabilitiesInRangeTest {
         });
         assertEqual({
             name: 'Start date for schedule entry e8f6e19897d11110d87839000153afb8',
-            shouldbe: new GlideDateTime(gs.dateGenerate(gs.daysAgoStart(0).substring(0, 10), "16:00:00")).getDisplayValue(),
+            shouldbe: new GlideDateTime(gs.dateGenerate(gs.daysAgoStart(0).substring(0, 10), "09:00:00")).getDisplayValue(),
             value: (<any>gr).start_date_time.getDisplayValue()
         });
 
@@ -1943,60 +1943,51 @@ namespace getAvailabilitiesInRangeTest {
             var sys_id: string | undefined = atfHelper.getRecordIdFromStep(schedulerParameters.step_sys_id);
             if (x_g_inte_site_17.AtfHelper.isNil(sys_id))
                 return false;
-            var constructorSignature: string = 'new ReservationScheduler("' + sys_id + '" /* ' + schedulerParameters.short_description + ' */, true)';
+            var basePsb = x_g_inte_site_17.AtfHelper.createPseudoCodeBuilder('var rs = new ReservationScheduler("' + sys_id + '" /* ' + schedulerParameters.short_description + ' */, true)');
             var rs: x_g_inte_site_17.ReservationScheduler;
             try { rs = new x_g_inte_site_17.ReservationScheduler(sys_id, true); }
             catch (e) {
-                atfHelper.setFailed("Unexpected exception while initializing " + constructorSignature, e);
+                atfHelper.setFailed("Unexpected exception while executing " + basePsb.toString(), e);
                 return false;
             }
+            var psb: x_g_inte_site_17.PseudoCodeBuilder = basePsb;
             for (var parameterSet of schedulerParameters.parameterSets) {
-                var desc = parameterSet.test_description + ' with ' + constructorSignature;
-                var actualArray: x_g_inte_site_17.ITimeSpan[];
-                stepResult.setOutputMessage(JSON.stringify({
-                    fromDateTime: parameterSet.fromDateTime.getValue() + ' (' + parameterSet.fromDateTime.getDisplayValue() + ')',
-                    toDateTime: parameterSet.toDateTime.getValue() + ' (' + parameterSet.toDateTime.getDisplayValue() + ')',
-                    minimumDuration: (typeof parameterSet.minimumDuration === undefined) ? undefined : (<GlideDuration>parameterSet.minimumDuration).getDurationValue(),
-                }));
+                stepResult.setOutputMessage('Executed: ' + basePsb.toString());
+                var iterator: Iterator<x_g_inte_site_17.ITimeSpan>;
                 try {
-                    if (typeof parameterSet.minimumDuration === 'undefined')
-                        actualArray = x_g_inte_site_17.Site17Util.iteratorToArray<x_g_inte_site_17.ITimeSpan>(rs.getAvailabilitiesInRange(parameterSet.fromDateTime, parameterSet.toDateTime));
-                    else
-                        actualArray = x_g_inte_site_17.Site17Util.iteratorToArray<x_g_inte_site_17.ITimeSpan>(rs.getAvailabilitiesInRange(parameterSet.fromDateTime, parameterSet.toDateTime, parameterSet.minimumDuration));
+                    if (typeof parameterSet.minimumDuration === 'undefined') {
+                        basePsb = basePsb.appendStatement('var iterator = rs.getAvailabilitiesInRange(new GlideDateTime(' + JSON.stringify(parameterSet.fromDateTime.getDisplayValue()) +
+                            '), new GlideDateTime(' + JSON.stringify(parameterSet.toDateTime.getDisplayValue()) + '))');
+                        iterator = rs.getAvailabilitiesInRange(parameterSet.fromDateTime, parameterSet.toDateTime);
+                    } else {
+                        basePsb = basePsb.appendStatement('var iterator = rs.getAvailabilitiesInRange(new GlideDateTime(' + JSON.stringify(parameterSet.fromDateTime.getDisplayValue()) +
+                            '), new GlideDateTime(' + JSON.stringify(parameterSet.toDateTime.getDisplayValue()) + '), new GlideDuration(' + JSON.stringify(parameterSet.minimumDuration.getDurationValue()) + '))');
+                        iterator = rs.getAvailabilitiesInRange(parameterSet.fromDateTime, parameterSet.toDateTime, parameterSet.minimumDuration);
+                    }
                 } catch (e) {
-                    atfHelper.setFailed("Unexpected exception while testing " + desc, e);
+                    atfHelper.setFailed("Unexpected exception while executing " + basePsb.toString(), e);
                     return false;
                 }
-                stepResult.setOutputMessage(JSON.stringify({
-                    fromDateTime: parameterSet.fromDateTime.getValue() + ' (' + parameterSet.fromDateTime.getDisplayValue() + ')',
-                    toDateTime: parameterSet.toDateTime.getValue() + ' (' + parameterSet.toDateTime.getDisplayValue() + ')',
-                    minimumDuration: (typeof parameterSet.minimumDuration === undefined) ? undefined : (<GlideDuration>parameterSet.minimumDuration).getDurationValue(),
-                    expected: parameterSet.expected.map(function(item: x_g_inte_site_17.ITimeSpan): {
-                        start: string;
-                        duration: string | undefined;
-                    } {
-                        return {
-                            start: item.start.getValue() + ' (' + item.start.getDisplayValue() + ')',
-                            duration: (typeof item.duration === 'undefined') ? undefined : item.duration.getDurationValue()
-                        };
-                    }),
-                    actual: actualArray.map(function(item: x_g_inte_site_17.ITimeSpan): {
-                        start: string;
-                        duration: string | undefined;
-                    } {
-                        return {
-                            start: item.start.getValue() + ' (' + item.start.getDisplayValue() + ')',
-                            duration: (typeof item.duration === 'undefined') ? undefined : item.duration.getDurationValue()
-                        };
-                    })
-                }));
+                stepResult.setOutputMessage('Executed: ' + basePsb.toString());
                 assertEqual({
-                    name: 'return value defined for ' + desc,
-                    shouldbe: true,
-                    value: typeof actualArray !== 'undefined'
+                    name: 'typeof iterator',
+                    shouldbe: 'object',
+                    value: x_g_inte_site_17.AtfHelper.typeOfEx(iterator)
+                });
+                var actualArray: x_g_inte_site_17.ITimeSpan[];
+                basePsb = basePsb.appendStatement('var actualArray = Site17Util.iteratorToArray(iterator)')
+                try { actualArray = x_g_inte_site_17.Site17Util.iteratorToArray<x_g_inte_site_17.ITimeSpan>(iterator, parameterSet.expected.length + 1); } catch (e) {
+                    atfHelper.setFailed("Unexpected exception while executing " + basePsb.toString(), e);
+                    return false;
+                }
+                stepResult.setOutputMessage('Executed: ' + basePsb.toString());
+                assertEqual({
+                    name: 'typeof actualArray',
+                    shouldbe: 'object',
+                    value: x_g_inte_site_17.AtfHelper.typeOfEx(actualArray)
                 });
                 assertEqual({
-                    name: 'length of return value for ' + desc,
+                    name: 'actualArray.length',
                     shouldbe: parameterSet.expected.length,
                     value: actualArray.length
                 });
@@ -2004,17 +1995,17 @@ namespace getAvailabilitiesInRangeTest {
                     var expectedItem = parameterSet.expected[i];
                     var actualItem = actualArray[i];
                     assertEqual({
-                        name: 'element ' + i  + ' defined for ' + desc,
-                        shouldbe: true,
-                        value: typeof actualItem === 'object' && actualItem !== null
+                        name: 'typeof actualArray[' + i  + ']',
+                        shouldbe: 'object',
+                        value: x_g_inte_site_17.AtfHelper.typeOfEx(actualItem)
                     });
                     assertEqual({
-                        name: 'startDateTime of element ' + i  + ' for ' + desc,
+                        name: 'actualArray[' + i  + '].start',
                         shouldbe: expectedItem.start,
                         value: actualItem.start
                     });
                     assertEqual({
-                        name: 'duration of element ' + i  + ' for ' + desc,
+                        name: 'actualArray[' + i  + '].duration',
                         shouldbe: expectedItem.duration,
                         value: actualItem.duration
                     });

@@ -283,7 +283,7 @@ var x_g_inte_site_17;
             var gr;
             var s;
             if (source instanceof GlideRecord || source instanceof GlideElement) {
-                if (('' + source.getTableName()) == 'sys_user')
+                if (('' + ((source instanceof GlideRecord) ? source.getTableName() : source.getReferenceTable())) == 'sys_user')
                     return ((s = '' + source.source).length == 0 || testDistinguishedName(s)) && isUserDN(s);
                 gr = getCaller(source);
                 if (gs.nil(gr))
@@ -320,7 +320,7 @@ var x_g_inte_site_17;
             var gr;
             var s;
             if (source instanceof GlideRecord || source instanceof GlideElement) {
-                if (('' + source.getTableName()) == 'sys_user_group')
+                if (('' + ((source instanceof GlideRecord) ? source.getTableName() : source.getReferenceTable())) == 'sys_user_group')
                     return ((s = '' + source.source).length == 0 || testDistinguishedName(s)) && isGroupDN(s);
                 gr = getCaller(source);
                 if (gs.nil(gr))
@@ -928,14 +928,14 @@ var x_g_inte_site_17;
         var TABLE_NAME_sc_req_item = 'sc_req_item';
         var TABLE_NAME_sc_task = 'sc_task';
         function isUser(target) {
-            return target.getTableName() == TABLE_NAME_sys_user;
+            return ((target instanceof GlideRecord) ? target.getTableName() : target.getReferenceTable()) == TABLE_NAME_sys_user;
         }
         function isGroup(target) {
-            return target.getTableName() == TABLE_NAME_sys_user_group;
+            return ((target instanceof GlideRecord) ? target.getTableName() : target.getReferenceTable()) == TABLE_NAME_sys_user_group;
         }
         function getCaller(target) {
             var caller;
-            switch ('' + target.getTableName()) {
+            switch ('' + ((target instanceof GlideRecord) ? target.getTableName() : target.getReferenceTable())) {
                 case TABLE_NAME_incident:
                     caller = target.caller_id;
                     break;
@@ -972,19 +972,19 @@ var x_g_inte_site_17;
             return typeof c !== 'undefined' && ('' + c.vip) == 'true';
         }
         function isBusinessUnit(target) {
-            return target.getTableName() == TABLE_NAME_business_unit;
+            return ((target instanceof GlideRecord) ? target.getTableName() : target.getReferenceTable()) == TABLE_NAME_business_unit;
         }
         function isDepartment(target) {
-            return target.getTableName() == TABLE_NAME_cmn_department;
+            return ((target instanceof GlideRecord) ? target.getTableName() : target.getReferenceTable()) == TABLE_NAME_cmn_department;
         }
         function isCompany(target) {
-            return target.getTableName() == TABLE_NAME_core_company;
+            return ((target instanceof GlideRecord) ? target.getTableName() : target.getReferenceTable()) == TABLE_NAME_core_company;
         }
         function isLocation(target) {
-            return target.getTableName() == TABLE_NAME_cmn_location;
+            return ((target instanceof GlideRecord) ? target.getTableName() : target.getReferenceTable()) == TABLE_NAME_cmn_location;
         }
         function isBuilding(target) {
-            return target.getTableName() == TABLE_NAME_cmn_building;
+            return ((target instanceof GlideRecord) ? target.getTableName() : target.getReferenceTable()) == TABLE_NAME_cmn_building;
         }
         function getBusinessUnitCompany(target) {
             var parent = target;
@@ -1017,7 +1017,7 @@ var x_g_inte_site_17;
             return target.business_unit;
         }
         function getBusinessUnit(target) {
-            switch ('' + target.getTableName()) {
+            switch ('' + ((target instanceof GlideRecord) ? target.getTableName() : target.getReferenceTable())) {
                 case TABLE_NAME_sys_user:
                     if ((target = target.department).nil())
                         return;
@@ -1033,7 +1033,7 @@ var x_g_inte_site_17;
         }
         function getCompany(target) {
             var company;
-            switch ('' + target.getTableName()) {
+            switch ('' + ((target instanceof GlideRecord) ? target.getTableName() : target.getReferenceTable())) {
                 case TABLE_NAME_sys_user:
                     if (!target.company.nil())
                         return target.company;
@@ -1053,7 +1053,7 @@ var x_g_inte_site_17;
                 return company;
         }
         function getLocation(target) {
-            switch ('' + target.getTableName()) {
+            switch ('' + ((target instanceof GlideRecord) ? target.getTableName() : target.getReferenceTable())) {
                 case TABLE_NAME_sys_user:
                     if (!target.location.nil())
                         return target.location;
