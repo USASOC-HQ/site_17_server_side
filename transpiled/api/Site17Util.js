@@ -928,10 +928,10 @@ var x_g_inte_site_17;
         var TABLE_NAME_sc_req_item = 'sc_req_item';
         var TABLE_NAME_sc_task = 'sc_task';
         function isUser(target) {
-            return target.getTableName() == TABLE_NAME_sys_user;
+            return ((target instanceof GlideRecord) ? target.getTableName() : target.getReferenceTable()) == TABLE_NAME_sys_user;
         }
         function isGroup(target) {
-            return target.getTableName() == TABLE_NAME_sys_user_group;
+            return ((target instanceof GlideRecord) ? target.getTableName() : target.getReferenceTable()) == TABLE_NAME_sys_user_group;
         }
         function getCaller(target) {
             var caller;
@@ -972,19 +972,19 @@ var x_g_inte_site_17;
             return typeof c !== 'undefined' && ('' + c.vip) == 'true';
         }
         function isBusinessUnit(target) {
-            return target.getTableName() == TABLE_NAME_business_unit;
+            return ((target instanceof GlideRecord) ? target.getTableName() : target.getReferenceTable()) == TABLE_NAME_business_unit;
         }
         function isDepartment(target) {
-            return target.getTableName() == TABLE_NAME_cmn_department;
+            return ((target instanceof GlideRecord) ? target.getTableName() : target.getReferenceTable()) == TABLE_NAME_cmn_department;
         }
         function isCompany(target) {
-            return target.getTableName() == TABLE_NAME_core_company;
+            return ((target instanceof GlideRecord) ? target.getTableName() : target.getReferenceTable()) == TABLE_NAME_core_company;
         }
         function isLocation(target) {
-            return target.getTableName() == TABLE_NAME_cmn_location;
+            return ((target instanceof GlideRecord) ? target.getTableName() : target.getReferenceTable()) == TABLE_NAME_cmn_location;
         }
         function isBuilding(target) {
-            return target.getTableName() == TABLE_NAME_cmn_building;
+            return ((target instanceof GlideRecord) ? target.getTableName() : target.getReferenceTable()) == TABLE_NAME_cmn_building;
         }
         function getBusinessUnitCompany(target) {
             var parent = target;

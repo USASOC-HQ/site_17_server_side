@@ -3477,7 +3477,7 @@ namespace site17Util_RecordTypesTest {
         name: string;
         active: boolean;
         /**
-         * Refers to sys_user ({@link Isys_userInfo});
+         * Refers to sys_user ({@link sys_userFields});
          * @type {string}
          * @memberof Isys_user_groupInfo
          */
@@ -3751,6 +3751,7 @@ namespace site17Util_RecordTypesTest {
         var refStepInfo: IAtfStepInfo;
         var basePsb: x_g_inte_site_17.PseudoCodeBuilder;
         var psb: x_g_inte_site_17.PseudoCodeBuilder;
+        var gr: GlideRecord;
         for (var validate_id in stepResultRecordInfo) {
             atfStepInfo = stepResultRecordInfo[validate_id];
             switch(atfStepInfo.table) {
@@ -3799,51 +3800,81 @@ namespace site17Util_RecordTypesTest {
             }
             stepResult.setOutputMessage('Executed: ' + basePsb.toString());
             assertEqual({
-                name: 'gs.nil(stepData)',
-                shouldbe: false,
-                value: gs.nil(stepData)
-            });
-            var record_id: atf_output_variableElement;
-            var psb = basePsb.appendStatement('record_id = stepData.record_id');
-            try {
-                record_id = stepData.record_id;
-            } catch (e) {
-                atfHelper.setFailed('Unexpected exception while executing ' + psb.toString(), e);
-                return false;
-            }
-            stepResult.setOutputMessage('Executed: ' + psb.toString());
-            assertEqual({
-                name: 'typeof record_id',
+                name: 'typeof stepData',
                 shouldbe: 'object',
-                value: x_g_inte_site_17.AtfHelper.typeOfEx(record_id)
+                value: x_g_inte_site_17.AtfHelper.typeOfEx(stepData)
             });
             var isTrue: boolean;
-            try { isTrue = record_id.nil(); } catch (e) {
-                atfHelper.setFailed('Unexpected exception while executing ' + psb.appendStatement('record_id.nil()').toString(), e);
-                return false;
-            }
-            assertEqual({
-                name: 'record_id.nil()',
-                shouldbe: false,
-                value: isTrue
-            });
             var sys_id: string;
-            try {
-                sys_id = ('' + record_id).trim();
-            } catch (e) {
-                atfHelper.setFailed('Unexpected exception while executing ' + psb.appendStatement('sys_id = ("" + record_id).trim()').toString(), e);
-                return false;
+            var record_id: atf_output_variableElement;
+            if (atfStepInfo.table === "sys_user") {
+                psb = basePsb.appendStatement('record_id = stepData.user');
+                try { record_id = stepData.user; } catch (e) {
+                    atfHelper.setFailed('Unexpected exception while executing ' + psb.toString(), e);
+                    return false;
+                }
+                stepResult.setOutputMessage('Executed: ' + psb.toString());
+                assertEqual({
+                    name: 'typeof record_id',
+                    shouldbe: 'object',
+                    value: x_g_inte_site_17.AtfHelper.typeOfEx(record_id)
+                });
+                try { isTrue = record_id.nil(); } catch (e) {
+                    atfHelper.setFailed('Unexpected exception while executing ' + psb.appendStatement('record_id.nil()').toString(), e);
+                    return false;
+                }
+                assertEqual({
+                    name: 'record_id.nil()',
+                    shouldbe: false,
+                    value: isTrue
+                });
+                try {
+                    sys_id = ('' + record_id).trim();
+                } catch (e) {
+                    atfHelper.setFailed('Unexpected exception while executing ' + psb.appendStatement('sys_id = ("" + record_id).trim()').toString(), e);
+                    return false;
+                }
+                basePsb = x_g_inte_site_17.AtfHelper.createPseudoCodeBuilder('sys_id = ("" + steps(' + JSON.stringify(validate_id) + ').user).trim()');
+            } else {
+                psb = basePsb.appendStatement('record_id = stepData.record_id');
+                try {
+                    record_id = stepData.record_id;
+                } catch (e) {
+                    atfHelper.setFailed('Unexpected exception while executing ' + psb.toString(), e);
+                    return false;
+                }
+                stepResult.setOutputMessage('Executed: ' + psb.toString());
+                assertEqual({
+                    name: 'typeof record_id',
+                    shouldbe: 'object',
+                    value: x_g_inte_site_17.AtfHelper.typeOfEx(record_id)
+                });
+                try { isTrue = record_id.nil(); } catch (e) {
+                    atfHelper.setFailed('Unexpected exception while executing ' + psb.appendStatement('record_id.nil()').toString(), e);
+                    return false;
+                }
+                assertEqual({
+                    name: 'record_id.nil()',
+                    shouldbe: false,
+                    value: isTrue
+                });
+                try {
+                    sys_id = ('' + record_id).trim();
+                } catch (e) {
+                    atfHelper.setFailed('Unexpected exception while executing ' + psb.appendStatement('sys_id = ("" + record_id).trim()').toString(), e);
+                    return false;
+                }
+                basePsb = x_g_inte_site_17.AtfHelper.createPseudoCodeBuilder('sys_id = ("" + steps(' + JSON.stringify(validate_id) + ').record_id).trim()');
             }
-            basePsb = x_g_inte_site_17.AtfHelper.createPseudoCodeBuilder('sys_id = ("" + steps(' + JSON.stringify(validate_id) + ').record_id).trim()');
             stepResult.setOutputMessage('Executed: ' + basePsb.toString());
             assertEqual({
                 name: 'sys_id.length',
-                shouldbe: 31,
+                shouldbe: 32,
                 value: sys_id.length
             });
             psb = basePsb.appendStatement('gr = new GlideRecord(' + JSON.stringify(atfStepInfo.table) + ')');
             try {
-                var gr = new GlideRecord(atfStepInfo.table);
+                gr = new GlideRecord(atfStepInfo.table);
                 psb = psb.appendStatement('gr.addQuery("sys_id", ' + JSON.stringify(sys_id) + ')');
                 gr.addQuery('sys_id', sys_id);
                 psb = psb.appendStatement('gr.query()');
@@ -3861,7 +3892,7 @@ namespace site17Util_RecordTypesTest {
                 shouldbe: true,
                 value: isTrue
             });
-            basePsb = basePsb.appendStatement('gr.query(); gr.next()');
+            stepResult.setOutputMessage('Executed: ' + basePsb.appendStatement('gr.query(); gr.next()').toString());
             glideRecords[validate_id] = gr;
         }
         
@@ -3935,7 +3966,7 @@ namespace site17Util_RecordTypesTest {
                 return false;
             }
             assertEqual({
-                name: 'Site17Util.isCompany(' + varName + ')',
+                name: 'Site17Util.isCompany(' + varName + ') // ' + JSON.stringify(target.getTableName()),
                 shouldbe: table === "core_company",
                 value: actual
             });
@@ -3984,7 +4015,7 @@ namespace site17Util_RecordTypesTest {
         for (var step_id in stepResultRecordInfo) {
             atfStepInfo = stepResultRecordInfo[step_id];
             stepResult.setOutputMessage('Executed: var gr = new GlideRecord(' + JSON.stringify(atfStepInfo.table) + ').get(steps(' + JSON.stringify(step_id) + ').record_id)');
-            var gr: GlideRecord = glideRecords[step_id];
+            gr = glideRecords[step_id];
             if (!validateGlideReference('gr', atfStepInfo.table, gr))
                 return false;
             switch(atfStepInfo.table) {
@@ -4022,344 +4053,3 @@ namespace site17Util_RecordTypesTest {
     })(outputs, steps, stepResult, assertEqual);
 }
 
-namespace site17Util_isVipTest {
-    declare var outputs: sn_atf.ITestStepOutputs;
-    declare function steps(sys_id: string): sn_atf.ITestStepOutputs;
-    declare var stepResult: sn_atf.ITestStepResult;
-    declare function assertEqual(assertion: sn_atf.ITestAssertion): void;
-
-    (function(outputs: sn_atf.ITestStepOutputs, steps: sn_atf.ITestStepsFunc, stepResult: sn_atf.ITestStepResult, assertEqual: sn_atf.IAssertEqualFunc): boolean {
-        var atfHelper: x_g_inte_site_17.AtfHelper = new x_g_inte_site_17.AtfHelper(steps, stepResult);
-        // TODO: Test x_g_inte_site_17.Site17Util.isVip
-        return true;
-    })(outputs, steps, stepResult, assertEqual);
-}
-
-namespace site17Util_RelatedRecordsTest {
-    type TestRecordTableName = 'sys_user_group' | 'core_company' | 'cmn_location' | 'cmn_building' | 'business_unit' | 'cmn_department' | 'sys_user';
-
-    interface IAtfStepInfo {
-        table: TestRecordTableName;
-        order: number;
-        notes: string;
-    }
-
-    interface Isys_user_groupInfo extends IAtfStepInfo {
-        table: 'sys_user_group';
-        name: string;
-        active: boolean;
-        /**
-         * Refers to sys_user ({@link sys_userFields}).
-         * @description Possible references:
-         * {@link sys_user_groupFields.manager};
-         * {@link sys_user_groupFields.parent}.{@link sys_user_groupFields.manager}.
-         * @type {string}
-         * @memberof Isys_user_groupInfo
-         */
-        sys_user?: string;
-    }
-
-    interface Icore_companyInfo extends IAtfStepInfo {
-        table: 'core_company';
-        name: string;
-        /**
-         * Refers to sys_user ({@link sys_userFields}).
-         * @description Possible references:
-         * {@link core_companyFields.contact};
-         * {@link core_companyFields.parent}.{@link core_companyFields.contact}.
-         * @type {string}
-         * @memberof Icore_companyInfo
-         */
-        sys_user?: string;
-    }
-
-    interface Icmn_locationInfo extends IAtfStepInfo {
-        table: 'cmn_location';
-        name: string;
-        /**
-         * Refers to core_company ({@link core_companyFields}).
-         * @description Possible references:
-         * {@link cmn_locationFields.company};
-         * {@link cmn_locationFields.parent}.{@link cmn_locationFields.company}.
-         * @type {string}
-         * @memberof Icmn_locationInfo
-         */
-        core_company?: string;
-        /**
-         * Refers to sys_user ({@link sys_userFields}).
-         * @description Possible references:
-         * {@link cmn_locationFields.contact};
-         * {@link cmn_locationFields.parent}.{@link cmn_locationFields.contact}.
-         * @type {string}
-         * @memberof Icmn_locationInfo
-         */
-        sys_user?: string;
-    }
-
-    interface Icmn_buildingInfo extends IAtfStepInfo {
-        table: 'cmn_building';
-        name: string;
-        /**
-         * Refers to sys_user ({@link sys_userFields}).
-         * @description Possible references:
-         * {@link cmn_buildingFields.contact}.
-         * @type {string}
-         * @memberof Icmn_buildingInfo
-         */
-        sys_user?: string;
-        /**
-         * Refers to cmn_location ({@link cmn_locationFields}).
-         * @description Possible references:
-         * {@link cmn_buildingFields.location};
-         * @type {string}
-         * @memberof Icmn_buildingInfo
-         */
-        cmn_location?: string;
-    }
-
-    interface Ibusiness_unitInfo extends IAtfStepInfo {
-        table: 'business_unit';
-        name: string;
-        /**
-         * Refers to sys_user ({@link sys_userFields}).
-         * @description Possible references:
-         * {@link business_unitFields.bu_head};
-         * {@link business_unitFields.parent}.{@link business_unitFields.bu_head}.
-         * @type {string}
-         * @memberof Ibusiness_unitInfo
-         */
-        sys_user?: string;
-        /**
-         * Refers to core_company ({@link core_companyFields}).
-         * @description Possible references:
-         * {@link business_unitFields.company};
-         * {@link business_unitFields.parent}.{@link business_unitFields.company}.
-         * @type {string}
-         * @memberof Ibusiness_unitInfo
-         */
-        core_company?: string;
-    }
-
-    interface Icmn_departmentInfo extends IAtfStepInfo {
-        table: 'cmn_department';
-        name: string;
-        /**
-         * Refers to business_unit ({@link business_unitFields}).
-         * @description Possible references:
-         * {@link cmn_departmentFields.business_unit};
-         * {@link cmn_departmentFields.parent}.{@link cmn_departmentFields.business_unit}.
-         * @type {string}
-         * @memberof Icmn_departmentInfo
-         */
-        business_unit?: string;
-        /**
-         * Refers to core_company ({@link core_companyFields}).
-         * @description Possible references:
-         * {@link cmn_departmentFields.company};
-         * {@link cmn_departmentFields.parent}.{@link cmn_departmentFields.company}.
-         * @type {string}
-         * @memberof Icmn_departmentInfo
-         */
-        core_company?: string;
-        /**
-         * Refers to sys_user ({@link sys_userFields}).
-         * @description Possible references:
-         * {@link business_unitFields.primary_contact};
-         * {@link business_unitFields.dept_head};
-         * {@link business_unitFields.parent}.{@link business_unitFields.primary_contact};
-         * {@link business_unitFields.parent}.{@link business_unitFields.dept_head}.
-         * @type {string}
-         * @memberof Icmn_departmentInfo
-         */
-        sys_user?: string;
-        /**
-         * Refers to cmn_location ({@link Icmn_locationInfo}).
-         * @description Possible references:
-         * {@link business_unitFields.primary_contact}.{@link sys_userFields.location};
-         * {@link business_unitFields.dept_head}.{@link sys_userFields.location};
-         * {@link business_unitFields.parent}.{@link business_unitFields.primary_contact}.{@link sys_userFields.location};
-         * {@link business_unitFields.parent}.{@link business_unitFields.dept_head}.{@link sys_userFields.location}.
-         * @type {string}
-         * @memberof Isys_userInfo
-         */
-        cmn_location?: string;
-    }
-
-    interface Isys_userInfo extends IAtfStepInfo {
-        table: 'sys_user';
-        user_name: string;
-        vip: boolean;
-        title?: string;
-        first_name: string;
-        middle_name?: string;
-        last_name: string;
-        active: boolean;
-        /**
-         * Refers to cmn_building ({@link Icmn_buildingInfo}).
-         * @description Possible references:
-         * {@link sys_userFields.building}.
-         * @type {string}
-         * @memberof Isys_userInfo
-         */
-        cmn_building?: string;
-        /**
-         * Refers to core_company ({@link Icore_companyInfo}).
-         * @description Possible references:
-         * {@link sys_userFields.company}.
-         * @type {string}
-         * @memberof Isys_userInfo
-         */
-        core_company?: string;
-        /**
-         * Refers to cmn_department ({@link Icmn_departmentInfo}).
-         * @description Possible references:
-         * {@link sys_userFields.department}.
-         * @type {string}
-         * @memberof Isys_userInfo
-         */
-        cmn_department?: string;
-        /**
-         * Refers to cmn_location ({@link Icmn_locationInfo}).
-         * @description Possible references:
-         * {@link sys_userFields.location}.
-         * @type {string}
-         * @memberof Isys_userInfo
-         */
-        cmn_location?: string;
-    }
-
-    declare var outputs: sn_atf.ITestStepOutputs;
-    declare function steps(sys_id: string): sn_atf.ITestStepOutputs;
-    declare var stepResult: sn_atf.ITestStepResult;
-    declare function assertEqual(assertion: sn_atf.ITestAssertion): void;
-
-    (function(outputs: sn_atf.ITestStepOutputs, steps: sn_atf.ITestStepsFunc, stepResult: sn_atf.ITestStepResult, assertEqual: sn_atf.IAssertEqualFunc): boolean {
-        var atfHelper: x_g_inte_site_17.AtfHelper = new x_g_inte_site_17.AtfHelper(steps, stepResult);
-        
-        var stepResultRecordInfo: {
-            [key: string]: IAtfStepInfo;
-        } = {
-            '1d3020991b4a1510ec0320efe54bcbe5': <Isys_user_groupInfo>{
-                table: 'sys_user_group',
-                order: 11,
-                notes: 'Create Test Group Record',
-                active: true,
-                name: 'Donut Eaters'
-            },
-            '45616c991b4a1510ec0320efe54bcb55': <Icore_companyInfo>{
-                table: 'core_company',
-                order: 12,
-                notes: 'Insert company',
-                name: 'Time to make the donuts'
-            },
-            '69e168d91b4a1510ec0320efe54bcb2a': <Icmn_locationInfo>{
-                table: 'cmn_location',
-                order: 13,
-                notes: 'Insert Location',
-                name: 'Donutville',
-                company: '45616c991b4a1510ec0320efe54bcb55'
-            },
-            'ff82a81d1b4a1510ec0320efe54bcbaf': <Icmn_buildingInfo>{
-                table: 'cmn_building',
-                order: 14,
-                notes: 'Insert Building',
-                name: 'The donut shop',
-                location: '69e168d91b4a1510ec0320efe54bcb2a'
-            },
-            '9103e05d1b4a1510ec0320efe54bcb83': <Ibusiness_unitInfo>{
-                table: 'business_unit',
-                order: 15,
-                notes: 'Insert parent Business Unit',
-                name: 'Corporate Donuts',
-                company: '45616c991b4a1510ec0320efe54bcb55'
-            },
-            '90e3a85d1b4a1510ec0320efe54bcbdc': <Ibusiness_unitInfo>{
-                table: 'business_unit',
-                order: 16,
-                notes: 'Insert subordinate Business Unit',
-                name: 'Donut Stores',
-                parent: '9103e05d1b4a1510ec0320efe54bcb83'
-            },
-            '4f34a85d1b4a1510ec0320efe54bcbfc': <Isys_userInfo>{
-                table: 'sys_user',
-                order: 17,
-                notes: 'Create non-VIP user',
-                first_name: 'Joey',
-                last_name: 'Bag O\' Donuts',
-                active: true,
-                vip: false,
-                cmn_building: 'ff82a81d1b4a1510ec0320efe54bcbaf'
-            },
-            '1c16e8dd1b4a1510ec0320efe54bcba5': <Icmn_departmentInfo>{
-                table: 'cmn_department',
-                name: 'Donut Makers',
-                order: 18,
-                notes: 'Create department'
-            },
-            '9f56e8dd1b4a1510ec0320efe54bcb1c': <Isys_userInfo>{
-                table: 'sys_user',
-                order: 18,
-                notes: 'Create VIP user',
-                first_name: 'Ian',
-                last_name: 'Extra',
-                active: true,
-                vip: true,
-                cmn_department: '1c16e8dd1b4a1510ec0320efe54bcba5'
-            }
-        };
-        function assertRelatedStep(step_id: string, name: string, table: TestRecordTableName, related_id?: string): void {
-            if (typeof related_id === 'undefined') return;
-            refStepInfo = stepResultRecordInfo[related_id];
-            assertEqual({
-                name: 'typeof stepResultRecordInfo[stepResultRecordInfo[' + step_id + '].' + name + ']',
-                shouldbe: 'object',
-                value: x_g_inte_site_17.AtfHelper.typeOfEx(refStepInfo)
-            });
-            assertEqual({
-                name: 'stepResultRecordInfo[stepResultRecordInfo[' + step_id + '].' + name + '].table',
-                shouldbe: table,
-                value: refStepInfo.table
-            });
-        }
-        var glideRecords: { [key: string]: GlideRecord; } = {};
-        var atfStepInfo: IAtfStepInfo;
-        var refStepInfo: IAtfStepInfo;
-        var basePsb: x_g_inte_site_17.PseudoCodeBuilder;
-        var psb: x_g_inte_site_17.PseudoCodeBuilder;
-        for (var validate_id in stepResultRecordInfo) {
-            atfStepInfo = stepResultRecordInfo[validate_id];
-            basePsb = x_g_inte_site_17.AtfHelper.createPseudoCodeBuilder('gr = new GlideRecord(' + JSON.stringify(atfStepInfo.table) + ')').setComment('step_id: ' + validate_id);
-            psb = basePsb;
-            var isTrue: boolean;
-            try {
-                var sys_id = ('' + steps(validate_id).record_id).trim()
-                var gr = new GlideRecord(atfStepInfo.table);
-                psb = psb.appendStatement('gr.addQuery("sys_id", ' + JSON.stringify(sys_id) + ')');
-                gr.addQuery('sys_id', sys_id);
-                basePsb = psb;
-                psb = psb.appendStatement('gr.query()');
-                gr.query();
-                psb = psb.appendStatement('gr.next()');
-                isTrue = gr.next();
-            } catch (e) {
-                atfHelper.setFailed('Unexpected exception while executing ' + psb.toString(), e);
-                return false;
-            }
-            stepResult.setOutputMessage('Executed: ' + basePsb.toString());
-            assertEqual({
-                name: 'gr.next()',
-                shouldbe: true,
-                value: isTrue
-            });
-            glideRecords[validate_id] = gr;
-        }
-        
-        for (var step_id in stepResultRecordInfo) {
-            // TODO: Test x_g_inte_site_17.Site17Util.getBusinessUnit
-            // TODO: Test x_g_inte_site_17.Site17Util.getCompany
-            // TODO: Test x_g_inte_site_17.Site17Util.getLocation
-            // TODO: Test x_g_inte_site_17.Site17Util.getCaller
-        }
-        return true;
-    })(outputs, steps, stepResult, assertEqual);
-}
