@@ -6,8 +6,8 @@ namespace constructorTest {
     declare function steps(sys_id: string): sn_atf.ITestStepOutputs;
     declare var stepResult: sn_atf.ITestStepResult;
     declare function assertEqual(assertion: sn_atf.ITestAssertion): void;
-    //  'SInt: 15M; Dur: inc=1M, min=1M, max=1H',
-            // 'SInt: 30M; Dur: inc=30M, min=30M, max=30M',
+    // 'SInt: 15M; Dur: inc=1M, min=1M, max=1H',
+    // 'SInt: 30M; Dur: inc=30M, min=30M, max=30M',
     export declare type ReservationTypeShortDescription = 'SInc: 1M; DInc: 15M; Min: 15M; Max: 1H' |
                                                           'SInc: 30M; DInc: 15M; Min: 15M; Max: 45M' |
                                                           'SInc: 1H; DInc: 1H; Min: 1H; Max: 1H; Appr: true' |

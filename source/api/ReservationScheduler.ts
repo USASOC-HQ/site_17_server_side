@@ -574,8 +574,7 @@
                     md = this.minimum_duration;
                 else
                     md = getNormalizedGlideDuration(minimumDuration, this.duration_increment, this.minimum_duration, this.maximum_duration);
-                return Site17Util.filterIterator<ITimeSpan>(new AvailabilityIterator(this.schedule, getNormalizedGlideDateTime(fromDateTime, this.start_time_interval),
-                        toDateTime),
+                return Site17Util.filterIterator<ITimeSpan>(new AvailabilityIterator(this.schedule, getNormalizedGlideDateTime(fromDateTime, this.start_time_interval), toDateTime),
                     function(this: IReservationSchedulerPrototype, ts: ITimeSpan, ...args: [] | [undefined]): boolean {
                         var ms = normalizeGlideDateTime(ts.start, this.start_time_interval);
                         if (ms > 0) {
