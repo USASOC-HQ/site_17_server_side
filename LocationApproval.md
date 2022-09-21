@@ -19,7 +19,7 @@ new LocationApproval(source: GlideRecord | GlideElementReference): LocationAppro
 
 Argument:
 
-- source: {(string | GlideRecord | GlideElementReference)} - The source object for the approval context.
+- source: `{(string | GlideRecord | GlideElementReference)}` - The source object for the approval context.
 
 Returns a new `LocationApproval` instance.
 
@@ -57,6 +57,6 @@ getDefaultApprovalGroup(source: GlideRecord | GlideElementReference): GlideEleme
 
 Argument:
 
-- source {(string | GlideRecord | GlideElementReference)} - The source object for the approval context.
+- source `{(string | GlideRecord | GlideElementReference)}` - The source object for the approval context.
 
 Returns the`GlideElementReference` for the default aproval group.
