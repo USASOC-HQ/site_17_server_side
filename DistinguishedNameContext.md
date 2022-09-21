@@ -1,6 +1,6 @@
 # x_g_inte_site_17.DistinguishedNameContext API
 
-Contextual information relating to the Active Directory distinguished name associated with a record.
+Gives an Active Directory Distinguished Name context for many record types, including User, Group and Task-based records, to determine if they are associated with a Site 17 user or group that was imported from Active Directory.
 
 - [x_g_inte_site_17.DistinguishedNameContext API](#x_g_inte_site_17distinguishednamecontext-api)
   - [Constructor](#constructor)
