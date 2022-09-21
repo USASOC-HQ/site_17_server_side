@@ -29,7 +29,7 @@ API for making schedule reservations.
     - [IPhoneAndOrg](#iphoneandorg)
 
 - [Source Code](source/api/ProfileValidator.ts)
-- [Type Definition](types/x_g_inte_site_17/api/ProfileValidator.d.ts)
+- [Type Definition File](types/x_g_inte_site_17/api/ProfileValidator.d.ts)
 
 ## Methods
 

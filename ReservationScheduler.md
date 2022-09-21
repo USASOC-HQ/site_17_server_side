@@ -19,7 +19,7 @@ API for making schedule reservations.
     - [Interface Properties](#interface-properties)
 
 - [Source Code](source/api/ReservationScheduler.ts)
-- [Type Definition](types/x_g_inte_site_17/api/ReservationScheduler.d.ts)
+- [Type Definition File](types/x_g_inte_site_17/api/ReservationScheduler.d.ts)
 
 ## Constructor
 

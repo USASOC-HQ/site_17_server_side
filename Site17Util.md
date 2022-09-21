@@ -52,7 +52,7 @@
     - [IIteratorThrowHandler](#iiteratorthrowhandler)
 
 - [Source Code](source/api/Site17Util.ts)
-- [Type Definition](types/x_g_inte_site_17/api/Site17Util.d.ts)
+- [Type Definition File](types/x_g_inte_site_17/api/Site17Util.d.ts)
 
 ## Methods
 

@@ -8,7 +8,7 @@ Client-callable methods for the [ReservationScheduler API](ReservationScheduler.
     - [getAvailabilitiesInRange](#getavailabilitiesinrange)
 
 - [Source Code](source/api/ReservationSchedulerAjax.ts)
-- [Type Definition](types/x_g_inte_site_17/api/ReservationSchedulerAjax.d.ts)
+- [Type Definition File](types/x_g_inte_site_17/api/ReservationSchedulerAjax.d.ts)
 
 ## Asynchronous Methods
 

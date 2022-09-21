@@ -5,7 +5,7 @@
   - [Methods](#methods)
 
 - [Source Code](source/api/LocationApproval.ts)
-- [Type Definition](types/x_g_inte_site_17/api/LocationApproval.d.ts)
+- [Type Definition File](types/x_g_inte_site_17/api/LocationApproval.d.ts)
 
 ## Constructor
 

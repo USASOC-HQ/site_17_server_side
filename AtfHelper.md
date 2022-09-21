@@ -3,7 +3,7 @@
 Helper API for test scripts in the [Automated Test Framework](https://docs.servicenow.com/bundle/sandiego-application-development/page/administer/auto-test-framework/concept/automated-test-framework.html).
 
 - [Source Code](source/api/AtfHelper.ts)
-- [Type Definition](types/x_g_inte_site_17/api/AtfHelper.d.ts)
+- [Type Definition File](types/x_g_inte_site_17/api/AtfHelper.d.ts)
 
 ## Constructor
 
