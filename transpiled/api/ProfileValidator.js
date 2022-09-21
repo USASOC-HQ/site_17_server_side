@@ -4,6 +4,7 @@ var x_g_inte_site_17;
 (function (x_g_inte_site_17) {
     x_g_inte_site_17.ProfileValidator = (function () {
         var constructor = Class.create();
+        // #region Private members
         var SYSID_RE = /^[\da-f]{32}$/i;
         var XMLNAME_result = 'result';
         var XMLNAME_org = 'org';
@@ -107,9 +108,25 @@ var x_g_inte_site_17;
             var userId = this.getParameter(PARAMNAME_user_id);
             return isNil(userId) ? gs.getUserID() : (typeof userId === 'string') ? userId : '' + userId;
         }
+        // #endregion
+        // #region Static methods
+        /**
+         * Indicates whether the user lookup result represents a fatal error.
+         * @param {IUserLookupResult} result The user lookup result object
+         * @returns {boolean} true if the user lookup result indicates a fatal error; otherwise, false.
+         * @static
+         * @memberof ProfileValidator
+         */
         constructor.isUserLookupFault = function (result) {
             return typeof result === 'object' && null != result && result.code !== 0;
         };
+        /**
+         * Attempts to get a related user or look up a user.
+         * @param {(GlideRecord | GlideElementReference | string)} user - The object referring to a user, a sys_id for a user or a user name (user_id).
+         * @returns {IUserLookupResult} An object that represents the result of detecting the associated user or looking up the user.
+         * @static
+         * @memberof ProfileValidator
+         */
         constructor.getUserLookupResult = function (user) {
             var user_id, sys_id;
             if (typeof user === 'object') {
@@ -159,6 +176,13 @@ var x_g_inte_site_17;
                 return { code: 1, user_id: user_id, sys_id: user_id.toLowerCase(), message: 'User with sys_id or user_name "' + user_id + '" not found' };
             return { code: 1, user_id: user_id, message: 'User with user_name "' + user_id + '" not found' };
         };
+        /**
+         * Does a compliance check for the specified sys_user.
+         * @param {(GlideRecord | GlideElementReference)} sys_user - The user to validate.
+         * @returns {IUserProfileComplianceInfo} An object that describes the compliance check result.
+         * @static
+         * @memberof ProfileValidator
+         */
         constructor.checkUserProfileCompliance = function (sys_user) {
             var profile_fields = getProfileComplianceCheckFields();
             if (sys_user instanceof GlideElementReference)
@@ -240,6 +264,13 @@ var x_g_inte_site_17;
             }
             return result;
         };
+        /**
+         * Gets compliance check information for the specified user.
+         * @param {(GlideRecord | GlideElementReference | string)} user - The object referring to a user, a sys_id for a user or a user name (user_id).
+         * @returns {IUserProfileComplianceResult} An object that describes the result of the compliance check.
+         * @static
+         * @memberof ProfileValidator
+         */
         constructor.getUserProfileCompliance = function (user) {
             var getUserResponse = constructor.getUserLookupResult(user);
             if (constructor.isUserLookupFault(getUserResponse))
@@ -259,6 +290,13 @@ var x_g_inte_site_17;
             result.sys_id = getUserResponse.sys_id;
             return result;
         };
+        /**
+         * Gets compliance check notifications for the specified user.
+         * @param {(GlideRecord | GlideElementReference | string)} user - The object referring to a user, a sys_id for a user or a user name (user_id).
+         * @returns {IUserNotificationsResult} An object that contains the compliance notification information.
+         * @static
+         * @memberof ProfileValidator
+         */
         constructor.getUserNotifications = function (user) {
             var getUserResponse = constructor.getUserLookupResult(user);
             if (constructor.isUserLookupFault(getUserResponse))
@@ -281,18 +319,59 @@ var x_g_inte_site_17;
                 profileCompliance: constructor.checkUserProfileCompliance(getUserResponse.user)
             };
         };
+        /**
+         * Gets the primary phone number and organization entity for the specified user.
+         * @param {(string | sys_userGlideRecord | sys_userElement)} [user] - The user record or Sys ID of the a user profile.
+         * @return {(IPhoneAndOrg | undefined)} The primary phone number and organization entity for the specified user or undefined if the user does not exist.
+         * @static
+         * @memberof ProfileValidator
+         */
         constructor.getUserPhoneAndOrg = getUserPhoneAndOrg;
+        /**
+         * Gets the primary phone number for the specified user.
+         * @param {(string | sys_userGlideRecord | sys_userElement)} [user] - The user record or Sys ID of the a user profile.
+         * @return {(string | undefined)} The primary phone number for the specified user or undefined if the user does not exist or no phone number was found.
+         * @static
+         * @memberof ProfileValidator
+         */
         constructor.getUserPhone = function (user) {
             var gr = asValidUserGlideRecord(user);
             if (typeof gr !== 'undefined')
                 return getUserPhone(gr);
         };
+        /**
+         * Gets the organization name for the specified user.
+         * @param {(string | sys_userGlideRecord | sys_userElement)} [user] - The user record or Sys ID of the a user profile.
+         * @return {(string | undefined)} The organization name for the specified user or undefined if the user does not exist or no related organization was found.
+         * @static
+         * @memberof ProfileValidator
+         */
         constructor.getUserOrg = function (user) {
             var gr = asValidUserGlideRecord(user);
             if (typeof gr !== 'undefined')
                 return getUserOrg(gr);
         };
+        /**
+         * Gets the names of the profile fields to be validated.
+         * @return {string[]} The names of the profile fields to be validated.
+         * @static
+         * @memberof ProfileValidator
+         */
+        constructor.getProfileComplianceCheckFields = getProfileComplianceCheckFields;
+        /**
+         * Gets the names of the fields for the user profile that may contain phone numbers.
+         * @return {string[]} The names of the fields for the user profile that may contain phone numbers.
+         * @static
+         * @memberof ProfileValidator
+         */
+        constructor.getProfilePhoneFields = getProfilePhoneFields;
+        // #endregion
         constructor.prototype = Object.extendsObject(global.AbstractAjaxProcessor, {
+            /**
+             * Gets compliance check information for the user indicated by the 'sysparm_user_id' parameter.
+             * @returns {(string | undefined)} A JSON string containing an {@link IUserProfileComplianceResult} object that describes the result of the compliance check.
+             * @memberof ProfileValidator
+             */
             getUserProfileCompliance: function () {
                 var response = constructor.getUserProfileCompliance('' + this.getParameter(PARAMNAME_user_id));
                 if (constructor.isUserLookupFault(response))
@@ -300,6 +379,11 @@ var x_g_inte_site_17;
                 else
                     return JSON.stringify(response);
             },
+            /**
+             * Gets compliance check notifications for the user indicated by the 'sysparm_user_id' parameter.
+             * @returns {(string | undefined)} A JSON string containing an {@link IUserNotificationsResult} object that contains the compliance notification information.
+             * @memberof ProfileValidator
+             */
             getUserNotifications: function () {
                 var response = constructor.getUserNotifications('' + this.getParameter(PARAMNAME_user_id));
                 if (constructor.isUserLookupFault(response))
@@ -307,6 +391,11 @@ var x_g_inte_site_17;
                 else
                     return JSON.stringify(response);
             },
+            /**
+             * Gets the primary phone number and organization entity for the user indicated by the 'sysparm_user_id' parameter.
+             * @description The 'result' element contains an attribute named 'org' which contains the organization name, as well as an attribute named 'phone' which contains the primary phone number.
+             * @memberof ProfileValidator
+             */
             getUserPhoneAndOrg: function () {
                 var result = this.newItem(XMLNAME_result);
                 var phoneAndOrg = getUserPhoneAndOrg(getUserIdFromParameter.call(this));
@@ -319,18 +408,26 @@ var x_g_inte_site_17;
                     result.setAttribute(XMLNAME_phone, phoneAndOrg.phone);
                 }
             },
+            /**
+             * Gets the primary phone number for theuser indicated by the 'sysparm_user_id' parameter.
+             * @return {string} The primary phone number for the specified user or an empty string if the user does not exist or no phone number was found.
+             * @memberof ProfileValidator
+             */
             getUserPhone: function () {
                 var gr = asValidUserGlideRecord(getUserIdFromParameter.call(this));
                 return (typeof gr !== 'undefined') ? getUserPhone(gr) : '';
             },
+            /**
+             * Gets the primary phone number for the user indicated by the 'sysparm_user_id' parameter.
+             * @return {string} The organization name for the specified user or an empty string if the user does not exist or no related organization was found.
+             * @memberof ProfileValidator
+             */
             getUserOrg: function () {
                 var gr = asValidUserGlideRecord(getUserIdFromParameter.call(this));
                 return (typeof gr !== 'undefined') ? getUserOrg(gr) : '';
             },
             type: "ProfileValidator"
         });
-        constructor.getProfileComplianceCheckFields = getProfileComplianceCheckFields;
-        constructor.getProfilePhoneFields = getProfilePhoneFields;
         return constructor;
     })();
 })(x_g_inte_site_17 || (x_g_inte_site_17 = {}));

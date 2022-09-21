@@ -2,14 +2,29 @@
 /// <reference path="../../types/x_g_inte_site_17/table/index.d.ts" />
 
  namespace x_g_inte_site_17 {
-
+    /**
+     * Represents an availability time span.
+     * @export
+     * @interface ITimeSpan
+     */
     export interface ITimeSpan {
+        /**
+         * The start date and time.
+         * @type {GlideDateTime}
+         * @memberof ITimeSpan
+         */
         start: GlideDateTime;
+
+        /**
+         * The duration of the time span.
+         * @type {GlideDuration}
+         * @memberof ITimeSpan
+         */
         duration: GlideDuration;
     }
 
     /**
-     * Base interface for the ReservationScheduler API.
+     * Interface for the ReservationScheduler API.
      * @export
      * @interface IReservationScheduler
      * @extends {$$snClass.ICustomClassBase<IReservationScheduler, "ReservationScheduler">}
@@ -18,7 +33,7 @@
         sys_id: string;
 
         /**
-         * Short description
+         * Short description.
          * @type {string}
          * @memberof IReservationScheduler
          */
@@ -32,7 +47,7 @@
         schedule: GlideSchedule;
 
         /**
-         * The current user's time zone
+         * The current user's time zone.
          * @type {string}
          * @memberof IReservationScheduler
          */
@@ -46,7 +61,7 @@
         approval_group?: string;
 
         /**
-         * Sys ID of Default Assignment group
+         * Sys ID of Default Assignment group.
          * @type {string}
          * @memberof IReservationScheduler
          * @description Refers to sys_user_group (Group)
@@ -54,7 +69,7 @@
         assignment_group: string;
 
         /**
-         * Minimum Duration
+         * Minimum Duration.
          * @type {GlideDuration}
          * @memberof IReservationScheduler
          * @description This is the minimum reservation duration. The minimum value is 1 minute, and values are rounded up to the nearest minute.
@@ -62,7 +77,7 @@
         minimum_duration: GlideDuration;
 
         /**
-         * Maximum Duration
+         * Maximum Duration.
          * @type {GlideDuration}
          * @memberof IReservationScheduler
          * @description This is the maximum reservation duration. This cannot be less than the Minimum Duration, and values are rounded up to the nearest minute.
@@ -70,7 +85,7 @@
         maximum_duration: GlideDuration;
 
         /**
-         * Duration Increment
+         * Duration Increment.
          * @type {GlideDuration}
          * @memberof IReservationScheduler
          * @description This is the length by which reservation durations can be incremented. The minimum value is 1 minute, and values are rounded up to the nearest minute.
@@ -128,7 +143,7 @@
          * @param {GlideDateTime} fromDateTime - The starting date/time (inclusive).
          * @param {GlideDateTime} toDateTime - The ending date/time (exclusive).
          * @param {GlideDuration} [minimumDuration] - The optional minimum duration.
-         * @return {ITimeSpan | undefined} 
+         * @return {ITimeSpan | undefined} The next available time span or undefined if there are not availabilities in the given time span.
          * @memberof IReservationScheduler
          */
         getNextAvailableTimeSpan(fromDateTime: GlideDateTime, toDateTime: GlideDateTime, minimumDuration?: GlideDuration): ITimeSpan | undefined;
@@ -159,12 +174,18 @@
          * @param {string} duration - The duration of the reservation.
          * @param {GlideDuration} [group_id] - The optional sys_id of the associated sys_user_group.
          * @param {GlideDuration} [user_id] - The optional sys_id of the associated user.
-         * @return {(cmn_schedule_spanGlideRecord | undefined)} The {@link cmn_schedule_spanGlideRecord} representing the reservation
+         * @return {(cmn_schedule_spanGlideRecord | undefined)} The {@link cmn_schedule_spanGlideRecord} representing the reservation.
          * or undefined if the specified date/time and duration was not available.
          * @memberof IReservationScheduler
          */
         addReservation(name: string, startDateTime: GlideDateTime, duration: GlideDuration, group_id?: string, user_id?: string): cmn_schedule_spanGlideRecord | undefined;
 
+        /**
+         * Removes a reservation (schedule entry) from the associated schedule
+         * @param {(string | cmn_schedule_spanElement | cmn_schedule_spanGlideRecord)} reservation - The Sys ID or record representing the schedule entry.
+         * @return {boolean} true if the schedule entry was removed; otherwise, false.
+         * @memberof IReservationScheduler
+         */
         removeReservation(reservation: string | cmn_schedule_spanElement | cmn_schedule_spanGlideRecord): boolean;
     }
 
@@ -175,8 +196,31 @@
     export declare type ReservationScheduler = Readonly<IReservationScheduler>;
 
     export interface ReservationSchedulerConstructor extends $$snClass.CustomClassConstructor3<IReservationScheduler, IReservationSchedulerPrototype, ReservationScheduler, reservation_typeGlideRecord | string, boolean, string> {
+        /**
+         * Creates a new {@link ReservationScheduler} object.
+         * @param {(reservation_typeGlideRecord | string)} type - The reservation type record.
+         * @param {boolean} [allowInactive] - Optionally indicates whether inactive reservation types are allowed. The default is false.
+         * @param {string} [timeZone] - An optional time zone for the inner scheduler.
+         * @return {ReservationScheduler} A new {@link ReservationScheduler} instance.
+         * @memberof ReservationSchedulerConstructor
+         */
         new(type: reservation_typeGlideRecord | string, allowInactive?: boolean, timeZone?: string): ReservationScheduler;
+
+        /**
+         * Creates a new {@link ReservationScheduler} object.
+         * @param {(reservation_typeGlideRecord | string)} type - The reservation type record.
+         * @param {boolean} [allowInactive] - Optionally indicates whether inactive reservation types are allowed. The default is false.
+         * @param {string} [timeZone] - An optional time zone for the inner scheduler.
+         * @return {ReservationScheduler} A new {@link ReservationScheduler} instance.
+         * @memberof ReservationSchedulerConstructor
+         */
         (type: reservation_typeGlideRecord | string, allowInactive?: boolean, timeZone?: string): ReservationScheduler;
+
+        /**
+         * Gets the reservation type table name.
+         * @return {string}
+         * @memberof ReservationSchedulerConstructor
+         */
         getTableName(): string;
     }
 

@@ -57,16 +57,16 @@ declare namespace x_g_inte_site_17 {
          */
         isGroupDN(): "true" | "false";
         /**
-         * Tests whether the given glide record or element is to be considered a Site 17 user.
-         * @return {("true" | "false")} "true" if the given glide record element is for a Site 17 user; otherwise, "false".
+         * Tests whether a given sys_id is for a user record that is to be considered a Site 17 user.
+         * @return {("true" | "false")} "true" iif the associated record is for a Site 17 user; otherwise, "false".
          * @memberof ISite17Util
          * @description This is intended to be invoked by a client script.
          * AJAX Parameter name: "sys_parm_user_id"=The SysID of a User (sys_user) record.
          */
         isSite17User(): "true" | "false";
         /**
-         * Tests whether the given glide record or element is to be considered a Site 17 group.
-         * @return {("true" | "false")} "true" if the given glide record element is for a Site 17 group; otherwise, "false".
+         * Tests whether a given sys_id is for a group record that is to be considered a Site 17 group.
+         * @return {("true" | "false")} "true" if the associated record element is for a Site 17 group; otherwise, "false".
          * @memberof ISite17Util
          * @description This is intended to be invoked by a client script.
          * AJAX Parameter name: "sys_parm_user_group_id"=The SysID of a Group (sys_user_group) record.
