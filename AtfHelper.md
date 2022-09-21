@@ -13,8 +13,8 @@ new AtfHelper(steps: sn_atf.ITestStepsFunc, stepResult: sn_atf.ITestStepResult);
 
 Arguments:
 
-- steps: sn_atf.ITestStepsFunc - The function provided by the Automated Test Framework to get the results of previous test steps.
-- stepResult: sn_atf.ITestStepResult - The object provided by the Automated Test Framework to indicate test step results.
+- steps: `{sn_atf.ITestStepsFunc}` - The function provided by the Automated Test Framework to get the results of previous test steps.
+- stepResult: `{sn_atf.ITestStepResult}` - The object provided by the Automated Test Framework to indicate test step results.
 
 ## Instance Methods
 
@@ -123,7 +123,7 @@ var dateString = x_g_inte_site_17.AtfHelper.endOfRelativeDay(-2);
 
 ### isNil
 
-Tests whether a value represents an undefined, null, NaN, an empty string value.
+Tests whether a value represents an `undefined`, `null`, `NaN`, an empty string value.
 
 ```TypeScript
 isNil(obj: any | undefined): obj is undefined | null | "";
@@ -137,7 +137,7 @@ Returns `true` if the value is `undefined`, `null`, `NaN`, an empty string, an u
 
 ### areAnyNil
 
-Tests whether any values represent an undefined, null, NaN, an empty string value.
+Tests whether any values represent an `undefined`, `null`, `NaN`, an empty string value.
 
 ```TypeScript
 areAnyNil(...obj: (any | undefined)[]): boolean;
