@@ -1,6 +1,11 @@
 /// <reference path="../../types/sn_typings_server_scoped/dist/index.d.ts" />
 
 namespace x_g_inte_site_17 {
+    /**
+     * Defines a profile field to be validated.
+     * @export
+     * @interface IProfileFieldDefinition
+     */
     export interface IProfileFieldDefinition {
         /**
          * The table column name.
@@ -27,18 +32,21 @@ namespace x_g_inte_site_17 {
         failAdj: string;
     }
 
+    /**
+     * Represents the results of a user lookup
+     * @export
+     * @interface IUserLookupResult
+     */
     export interface IUserLookupResult {
         /**
          * The profile compliance check result code: 0=Success; 1=User not found; 2=Unexpected exception trying to find user.
-         *
          * @type {number}
-         * @memberof IUserProfileComplianceResult
+         * @memberof IUserLookupResult
          */
         code: number;
 
         /**
          * The sys_id of the sys_user that was found or the sys_id that was used for the user lookup.
-         *
          * @type {(string | undefined)}
          * @memberof IUserLookupResult
          */
@@ -46,7 +54,6 @@ namespace x_g_inte_site_17 {
 
         /**
          * The user_id of the sys_user that was found or the user_id that was used for the user lookup.
-         *
          * @type {(string | undefined)}
          * @memberof IUserLookupResult
          */
@@ -54,7 +61,6 @@ namespace x_g_inte_site_17 {
 
         /**
          * The sys_user that was found.
-         *
          * @type {(GlideRecord | GlideElementReference | undefined)}
          * @memberof IUserLookupResult
          */
@@ -62,7 +68,6 @@ namespace x_g_inte_site_17 {
 
         /**
          * The user lookup failure message.
-         *
          * @type {string}
          * @memberof IUserLookupResult
          */
@@ -70,25 +75,27 @@ namespace x_g_inte_site_17 {
 
         /**
          * Describes the fatal error.
-         *
          * @type {(any | undefined)}
-         * @memberof IUserProfileComplianceInfo
+         * @memberof IUserLookupResult
          */
         fault?: any;
     }
 
+    /**
+     * Represents the results of a compliance check for a profile field.
+     * @export
+     * @interface IComplianceCheckResult
+     */
     export interface IComplianceCheckResult {
         /**
          * The label for the field that was checked.
-         *
          * @type {string}
-         * @memberof IProfileFieldDefinition
+         * @memberof IComplianceCheckResult
          */
         label: string;
 
         /**
          * Indicates whether the compliance check passed.
-         *
          * @type {boolean}
          * @memberof IComplianceCheckResult
          */
@@ -96,30 +103,26 @@ namespace x_g_inte_site_17 {
 
         /**
          * The field access failure message.
-         *
          * @type {string}
-         * @memberof IUserLookupResult
+         * @memberof IComplianceCheckResult
          */
         message?: string;
 
         /**
          * Describes the fatal error.
-         *
          * @type {(any | undefined)}
-         * @memberof IUserProfileComplianceInfo
+         * @memberof IComplianceCheckResult
          */
         fault?: any;
     }
 
     /**
-     * User compliance check information
-     *
+     * User compliance check information.
      * @interface IUserProfileComplianceInfo
      */
     export interface IUserProfileComplianceInfo {
         /**
          * The number of compliance checks not evaluated due to fatal exception.
-         *
          * @type {number}
          * @memberof IUserProfileComplianceInfo
          */
@@ -127,7 +130,6 @@ namespace x_g_inte_site_17 {
 
         /**
          * The number of evaluated compliance checks that passed.
-         *
          * @type {number}
          * @memberof IUserProfileComplianceInfo
          */
@@ -135,7 +137,6 @@ namespace x_g_inte_site_17 {
 
         /**
          * The number of evaluated compliance checks that failed.
-         *
          * @type {number}
          * @memberof IUserProfileComplianceInfo
          */
@@ -143,7 +144,6 @@ namespace x_g_inte_site_17 {
 
         /**
          * Compliance check results by name.
-         *
          * @type {(Record<string, IComplianceCheckResult> | undefined)}
          * @memberof IUserProfileComplianceInfo
          */
@@ -151,7 +151,6 @@ namespace x_g_inte_site_17 {
 
         /**
          * Compliance check result message.
-         *
          * @type {string}
          * @memberof IUserProfileComplianceInfo
          */
@@ -159,17 +158,21 @@ namespace x_g_inte_site_17 {
 
         /**
          * Describes the fatal error.
-         *
          * @type {(any | undefined)}
          * @memberof IUserProfileComplianceInfo
          */
         fault?: any;
     }
 
+    /**
+     * Represents the results of a profile compliance check.
+     * @export
+     * @interface IUserProfileComplianceResult
+     * @extends {IUserProfileComplianceInfo}
+     */
     export interface IUserProfileComplianceResult extends IUserProfileComplianceInfo {
         /**
          * The profile compliance check result code: 0=Success; 1=User not found; 2=Unexpected exception trying to find user.
-         *
          * @type {number}
          * @memberof IUserProfileComplianceResult
          */
@@ -177,17 +180,15 @@ namespace x_g_inte_site_17 {
 
         /**
          * The sys_id of the sys_user that was found or the sys_id that was used for the user lookup.
-         *
          * @type {(string | undefined)}
-         * @memberof IUserLookupResult
+         * @memberof IUserProfileComplianceResult
          */
         sys_id?: string;
 
         /**
          * The user_id of the sys_user that was found or the user_id that was used for the user lookup.
-         *
          * @type {(string | undefined)}
-         * @memberof IUserLookupResult
+         * @memberof IUserProfileComplianceResult
          */
         user_id?: string;
     }
@@ -195,31 +196,27 @@ namespace x_g_inte_site_17 {
     export interface IUserNotificationsResult {
         /**
          * The profile compliance check result code: 0=Success; 1=User not found; 2=Unexpected exception trying to find user.
-         *
          * @type {number}
-         * @memberof IUserProfileComplianceResult
+         * @memberof IUserNotificationsResult
          */
         code: number;
 
         /**
          * The sys_id of the sys_user that was found or the sys_id that was used for the user lookup.
-         *
          * @type {(string | undefined)}
-         * @memberof IUserLookupResult
+         * @memberof IUserNotificationsResult
          */
         sys_id?: string;
 
         /**
          * The user_id of the sys_user that was found or the user_id that was used for the user lookup.
-         *
          * @type {(string | undefined)}
-         * @memberof IUserLookupResult
+         * @memberof IUserNotificationsResult
          */
         user_id?: string;
 
         /**
          * Profile compliance check information.
-         *
          * @type {IUserProfileComplianceInfo}
          * @memberof IUserNotificationsResult
          */
@@ -227,31 +224,55 @@ namespace x_g_inte_site_17 {
     }
 
     export interface IPhoneAndOrg {
+        /**
+         * Name of a user's organization.
+         * @type {string}
+         * @memberof IPhoneAndOrg
+         */
         org: string;
+
+        /**
+         * User's primary phone number
+         * @type {string}
+         * @memberof IPhoneAndOrg
+         */
         phone: string;
     }
 
     export interface IProfileValidator extends $$snClass.ICustomClassBase<IProfileValidator, "ProfileValidator"> {
         /**
          * Gets compliance check information for the user indicated by the 'sysparm_user_id' parameter.
-         *
          * @returns {(string | undefined)} A JSON string containing an {@link IUserProfileComplianceResult} object that describes the result of the compliance check.
-         * @memberof IProfileValidatorPrototype
+         * @memberof IProfileValidator
          */
         getUserProfileCompliance(): string | undefined;
 
         /**
          * Gets compliance check notifications for the user indicated by the 'sysparm_user_id' parameter.
-         *
          * @returns {(string | undefined)} A JSON string containing an {@link IUserNotificationsResult} object that contains the compliance notification information.
-         * @memberof IProfileValidatorPrototype
+         * @memberof IProfileValidator
          */
         getUserNotifications(): string | undefined;
 
+        /**
+         * Gets the primary phone number and organization entity for the user indicated by the 'sysparm_user_id' parameter.
+         * @description The 'result' element contains an attribute named 'org' which contains the organization name, as well as an attribute named 'phone' which contains the primary phone number.
+         * @memberof IProfileValidator
+         */
         getUserPhoneAndOrg(): void;
 
+        /**
+         * Gets the primary phone number for theuser indicated by the 'sysparm_user_id' parameter.
+         * @return {string} The primary phone number for the specified user or an empty string if the user does not exist or no phone number was found.
+         * @memberof IProfileValidator
+         */
         getUserPhone(): string;
 
+        /**
+         * Gets the primary phone number for the user indicated by the 'sysparm_user_id' parameter.
+         * @return {string} The organization name for the specified user or an empty string if the user does not exist or no related organization was found.
+         * @memberof IProfileValidator
+         */
         getUserOrg(): string;
     }
 
@@ -263,9 +284,9 @@ namespace x_g_inte_site_17 {
     export interface ProfileValidatorConstructor extends $$snClass.CustomAjaxClassConstructor<IProfileValidator, IProfileValidatorPrototype, ProfileValidator> {
         new(request?: GlideServletRequest, responseXML?: XMLDocument2, gc?: GlideController): ProfileValidator;
         (request?: GlideServletRequest, responseXML?: XMLDocument2, gc?: GlideController): ProfileValidator;
+
         /**
          * Indicates whether the user lookup result represents a fatal error.
-         *
          * @param {IUserLookupResult} result The user lookup result object
          * @returns {boolean} true if the user lookup result indicates a fatal error; otherwise, false.
          * @memberof ProfileValidatorConstructor
@@ -274,7 +295,6 @@ namespace x_g_inte_site_17 {
 
         /**
          * Attempts to get a related user or look up a user.
-         *
          * @param {(GlideRecord | GlideElementReference | string)} user - The object referring to a user, a sys_id for a user or a user name (user_id).
          * @returns {IUserLookupResult} An object that represents the result of detecting the associated user or looking up the user.
          * @memberof ProfileValidatorConstructor
@@ -283,7 +303,6 @@ namespace x_g_inte_site_17 {
 
         /**
          * Does a compliance check for the specified sys_user.
-         *
          * @param {(GlideRecord | GlideElementReference)} sys_user - The user to validate.
          * @returns {IUserProfileComplianceInfo} An object that describes the compliance check result.
          * @memberof ProfileValidatorConstructor
@@ -292,7 +311,6 @@ namespace x_g_inte_site_17 {
 
         /**
          * Gets compliance check information for the specified user.
-         *
          * @param {(GlideRecord | GlideElementReference | string)} user - The object referring to a user, a sys_id for a user or a user name (user_id).
          * @returns {IUserProfileComplianceResult} An object that describes the result of the compliance check.
          * @memberof ProfileValidatorConstructor
@@ -301,26 +319,55 @@ namespace x_g_inte_site_17 {
 
         /**
          * Gets compliance check notifications for the specified user.
-         *
          * @param {(GlideRecord | GlideElementReference | string)} user - The object referring to a user, a sys_id for a user or a user name (user_id).
          * @returns {IUserNotificationsResult} An object that contains the compliance notification information.
          * @memberof ProfileValidatorConstructor
          */
         getUserNotifications(user: GlideRecord | GlideElementReference | string): IUserNotificationsResult;
 
+        /**
+         * Gets the names of the fields for the user profile that may contain phone numbers.
+         * @return {string[]} The names of the fields for the user profile that may contain phone numbers.
+         * @memberof ProfileValidatorConstructor
+         */
         getProfilePhoneFields(): string[];
 
+        /**
+         * Gets the names of the profile fields to be validated.
+         * @return {string[]} The names of the profile fields to be validated.
+         * @memberof ProfileValidatorConstructor
+         */
         getProfileComplianceCheckFields(): string[];
-
+        
+        /**
+         * Gets the primary phone number and organization entity for the specified user.
+         * @param {(string | sys_userGlideRecord | sys_userElement)} [user] - The user record or Sys ID of the a user profile.
+         * @return {(IPhoneAndOrg | undefined)} The primary phone number and organization entity for the specified user or undefined if the user does not exist.
+         * @memberof ProfileValidatorConstructor
+         */
         getUserPhoneAndOrg(user?: string | sys_userGlideRecord | sys_userElement): IPhoneAndOrg | undefined;
 
+        /**
+         * Gets the primary phone number for the specified user.
+         * @param {(string | sys_userGlideRecord | sys_userElement)} [user] - The user record or Sys ID of the a user profile.
+         * @return {(string | undefined)} The primary phone number for the specified user or undefined if the user does not exist or no phone number was found.
+         * @memberof ProfileValidatorConstructor
+         */
         getUserPhone(user?: string | sys_userGlideRecord | sys_userElement): string | undefined;
 
+        /**
+         * Gets the organization name for the specified user.
+         * @param {(string | sys_userGlideRecord | sys_userElement)} [user] - The user record or Sys ID of the a user profile.
+         * @return {(string | undefined)} The organization name for the specified user or undefined if the user does not exist or no related organization was found.
+         * @memberof ProfileValidatorConstructor
+         */
         getUserOrg(user?: string | sys_userGlideRecord | sys_userElement): string | undefined;
     }
 
     export const ProfileValidator: ProfileValidatorConstructor = (function (): ProfileValidatorConstructor {
         var constructor: ProfileValidatorConstructor = Class.create();
+
+        // #region Private members
 
         const SYSID_RE = /^[\da-f]{32}$/i;
         const XMLNAME_result = 'result';
@@ -424,10 +471,28 @@ namespace x_g_inte_site_17 {
             return isNil(userId) ? gs.getUserID() : (typeof userId === 'string') ? userId : '' + userId;
         }
 
+        // #endregion
+
+        // #region Static methods
+
+        /**
+         * Indicates whether the user lookup result represents a fatal error.
+         * @param {IUserLookupResult} result The user lookup result object
+         * @returns {boolean} true if the user lookup result indicates a fatal error; otherwise, false.
+         * @static
+         * @memberof ProfileValidator
+         */
         constructor.isUserLookupFault = function(result: IUserLookupResult): boolean {
             return typeof result === 'object' && null != result && result.code !== 0;
         };
 
+        /**
+         * Attempts to get a related user or look up a user.
+         * @param {(GlideRecord | GlideElementReference | string)} user - The object referring to a user, a sys_id for a user or a user name (user_id).
+         * @returns {IUserLookupResult} An object that represents the result of detecting the associated user or looking up the user.
+         * @static
+         * @memberof ProfileValidator
+         */
         constructor.getUserLookupResult = function(user: GlideRecord | GlideElementReference | string): IUserLookupResult {
             var user_id, sys_id;
             if (typeof user === 'object') {
@@ -474,6 +539,13 @@ namespace x_g_inte_site_17 {
             return { code: 1, user_id: user_id, message: 'User with user_name "' + user_id + '" not found' };
         };
 
+        /**
+         * Does a compliance check for the specified sys_user.
+         * @param {(GlideRecord | GlideElementReference)} sys_user - The user to validate.
+         * @returns {IUserProfileComplianceInfo} An object that describes the compliance check result.
+         * @static
+         * @memberof ProfileValidator
+         */
         constructor.checkUserProfileCompliance = function(sys_user: GlideRecord | GlideElementReference): IUserProfileComplianceInfo {
             var profile_fields = getProfileComplianceCheckFields();
             if (sys_user instanceof GlideElementReference)
@@ -551,6 +623,13 @@ namespace x_g_inte_site_17 {
             return result;
         };
 
+        /**
+         * Gets compliance check information for the specified user.
+         * @param {(GlideRecord | GlideElementReference | string)} user - The object referring to a user, a sys_id for a user or a user name (user_id).
+         * @returns {IUserProfileComplianceResult} An object that describes the result of the compliance check.
+         * @static
+         * @memberof ProfileValidator
+         */
         constructor.getUserProfileCompliance = function(user: GlideRecord | GlideElementReference | string): IUserProfileComplianceResult {
             var getUserResponse: IUserLookupResult = constructor.getUserLookupResult(user);
             if (constructor.isUserLookupFault(getUserResponse))
@@ -571,6 +650,13 @@ namespace x_g_inte_site_17 {
             return result;
         };
 
+        /**
+         * Gets compliance check notifications for the specified user.
+         * @param {(GlideRecord | GlideElementReference | string)} user - The object referring to a user, a sys_id for a user or a user name (user_id).
+         * @returns {IUserNotificationsResult} An object that contains the compliance notification information.
+         * @static
+         * @memberof ProfileValidator
+         */
         constructor.getUserNotifications = function(user: GlideRecord | GlideElementReference | string): IUserNotificationsResult {
             var getUserResponse: IUserLookupResult = constructor.getUserLookupResult(user);
             if (constructor.isUserLookupFault(getUserResponse))
@@ -594,19 +680,63 @@ namespace x_g_inte_site_17 {
             };
         };
 
+        /**
+         * Gets the primary phone number and organization entity for the specified user.
+         * @param {(string | sys_userGlideRecord | sys_userElement)} [user] - The user record or Sys ID of the a user profile.
+         * @return {(IPhoneAndOrg | undefined)} The primary phone number and organization entity for the specified user or undefined if the user does not exist.
+         * @static
+         * @memberof ProfileValidator
+         */
         constructor.getUserPhoneAndOrg = getUserPhoneAndOrg;
 
+        /**
+         * Gets the primary phone number for the specified user.
+         * @param {(string | sys_userGlideRecord | sys_userElement)} [user] - The user record or Sys ID of the a user profile.
+         * @return {(string | undefined)} The primary phone number for the specified user or undefined if the user does not exist or no phone number was found.
+         * @static
+         * @memberof ProfileValidator
+         */
         constructor.getUserPhone = function(user?: string | sys_userGlideRecord | sys_userElement): string | undefined {
             var gr: sys_userGlideRecord | undefined = asValidUserGlideRecord(user);
             if (typeof gr !== 'undefined') return getUserPhone(gr);
         };
 
+        /**
+         * Gets the organization name for the specified user.
+         * @param {(string | sys_userGlideRecord | sys_userElement)} [user] - The user record or Sys ID of the a user profile.
+         * @return {(string | undefined)} The organization name for the specified user or undefined if the user does not exist or no related organization was found.
+         * @static
+         * @memberof ProfileValidator
+         */
         constructor.getUserOrg = function(user?: string | sys_userGlideRecord | sys_userElement): string | undefined {
             var gr: sys_userGlideRecord | undefined = asValidUserGlideRecord(user);
             if (typeof gr !== 'undefined') return getUserOrg(gr);
         };
 
+        /**
+         * Gets the names of the profile fields to be validated.
+         * @return {string[]} The names of the profile fields to be validated.
+         * @static
+         * @memberof ProfileValidator
+         */
+        constructor.getProfileComplianceCheckFields = getProfileComplianceCheckFields;
+
+        /**
+         * Gets the names of the fields for the user profile that may contain phone numbers.
+         * @return {string[]} The names of the fields for the user profile that may contain phone numbers.
+         * @static
+         * @memberof ProfileValidator
+         */
+        constructor.getProfilePhoneFields = getProfilePhoneFields;
+
+        // #endregion
+
         constructor.prototype = Object.extendsObject<IAbstractAjaxProcessor, IProfileValidatorPrototype>(global.AbstractAjaxProcessor, {
+            /**
+             * Gets compliance check information for the user indicated by the 'sysparm_user_id' parameter.
+             * @returns {(string | undefined)} A JSON string containing an {@link IUserProfileComplianceResult} object that describes the result of the compliance check.
+             * @memberof ProfileValidator
+             */
             getUserProfileCompliance: function(this: IProfileValidatorPrototype & IAbstractAjaxProcessor): string | undefined {
                 var response = constructor.getUserProfileCompliance('' + this.getParameter(PARAMNAME_user_id));
                 if (constructor.isUserLookupFault(response))
@@ -615,6 +745,11 @@ namespace x_g_inte_site_17 {
                     return JSON.stringify(response);
             },
 
+            /**
+             * Gets compliance check notifications for the user indicated by the 'sysparm_user_id' parameter.
+             * @returns {(string | undefined)} A JSON string containing an {@link IUserNotificationsResult} object that contains the compliance notification information.
+             * @memberof ProfileValidator
+             */
             getUserNotifications: function(this: IProfileValidatorPrototype & IAbstractAjaxProcessor): string | undefined {
                 var response = constructor.getUserNotifications('' + this.getParameter(PARAMNAME_user_id));
                 if (constructor.isUserLookupFault(response))
@@ -623,6 +758,11 @@ namespace x_g_inte_site_17 {
                     return JSON.stringify(response);
             },
 
+            /**
+             * Gets the primary phone number and organization entity for the user indicated by the 'sysparm_user_id' parameter.
+             * @description The 'result' element contains an attribute named 'org' which contains the organization name, as well as an attribute named 'phone' which contains the primary phone number.
+             * @memberof ProfileValidator
+             */
             getUserPhoneAndOrg: function(this: IProfileValidatorPrototype & IAbstractAjaxProcessor): void {
                 var result = this.newItem(XMLNAME_result)
                 var phoneAndOrg = getUserPhoneAndOrg(getUserIdFromParameter.call(this));
@@ -635,11 +775,21 @@ namespace x_g_inte_site_17 {
                 }
             },
 
+            /**
+             * Gets the primary phone number for theuser indicated by the 'sysparm_user_id' parameter.
+             * @return {string} The primary phone number for the specified user or an empty string if the user does not exist or no phone number was found.
+             * @memberof ProfileValidator
+             */
             getUserPhone: function(this: IProfileValidatorPrototype & IAbstractAjaxProcessor): string {
                 var gr: sys_userGlideRecord | undefined = asValidUserGlideRecord(getUserIdFromParameter.call(this));
                 return (typeof gr !== 'undefined') ? getUserPhone(gr) : '';
             },
 
+            /**
+             * Gets the primary phone number for the user indicated by the 'sysparm_user_id' parameter.
+             * @return {string} The organization name for the specified user or an empty string if the user does not exist or no related organization was found.
+             * @memberof ProfileValidator
+             */
             getUserOrg: function(this: IProfileValidatorPrototype & IAbstractAjaxProcessor): string {
                 var gr: sys_userGlideRecord | undefined = asValidUserGlideRecord(getUserIdFromParameter.call(this));
                 return (typeof gr !== 'undefined') ? getUserOrg(gr) : '';
@@ -647,10 +797,6 @@ namespace x_g_inte_site_17 {
 
             type: "ProfileValidator"
         });
-
-        constructor.getProfileComplianceCheckFields = getProfileComplianceCheckFields;
-
-        constructor.getProfilePhoneFields = getProfilePhoneFields;
 
         return constructor;
     })();

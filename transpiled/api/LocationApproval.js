@@ -35,6 +35,12 @@ var x_g_inte_site_17;
         }
         constructor.getDefaultApprovalGroup = getDefaultApprovalGroup;
         constructor.prototype = {
+            /**
+             * Creates a new {@link LocationApproval} instance.
+             * @constructor
+             * @param {(string | GlideRecord | GlideElementReference)} source - The source object for the approval context.
+             * @memberof LocationApproval
+             */
             initialize: function (source) {
                 if (gs.nil(source))
                     throw new Error("No glide object provided");
@@ -49,12 +55,27 @@ var x_g_inte_site_17;
                         throw new Error("No glide record referenced");
                 }
             },
+            /**
+             * Gets the target user of the target record (ie. caller, requested_for).
+             * @returns {(GlideRecord | GlideElementReference | undefined)} The {@link GlideRecord} or {@link GlideElementReference} for the target user.
+             * @memberof LocationApproval
+             */
             getCaller: function () {
                 return x_g_inte_site_17.Site17Util.getCaller(this._glideRecord);
             },
+            /**
+             * Indicates whether the target user is a VIP user.
+             * @returns {boolean} true if {@link ILocationApproval#getCaller} returns user designated as VIP; otherwise, false.
+             * @memberof LocationApproval
+             */
             isVip: function () {
                 return x_g_inte_site_17.Site17Util.isVip(this._glideRecord);
             },
+            /**
+             * Looks up the default approval group.
+             * @returns {(GlideElementReference | undefined)} The{@link GlideElementReference} for the default aproval group.
+             * @memberof LocationApproval
+             */
             getDefaultApprovalGroup: function () {
                 return getDefaultApprovalGroup(this.getCaller());
             },

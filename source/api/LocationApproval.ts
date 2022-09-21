@@ -2,25 +2,24 @@
 
 namespace x_g_inte_site_17 {
     export interface ILocationApproval extends $$snClass.ICustomClassBase<ILocationApproval, "LocationApproval"> {
-
         /**
          * Gets the target user of the target record (ie. caller, requested_for).
-         *
          * @returns {(GlideRecord | GlideElementReference | undefined)} The {@link GlideRecord} or {@link GlideElementReference} for the target user.
+         * @memberof ILocationApproval
          */
         getCaller(): GlideRecord | GlideElement | undefined;
 
         /**
          * Indicates whether the target user is a VIP user.
-         *
          * @returns {boolean} true if {@link ILocationApproval#getCaller} returns user designated as VIP; otherwise, false.
+         * @memberof ILocationApproval
          */
         isVip(): boolean;
 
         /**
          * Looks up the default approval group.
-         *
          * @returns {(GlideElementReference | undefined)} The{@link GlideElementReference} for the default aproval group.
+         * @memberof ILocationApproval
          */
         getDefaultApprovalGroup(): GlideElementReference | undefined;
     }
@@ -28,7 +27,6 @@ namespace x_g_inte_site_17 {
     export interface ILocationApprovalPrototype extends $$snClass.ICustomClassPrototype1<ILocationApproval, ILocationApprovalPrototype, "LocationApproval", GlideRecord | GlideElementReference>, ILocationApproval {
         /**
          * The target {@link GlideRecord}.
-         *
          * @type {GlideRecord}
          * @memberof ILocationApprovalPrototype
          * @private
@@ -41,29 +39,27 @@ namespace x_g_inte_site_17 {
     export interface LocationApprovalConstructor extends $$snClass.CustomClassConstructor1<ILocationApproval, ILocationApprovalPrototype, LocationApproval, GlideRecord | GlideElementReference> {
         /**
          * Creates a new {@link LocationApproval} instance.
-         * 
          * @constructor
          * @param {(string | GlideRecord | GlideElementReference)} source - The source object for the approval context.
-         * @memberof LocationApprovalConstructor
          * @returns {ILocationApproval} A new {@link LocationApproval} instance.
+         * @memberof LocationApprovalConstructor
          */
         new(source: GlideRecord | GlideElementReference): LocationApproval;
 
         /**
          * Creates a new {@link LocationApproval} instance.
-         * 
          * @constructor
          * @param {(string | GlideRecord | GlideElementReference)} source - The source object for the approval context.
-         * @memberof LocationApprovalConstructor
          * @returns {ILocationApproval} A new {@link LocationApproval} instance.
+         * @memberof LocationApprovalConstructor
          */
         (source: GlideRecord | GlideElementReference): LocationApproval;
 
         /**
          * Looks up the default approval group.
-         *
          * @param {(string | GlideRecord | GlideElementReference)} source - The source object for the approval context.
          * @returns {(GlideElementReference | undefined)} The{@link GlideElementReference} for the default aproval group.
+         * @memberof LocationApprovalConstructor
          */
         getDefaultApprovalGroup(source: GlideRecord | GlideElementReference): GlideElementReference | undefined;
     }
@@ -104,6 +100,12 @@ namespace x_g_inte_site_17 {
         constructor.getDefaultApprovalGroup = getDefaultApprovalGroup;
 
         constructor.prototype = {
+            /**
+             * Creates a new {@link LocationApproval} instance.
+             * @constructor
+             * @param {(string | GlideRecord | GlideElementReference)} source - The source object for the approval context.
+             * @memberof LocationApproval
+             */
             initialize(source: GlideRecord | GlideElementReference): void {
                 if (gs.nil(source)) throw new Error("No glide object provided");
                 if (source instanceof GlideRecord) {
@@ -116,14 +118,29 @@ namespace x_g_inte_site_17 {
                 }
             },
 
+            /**
+             * Gets the target user of the target record (ie. caller, requested_for).
+             * @returns {(GlideRecord | GlideElementReference | undefined)} The {@link GlideRecord} or {@link GlideElementReference} for the target user.
+             * @memberof LocationApproval
+             */
             getCaller: function(): GlideRecord | GlideElement | undefined {
                 return Site17Util.getCaller(<GlideRecord>this._glideRecord);
             },
 
+            /**
+             * Indicates whether the target user is a VIP user.
+             * @returns {boolean} true if {@link ILocationApproval#getCaller} returns user designated as VIP; otherwise, false.
+             * @memberof LocationApproval
+             */
             isVip: function(): boolean {
                 return Site17Util.isVip(<GlideRecord>this._glideRecord);
             },
 
+            /**
+             * Looks up the default approval group.
+             * @returns {(GlideElementReference | undefined)} The{@link GlideElementReference} for the default aproval group.
+             * @memberof LocationApproval
+             */
             getDefaultApprovalGroup: function(): GlideElementReference | undefined {
                 return getDefaultApprovalGroup(<GlideRecord>this.getCaller());
             },

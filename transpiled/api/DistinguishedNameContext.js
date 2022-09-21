@@ -6,6 +6,13 @@ var x_g_inte_site_17;
         var constructor = Class.create();
         constructor.prototype = {
             _isGroup: false,
+            /**
+             * Creates a new {@link DistinguishedNameContext} instance.
+             * @constructor
+             * @param {(string | GlideRecord | GlideElementReference)} source - The source of the Distinguished Name context
+             * @returns {DistinguishedNameContext} A new {@link DistinguishedNameContext} instance.
+             * @memberof DistinguishedNameContext
+             */
             initialize: function (source) {
                 if (gs.nil(source))
                     throw new Error("No user or group specified");
@@ -51,12 +58,36 @@ var x_g_inte_site_17;
                         break;
                 }
             },
+            /**
+             * Gets the GlideRecord that is the source of this context.
+             * @returns {GlideRecord} The GlideRecord that is the source of this context.
+             */
             getSourceRecord: function () { return this._sourceRecord; },
+            /**
+             * Gets the sys_user or sys_user_group object that is the target of this context.
+             * @returns {(GlideRecord | GlideElementReference | undefined)} The GlideRecord that is the target of this context.
+             * @memberof DistinguishedNameContext
+             */
             getTargetObject: function () { return this._targetobject; },
+            /**
+             * Indicates whether the target object is a sys_user_group or sys_user.
+             * @returns {boolean} true if {@link IDistinguishedNameContext#getTargetObject} returns a sys_user_group {@link GlideRecord} or {@link GlideElementReference}; otherwise, false.
+             * @memberof DistinguishedNameContext
+             */
             isGroup: function () { return this._isGroup; },
+            /**
+             * Indicates whether the target object is a sys_user and it is considered a Site 17 user.
+             * @returns {boolean} true if {@link IDistinguishedNameContext#getTargetObject} returns a sys_user {@link GlideRecord} or {@link GlideElementReference} and {@link Site17Util#isUserDN} returns true for the source property of the target object; otherwise, false.
+             * @memberof DistinguishedNameContext
+             */
             isSite17User: function () {
                 return !this._isGroup && x_g_inte_site_17.Site17Util.isUserDN('' + (this._isGroup ? this._sourceRecord : this._targetobject).source);
             },
+            /**
+             * Indicates whether the target object is a sys_user_group and it is considered a Site 17 group.
+             * @returns {boolean} true if {@link IDistinguishedNameContext#getTargetObject} returns a sys_user_group {@link GlideRecord} or {@link GlideElementReference} and {@link Site17Util#isGroupDN} returns true for the source property of the target object; otherwise, false.
+             * @memberof DistinguishedNameContext
+             */
             isSite17Group: function () {
                 return this._isGroup && x_g_inte_site_17.Site17Util.isGroupDN('' + (this._isGroup ? this._sourceRecord : this._targetobject).source);
             },

@@ -1,5 +1,56 @@
 # x_g_inte_site_17.Site17Util API
 
+- [x_g_inte_site_17.Site17Util API](#x_g_inte_site_17site17util-api)
+  - [Methods](#methods)
+    - [isUser](#isuser)
+    - [isGroup](#isgroup)
+    - [isVip](#isvip)
+    - [isBusinessUnit](#isbusinessunit)
+    - [isDepartment](#isdepartment)
+    - [isCompany](#iscompany)
+    - [isLocation](#islocation)
+    - [isBuilding](#isbuilding)
+    - [getBusinessUnit](#getbusinessunit)
+    - [getCompany](#getcompany)
+    - [getLocation](#getlocation)
+    - [getCaller](#getcaller)
+    - [testDistinguishedName](#testdistinguishedname)
+    - [isDnContainedBy](#isdncontainedby)
+    - [getUsersContainerDN](#getuserscontainerdn)
+    - [getGroupsContainerDN](#getgroupscontainerdn)
+    - [includeEmptyUserSource](#includeemptyusersource)
+    - [includeEmptyGroupSource](#includeemptygroupsource)
+    - [isUserDN](#isuserdn)
+    - [isGroupDN](#isgroupdn)
+    - [isSite17User](#issite17user)
+    - [isSite17Group](#issite17group)
+    - [filterIterator](#filteriterator)
+    - [reiterate](#reiterate)
+    - [mapIterator](#mapiterator)
+    - [reduceIterator](#reduceiterator)
+    - [firstIterated](#firstiterated)
+    - [firstIteratedOrDefault](#firstiteratedordefault)
+    - [limitIterator](#limititerator)
+    - [iteratorToArray](#iteratortoarray)
+    - [iteratorFromArray](#iteratorfromarray)
+    - [isDnContainedBy (asynchronous)](#isdncontainedby-asynchronous)
+    - [getUsersContainerDN (asynchronous)](#getuserscontainerdn-asynchronous)
+    - [getGroupsContainerDN (asynchronous)](#getgroupscontainerdn-asynchronous)
+    - [includeEmptyUserSource (asynchronous)](#includeemptyusersource-asynchronous)
+    - [includeEmptyGroupSource (asynchronous)](#includeemptygroupsource-asynchronous)
+    - [isUserDN (asynchronous)](#isuserdn-asynchronous)
+    - [isGroupDN (asynchronous)](#isgroupdn-asynchronous)
+    - [isSite17User (asynchronous)](#issite17user-asynchronous)
+    - [isSite17Group (asynchronous)](#issite17group-asynchronous)
+  - [Callback Function Types](#callback-function-types)
+    - [IThrowFunc](#ithrowfunc)
+    - [IIterationPredicate](#iiterationpredicate)
+    - [IIteratorNextCallback](#iiteratornextcallback)
+    - [IMapFunc](#imapfunc)
+    - [IReducerFunc](#ireducerfunc)
+    - [IPredicate](#ipredicate)
+    - [IIteratorThrowHandler](#iiteratorthrowhandler)
+
 - [Source Code](source/api/Site17Util.ts)
 - [Type Definition](types/x_g_inte_site_17/api/Site17Util.d.ts)
 
@@ -349,7 +400,7 @@ Generic Types:
 Arguments:
 
 - source: `{Iterator<TYield, TReturn, TNext>}` - The source iterator.
-- predicate: `{IIterationPredicate<TYield, TNext, TThis>}` - Determines whether a value will be yielded in the result iterator.
+- predicate: [`{IIterationPredicate<TYield, TNext, TThis>}`](#iiterationpredicate) - Determines whether a value will be yielded in the result iterator.
 - thisArg (optional): `{(TThis | undefined)}` - An object to which the `this` keyword can refer in the predicate function.
 
 Returns the `Iterator` yielding filtered results.
@@ -383,7 +434,7 @@ Generic Types:
 Arguments:
 
 - source: `{Iterator<TYield, TReturn, TNext>}` - The source iterator.
-- callbackFn: `{IIteratorNextCallback<TYield, TNext, TThis>}` - The function that is applied to each value before it is yielded in the result iterator.
+- callbackFn: [`{IIteratorNextCallback<TYield, TNext, TThis>}`](#iiteratornextcallback) - The function that is applied to each value before it is yielded in the result iterator.
 - thisArg (optional): `{(TThis | undefined)}` - An object to which the `this` keyword can refer in the predicate function.
 
 Returns a wrapper for the original `Iterator`.
@@ -410,7 +461,7 @@ Generic Types:
 Arguments:
 
 - source: `{Iterator<TInput, TReturn, TNext>}` - The source iterator.
-- mapper: `{IMapFunc<TInput, TYield, TNext, TThis>}` - A function that converts each value from the source iterator as it is yielded.
+- mapper: [`{IMapFunc<TInput, TYield, TNext, TThis>}`](#imapfunc) - A function that converts each value from the source iterator as it is yielded.
 - thisArg (optional): `{(TThis | undefined)}` - An object to which the `this` keyword can refer in the predicate function.
 
 Returns an `Iterator` with mapped values.
@@ -442,7 +493,7 @@ Arguments:
 
 - source: `{Iterator<TInput>}` - The source iterator.
 - initialValue: `{TAcc}` - The initial aggregated value.
-- reducerFn: `{IReducerFunc<TAcc, TInput, TThis>}` - The function that calculates the aggregated value for each yielded iterator value.
+- reducerFn: [`{IReducerFunc<TAcc, TInput, TThis>}`](#ireducerfunc) - The function that calculates the aggregated value for each yielded iterator value.
 - thisArg (optional): `{(TThis | undefined)}` - An object to which the `this` keyword can refer in the predicate function.
 
 Returns the final aggregated value.
@@ -472,7 +523,7 @@ Generic Types:
 Arguments:
 
 - source: `{Iterator<TYield>}` - The source iterator.
-- predicate (optional): `{(IPredicate<TYield, TThis> | undefined)}` - Predicate that determines whether to ignore a yielded value.
+- predicate (optional): [`{(IPredicate<TYield, TThis> | undefined)}`](#ipredicate) - Predicate that determines whether to ignore a yielded value.
 - thisArg (optional): `{(TThis | undefined)}` - An object to which the `this` keyword can refer in the predicate function.
 
 Returns the first yielded result that wasn't filered out by the predicate.
@@ -495,7 +546,7 @@ Arguments:
 
 - source: `{Iterator<TYield>}` - The source iterator.
 - ifEmpty: `{(TYield | { (this: TThis): TYield; })}` - Default value or function that produces the default value if no value was yieled which was not filtered out.
-- predicate (optional): `{(IPredicate<TYield, TThis> | undefined)}` - Predicate that determines whether to ignore a yielded value.
+- predicate (optional): [`{(IPredicate<TYield, TThis> | undefined)}`](#ipredicate) - Predicate that determines whether to ignore a yielded value.
 - thisArg (optional): `{(TThis | undefined)}` - An object to which the `this` keyword can refer in the predicate function.
 
 Returns the first yeilded value that was not filtered out or the default value.
@@ -563,7 +614,7 @@ Arguments:
 - arr: T[] - The source array.
 - supportsReturn (optional):  `{(boolean | undefined)}` - If `true`, the iterator will implement the `Iterator.return()` method.
 - finalReturnValue (optional):  `{(TReturn | undefined)}` - The value to return with the iteration result when all items have been iterated.
-- onThrow (optional):  `{(IIteratorThrowHandler<TReturn> | undefined)}` - If defined, the iterator will implement `Iterator.throw()` using this method to get the result value.
+- onThrow (optional):  [`{(IIteratorThrowHandler<TReturn> | undefined)}`](#iiteratorthrowhandler) - If defined, the iterator will implement `Iterator.throw()` using this method to get the result value.
 
 Returns the `Iterator` created from the array.
 

@@ -4,6 +4,18 @@ TypeScript source code for server-side scripts in the [Site 17 ServiceNow applic
 
 Issues and backlog items are tracked in the [Site 17 App GitHub Project](https://github.com/orgs/USASOC-HQ/projects/4).
 
+- [site_17_server_side](#site_17_server_side)
+  - [APIs](#apis)
+  - [Pre-requisites and Initialization](#pre-requisites-and-initialization)
+    - [Visual Studio Code](#visual-studio-code)
+    - [NodeJS and NPM (Node Package Manager)](#nodejs-and-npm-node-package-manager)
+  - [Using Transpiled Code](#using-transpiled-code)
+    - [Script Includes](#script-includes)
+    - [ATF test scripts and other scripts](#atf-test-scripts-and-other-scripts)
+  - [Type Definitions](#type-definitions)
+    - [Type Definition Dependency](#type-definition-dependency)
+    - [Generate Type Definitions](#generate-type-definitions)
+
 ## APIs
 
 Following are APIs defined within this ServiceNow application
@@ -11,13 +23,10 @@ Following are APIs defined within this ServiceNow application
 - [Site17Util](Site17Util.md)
 - [DistinguishedNameContext](DistinguishedNameContext.md)
 - [LocationApproval](LocationApproval.md)
-- [ProfileValidator](ProfileValidator.md)
 - [ReservationScheduler](ReservationScheduler.md)
 - [ReservationSchedulerAjax](ReservationSchedulerAjax.md)
+- [ProfileValidator](ProfileValidator.md)
 - [AtfHelper](AtfHelper.md)
-
-
-
 
 ## Pre-requisites and Initialization
 
