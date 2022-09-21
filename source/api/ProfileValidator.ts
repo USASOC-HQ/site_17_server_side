@@ -376,8 +376,8 @@ namespace x_g_inte_site_17 {
         const XMLNAME_ = '';
         const PARAMNAME_user_id = 'sysparm_user_id';
         const PARAMNAME_ = '';
-        const PROPERTY_NAME_profile_phone_fields = 'x_g_inte_site_17.profile_phone_fields';
-        const PROPERTY_NAME_profile_compliance_check_fields = 'x_g_inte_site_17.profile_compliance_check_fields';
+        const PROPERTY_NAME_profile_phone_columns = 'x_g_inte_site_17.profile_phone_columns';
+        const PROPERTY_NAME_profile_compliance_check_columns = 'x_g_inte_site_17.profile_compliance_check_columns';
 
         function isNil(obj: any | undefined): obj is undefined | null | "" {
             switch (typeof obj) {
@@ -400,13 +400,13 @@ namespace x_g_inte_site_17 {
         }
 
         function getProfileComplianceCheckFields(): string[] {
-            var value = gs.getProperty(PROPERTY_NAME_profile_compliance_check_fields, '');
+            var value = gs.getProperty(PROPERTY_NAME_profile_compliance_check_columns, '');
             if (isNil(value)) return [];
             return value.split(',').map(function(s: string) { return s.trim() }).filter(function(s: string) { return s.length > 0; });
         }
 
         function getProfilePhoneFields(): string[] {
-            var value = gs.getProperty(PROPERTY_NAME_profile_phone_fields, '');
+            var value = gs.getProperty(PROPERTY_NAME_profile_phone_columns, '');
             if (isNil(value)) return [];
             return value.split(',').map(function(s: string) { return s.trim() }).filter(function(s: string) { return s.length > 0; });
         }
