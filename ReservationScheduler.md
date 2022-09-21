@@ -1,6 +1,6 @@
 # x_g_inte_site_17.ReservationScheduler API
 
-API for making schedule reservations.
+API for creating schedule entries on a schedule to represent reservations.
 
 - [x_g_inte_site_17.ReservationScheduler API](#x_g_inte_site_17reservationscheduler-api)
   - [Constructor](#constructor)

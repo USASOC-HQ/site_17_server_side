@@ -1,5 +1,7 @@
 # x_g_inte_site_17.Site17Util API
 
+General-purpose utility methods.
+
 - [x_g_inte_site_17.Site17Util API](#x_g_inte_site_17site17util-api)
   - [Methods](#methods)
     - [isUser](#isuser)

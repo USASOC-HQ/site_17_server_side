@@ -1,6 +1,7 @@
 # x_g_inte_site_17.ProfileValidator API
 
-API for making schedule reservations.
+API supporting user profile checking.
+Static methods are intended to be called server-side and instance methods are client-callable.
 
 - [x_g_inte_site_17.ProfileValidator API](#x_g_inte_site_17profilevalidator-api)
   - [Methods](#methods)

@@ -20,13 +20,13 @@ Issues and backlog items are tracked in the [Site 17 App GitHub Project](https:/
 
 Following are APIs defined within this ServiceNow application
 
-- [Site17Util](Site17Util.md)
-- [DistinguishedNameContext](DistinguishedNameContext.md)
-- [LocationApproval](LocationApproval.md)
-- [ReservationScheduler](ReservationScheduler.md)
-- [ReservationSchedulerAjax](ReservationSchedulerAjax.md)
-- [ProfileValidator](ProfileValidator.md)
-- [AtfHelper](AtfHelper.md)
+- [Site17Util](Site17Util.md) - General-purpose utility methods.
+- [DistinguishedNameContext](DistinguishedNameContext.md) - Contextual information relating to the Active Directory distinguished name.
+- [LocationApproval](LocationApproval.md) - Location-based approvals.
+- [ReservationScheduler](ReservationScheduler.md) - Reservation scheduling.
+- [ReservationSchedulerAjax](ReservationSchedulerAjax.md) - Client-callable methods for the ReservationScheduler API.
+- [ProfileValidator](ProfileValidator.md) - User profile checking.
+- [AtfHelper](AtfHelper.md) - Helper API for test scripts.
 
 ## Pre-requisites and Initialization
 

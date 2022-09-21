@@ -1,5 +1,7 @@
 # x_g_inte_site_17.LocationApproval API
 
+Location-based approval support.
+
 - [x_g_inte_site_17.LocationApproval API](#x_g_inte_site_17locationapproval-api)
   - [Constructor](#constructor)
   - [Methods](#methods)

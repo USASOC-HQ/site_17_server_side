@@ -1,5 +1,7 @@
 # x_g_inte_site_17.DistinguishedNameContext API
 
+Contextual information relating to the Active Directory distinguished name associated with a record.
+
 - [x_g_inte_site_17.DistinguishedNameContext API](#x_g_inte_site_17distinguishednamecontext-api)
   - [Constructor](#constructor)
   - [Methods](#methods)
