@@ -2,13 +2,21 @@
   "name": "site_17_server_side",
   "version": "0.0.1",
   "description": "TypeScript source code for the Site 17 ServiceNow application",
-  "author": {
-    "name": "Leonard T. Erwine"
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/USASOC-HQ/site_17_server_side.git"
   },
   "scripts": {
     "build": "tsc --build - source/api/tsconfig.json",
-    "clean": "tsc --build --clean - source/api/tsconfig.json"
+    "clean": "tsc --build --clean - source/api/tsconfig.json",
+    "test": "echo \"Error: no test specified\" && exit 1"
   },
+  "author": "Leonard T. Erwine",
+  "license": "GPL-3.0-only",
+  "bugs": {
+    "url": "https://github.com/USASOC-HQ/site_17_server_side/issues"
+  },
+  "homepage": "https://github.com/USASOC-HQ/site_17_server_side#readme",
   "devDependencies": {
     "typescript": "^4.8.3"
   }
