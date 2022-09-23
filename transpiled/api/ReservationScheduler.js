@@ -11,6 +11,48 @@ var x_g_inte_site_17;
         var oneMinute = new GlideDuration(60000);
         var AvailabilityIterator = (function () {
             var iteratorConstructor = Class.create();
+            function nextFromDuration(maxDuration) {
+                var endDateTime = new GlideDateTime(this._start);
+                endDateTime.add(maxDuration);
+                var actualDuration;
+                while ((actualDuration = this._schedule.duration(this._start, endDateTime)).before(maxDuration)) {
+                    if (!actualDuration.after(gdz))
+                        return nextFromExclusion.call(this);
+                    maxDuration = actualDuration;
+                    endDateTime = new GlideDateTime(this._start);
+                    endDateTime.add(maxDuration);
+                }
+                return moveFromDuration.call(this, maxDuration);
+            }
+            function nextFromExclusion() {
+                var ms = this._schedule.whenNext(this._start);
+                if (ms < 0)
+                    return { done: true };
+                this._start.add(ms);
+                var actualDuration;
+                while (!(actualDuration = this._schedule.duration(this._start, this._end)).after(gdz)) {
+                    this._start.addSeconds(1);
+                    if (!this._start.before(this._end))
+                        return { done: true };
+                    if ((actualDuration = this._schedule.duration(this._start, this._end)).after(gdz))
+                        break;
+                    if ((ms = this._schedule.whenNext(this._start)) < 0)
+                        return { done: true };
+                    this._start.add(ms);
+                }
+                var maxDuration = GlideDateTime.subtract(this._start, this._end);
+                if (actualDuration.before(maxDuration))
+                    return nextFromDuration.call(this, actualDuration);
+                return moveFromDuration.call(this, maxDuration);
+            }
+            function moveFromDuration(duration) {
+                var result = {
+                    start: new GlideDateTime(this._start),
+                    duration: duration
+                };
+                this._start.add(duration);
+                return { value: result };
+            }
             iteratorConstructor.prototype = {
                 initialize: function (schedule, start, end) {
                     this._schedule = schedule;
@@ -20,34 +62,14 @@ var x_g_inte_site_17;
                 next: function () {
                     if (!this._start.before(this._end))
                         return { done: true };
-                    var duration = GlideDateTime.subtract(this._start, this._end);
-                    var actual = this._schedule.duration(this._start, this._end);
-                    if (!actual.after(gdz)) {
-                        var ms = this._schedule.whenNext(this._start);
-                        if (ms < 0)
-                            return { done: true };
-                        this._start.add(ms);
-                        while (!(actual = this._schedule.duration(this._start, this._end)).after(gdz)) {
-                            this._start.addSeconds(1);
-                            if ((actual = this._schedule.duration(this._start, this._end)).after(gdz))
-                                break;
-                            if ((ms = this._schedule.whenNext(this._start)) < 0)
-                                return { done: true };
-                            this._start.add(ms);
-                        }
+                    var maxDuration = GlideDateTime.subtract(this._start, this._end);
+                    var actualDuration = this._schedule.duration(this._start, this._end);
+                    if (actualDuration.after(gdz)) {
+                        if (actualDuration.before(maxDuration))
+                            return nextFromDuration.call(this, actualDuration);
+                        return moveFromDuration.call(this, maxDuration);
                     }
-                    while (actual.before(duration)) {
-                        duration = actual;
-                        var endDateTime = new GlideDateTime(this._start);
-                        endDateTime.add(duration);
-                        actual = this._schedule.duration(this._start, endDateTime);
-                    }
-                    var result = {
-                        start: new GlideDateTime(this._start),
-                        duration: duration
-                    };
-                    this._start.add(duration);
-                    return { value: result };
+                    return nextFromExclusion.call(this);
                 },
                 type: "AvailabilityIterator"
             };

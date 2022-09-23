@@ -252,6 +252,46 @@
         const AvailabilityIterator: AvailabilityIteratorConstructor = (function (): AvailabilityIteratorConstructor {
             var iteratorConstructor: AvailabilityIteratorConstructor = Class.create();
 
+            function nextFromDuration(this: IAvailabilityIteratorPrototype, maxDuration: GlideDuration): IteratorResult<ITimeSpan> {
+                var endDateTime = new GlideDateTime(this._start);
+                endDateTime.add(maxDuration);
+                var actualDuration: GlideDuration;
+                while ((actualDuration = this._schedule.duration(this._start, endDateTime)).before(maxDuration)) {
+                    if (!actualDuration.after(gdz)) return nextFromExclusion.call(this);
+                    maxDuration = actualDuration;
+                    endDateTime = new GlideDateTime(this._start);
+                    endDateTime.add(maxDuration);
+                }
+                return moveFromDuration.call(this, maxDuration);
+            }
+
+            function nextFromExclusion(this: IAvailabilityIteratorPrototype): IteratorResult<ITimeSpan> {
+                var ms = this._schedule.whenNext(this._start);
+                if(ms < 0) return <IteratorResult<ITimeSpan>>{ done: true };
+                this._start.add(ms);
+                var actualDuration: GlideDuration;
+                while (!(actualDuration = this._schedule.duration(this._start, this._end)).after(gdz)) {
+                    this._start.addSeconds(1);
+                    if (!this._start.before(this._end)) return <IteratorResult<ITimeSpan>>{ done: true };
+                    if ((actualDuration = this._schedule.duration(this._start, this._end)).after(gdz)) break;
+                    if((ms = this._schedule.whenNext(this._start)) < 0) return <IteratorResult<ITimeSpan>>{ done: true };
+                    this._start.add(ms);
+                }
+                var maxDuration = GlideDateTime.subtract(this._start, this._end);
+                if (actualDuration.before(maxDuration))
+                    return nextFromDuration.call(this, actualDuration);
+                return moveFromDuration.call(this, maxDuration);
+            }
+
+            function moveFromDuration(this: IAvailabilityIteratorPrototype, duration: GlideDuration): IteratorResult<ITimeSpan> {
+                var result: ITimeSpan = {
+                    start: new GlideDateTime(this._start),
+                    duration: duration
+                };
+                this._start.add(duration);
+                return <IteratorResult<ITimeSpan>>{ value: result };
+            }
+
             iteratorConstructor.prototype = <IAvailabilityIteratorPrototype>{
                 initialize: function(schedule: GlideSchedule, start: GlideDateTime, end: GlideDateTime): void {
                     this._schedule = schedule
@@ -261,31 +301,14 @@
 
                 next: function(): IteratorResult<ITimeSpan> {
                     if (!this._start.before(this._end)) return <IteratorResult<ITimeSpan>>{ done: true };
-                    var duration = GlideDateTime.subtract(this._start, this._end);
-                    var actual = this._schedule.duration(this._start, this._end);
-                    if (!actual.after(gdz)) {
-                        var ms = this._schedule.whenNext(this._start);
-                        if(ms < 0) return <IteratorResult<ITimeSpan>>{ done: true };
-                        this._start.add(ms);
-                        while (!(actual = this._schedule.duration(this._start, this._end)).after(gdz)) {
-                            this._start.addSeconds(1);
-                            if ((actual = this._schedule.duration(this._start, this._end)).after(gdz)) break;
-                            if((ms = this._schedule.whenNext(this._start)) < 0) return <IteratorResult<ITimeSpan>>{ done: true };
-                            this._start.add(ms);
-                        }
+                    var maxDuration = GlideDateTime.subtract(this._start, this._end);
+                    var actualDuration = this._schedule.duration(this._start, this._end);
+                    if (actualDuration.after(gdz)) {
+                        if (actualDuration.before(maxDuration))
+                            return nextFromDuration.call(this, actualDuration);
+                        return moveFromDuration.call(this, maxDuration);
                     }
-                    while (actual.before(duration)) {
-                        duration = actual;
-                        var endDateTime = new GlideDateTime(this._start);
-                        endDateTime.add(duration);
-                        actual = this._schedule.duration(this._start, endDateTime);
-                    }
-                    var result: ITimeSpan = {
-                        start: new GlideDateTime(this._start),
-                        duration: duration
-                    };
-                    this._start.add(duration);
-                    return <IteratorResult<ITimeSpan>>{ value: result };
+                    return nextFromExclusion.call(this);
                 },
 
                 type: "AvailabilityIterator"
